@@ -1,0 +1,75 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-info">
+      <div class="inner">
+        <h3>150</h3>
+        <p>Nuevos Registros</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-success">
+      <div class="inner">
+        <h3>53<sup style="font-size: 20px">%</sup></h3>
+        <p>Tasa de Conversión</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-warning">
+      <div class="inner">
+        <h3>44</h3>
+        <p>Procesos Pendientes</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-tasks"></i>
+      </div>
+      <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-danger">
+      <div class="inner">
+        <h3>65</h3>
+        <p>Alertas</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-bell"></i>
+      </div>
+      <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Bienvenido al Panel de Administración</h3>
+      </div>
+      <div class="card-body">
+        <p>Este es el panel de administración de Diaken. Aquí podrás gestionar todos los aspectos de tu aplicación.</p>
+        <p>Utiliza el menú lateral para navegar entre las diferentes secciones.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

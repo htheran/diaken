@@ -1,0 +1,21 @@
+{% extends 'base/base.html' %}
+
+{% block auth_content %}
+<div class="login-page">
+  <div class="login-box">
+    <div class="card card-outline card-primary">
+      <div class="card-header text-center">
+        <a href="#" class="h1"><b>Diaken</b></a>
+      </div>
+      <div class="card-body">
+        <p class="login-box-msg">Has cerrado sesión correctamente</p>
+        <div class="row">
+          <div class="col-12">
+            <a href="{% url 'login' %}" class="btn btn-primary btn-block">Volver a iniciar sesión</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
