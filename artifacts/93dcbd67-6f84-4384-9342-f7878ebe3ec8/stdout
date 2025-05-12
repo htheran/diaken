@@ -1,0 +1,51 @@
+
+PLAY [Instalar nano en RedHat/Oracle Linux] ************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Instalar nano (DNF)] *****************************************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar versión de nano instalada] *************************************
+[0;32mok: [demo02][0m
+
+TASK [debug] *******************************************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "nano_version.stdout_lines": [[0m
+[0;32m        " GNU nano, version 5.6.1",[0m
+[0;32m        " (C) 1999-2011, 2013-2021 Free Software Foundation, Inc.",[0m
+[0;32m        " (C) 2014-2021 the contributors to nano",[0m
+[0;32m        " Compiled options: --enable-utf8"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar que nano está instalado] ***************************************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar resultado de verificación] ***************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "nano_check": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "cmd": [[0m
+[0;32m            "which",[0m
+[0;32m            "nano"[0m
+[0;32m        ],[0m
+[0;32m        "delta": "0:00:00.007357",[0m
+[0;32m        "end": "2025-05-12 15:11:37.904803",[0m
+[0;32m        "failed": false,[0m
+[0;32m        "failed_when_result": false,[0m
+[0;32m        "msg": "",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "start": "2025-05-12 15:11:37.897446",[0m
+[0;32m        "stderr": "",[0m
+[0;32m        "stderr_lines": [],[0m
+[0;32m        "stdout": "/bin/nano",[0m
+[0;32m        "stdout_lines": [[0m
+[0;32m            "/bin/nano"[0m
+[0;32m        ][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo02[0m                     : [0;32mok=6   [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

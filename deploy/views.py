@@ -35,13 +35,14 @@ def generate_temporary_inventory(group_id=None, host_id=None):
                     key_file.close()
                     os.chmod(key_file.name, 0o600)
                     private_key_path = key_file.name
-                user = host.ansible_user if host.ansible_user else 'root'
+                user = host.deployment_credential.user if host.deployment_credential and hasattr(host.deployment_credential, 'user') else 'root'
                 ssh_key_valid = bool(private_key_path and os.path.exists(private_key_path) and os.path.getsize(private_key_path) > 100)
                 line = (
                     f"{host.name} ansible_host={host.ip} ansible_python_interpreter={host.ansible_python_interpreter}"
                     f" ansible_user={user}"
                     f" ansible_become={'yes' if host.ansible_become else 'no'}"
                     f" ansible_become_method={host.ansible_become_method if host.ansible_become_method else ''}"
+                    f" ansible_ssh_common_args='-o StrictHostKeyChecking=no'"
                 )
                 if ssh_key_valid:
                     line += f" ansible_ssh_private_key_file={private_key_path}"
@@ -61,13 +62,14 @@ def generate_temporary_inventory(group_id=None, host_id=None):
                 os.chmod(key_file.name, 0o600)
                 private_key_path = key_file.name
             inventory_file.write(f"[target_host]\n")
-            user = host.ansible_user if host.ansible_user else 'root'
+            user = host.deployment_credential.user if host.deployment_credential and hasattr(host.deployment_credential, 'user') else 'root'
             ssh_key_valid = bool(private_key_path and os.path.exists(private_key_path) and os.path.getsize(private_key_path) > 100)
             line = (
                 f"{host.name} ansible_host={host.ip} ansible_python_interpreter={host.ansible_python_interpreter}"
                 f" ansible_user={user}"
                 f" ansible_become={'yes' if host.ansible_become else 'no'}"
                 f" ansible_become_method={host.ansible_become_method if host.ansible_become_method else ''}"
+                f" ansible_ssh_common_args='-o StrictHostKeyChecking=no'"
             )
             if ssh_key_valid:
                 line += f" ansible_ssh_private_key_file={private_key_path}"
@@ -78,60 +80,69 @@ def generate_temporary_inventory(group_id=None, host_id=None):
     try:
         with open(inventory_path, 'r') as f:
             contenido = f.read()
-        logger.info(f"[DEPURACIÓN] Inventario temporal generado en: {inventory_path}\nContenido:\n{contenido}")
+        # logger.info(f"[DEPURACIÓN] Inventario temporal generado en: {inventory_path}\nContenido:\n{contenido}")
     except Exception as e:
         logger.error(f"[DEPURACIÓN] Error al leer el inventario temporal: {e}")
     return inventory_path
 
 
-def deploy_to_host(request):
-    def get_ansible_status(output):
-        import re
-        clean_output = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', output)
-        match = re.search(r'ok=(\d+)\s+changed=(\d+)\s+unreachable=(\d+)\s+failed=(\d+)', clean_output)
-        if match:
-            ok, changed, unreachable, failed = map(int, match.groups())
-            if failed == 0 and unreachable == 0:
-                status = 'successful'
-                if changed == 0:
-                    resumen = "✅ Ejecución exitosa\n"
-                else:
-                    resumen = "✅ Ejecución exitosa (se realizaron cambios)\n"
+def get_ansible_status(output):
+    import re
+    clean_output = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', output)
+    match = re.search(r'ok=(\d+)\s+changed=(\d+)\s+unreachable=(\d+)\s+failed=(\d+)', clean_output)
+    if match:
+        ok, changed, unreachable, failed = map(int, match.groups())
+        if failed == 0 and unreachable == 0:
+            status = 'successful'
+            if changed == 0:
+                resumen = "✅ Ejecución exitosa\n"
             else:
-                status = 'failed'
-                resumen = "❌ Ejecución fallida\n"
+                resumen = "✅ Ejecución exitosa (se realizaron cambios)\n"
         else:
             status = 'failed'
-            resumen = "❌ Ejecución fallida (no se pudo interpretar el resultado)\n"
-        return status, resumen + clean_output
+            resumen = "❌ Ejecución fallida\n"
+    else:
+        status = 'failed'
+        resumen = "❌ Ejecución fallida (no se pudo interpretar el resultado)\n"
+    return status, resumen + clean_output
 
+def deploy_to_host(request):
     if request.method == 'POST':
         playbook_id = request.POST.get('playbook')
         host_id = request.POST.get('host')
         playbook = Playbook.objects.get(id=playbook_id)
         host = Host.objects.get(id=host_id)
 
-        print('DEBUG deploy_to_host: host_id recibido:', host_id)
-        print('DEBUG deploy_to_host: host seleccionado:', host.name)
+        # print('DEBUG deploy_to_host: host_id recibido:', host_id)
+        # print('DEBUG deploy_to_host: host seleccionado:', host.name)
 
         # Genera archivo de inventario temporal
         inventory_path = generate_temporary_inventory(host_id=host_id)
         with open(inventory_path, 'r') as f:
-            print('DEBUG deploy_to_host: INVENTARIO GENERADO:')
-            print(f.read())
+            pass  # No debug output; bloque requerido para evitar error de indentación
 
         # No necesitamos pasar target_host si ya está definido en el inventario
         extravars = {}
 
-        # Run Ansible playbook with variable
+        # Crear copia temporal del playbook con reemplazo de hosts: target_host
+        import tempfile
+        with open(playbook.file.path, 'r') as original_pb:
+            pb_content = original_pb.read()
+        pb_content = pb_content.replace('hosts: target_host', f'hosts: {host.name}')
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.yml') as temp_pb:
+            temp_pb.write(pb_content)
+            temp_pb_path = temp_pb.name
+
+        # Run Ansible playbook con archivo temporal modificado
         result = ansible_runner.run(
             private_data_dir='/opt/www',
-            playbook=playbook.file.path,
+            playbook=temp_pb_path,
             inventory=inventory_path
         )
 
-        # Remove temporary inventory file
+        # Eliminar archivos temporales
         os.remove(inventory_path)
+        os.remove(temp_pb_path)
 
         # Determinar status correctamente del output de Ansible
         import re
@@ -164,7 +175,7 @@ def deploy_to_host(request):
             status=status,
             output=output
         )
-        logger.info(result.stats)
+        # logger.info(result.stats)
         return redirect('deploy_success')
     else:
         playbooks = Playbook.objects.all()
@@ -186,15 +197,25 @@ def deploy_to_group(request):
         # No necesitamos pasar target_host si ya está definido en el inventario
         extravars = {}
 
-        # Run Ansible playbook with variable
+        # Crear copia temporal del playbook con reemplazo de hosts: target_group
+        import tempfile
+        with open(playbook.file.path, 'r') as original_pb:
+            pb_content = original_pb.read()
+        pb_content = pb_content.replace('hosts: target_group', f'hosts: {group.name}')
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.yml') as temp_pb:
+            temp_pb.write(pb_content)
+            temp_pb_path = temp_pb.name
+
+        # Run Ansible playbook con archivo temporal modificado
         result = ansible_runner.run(
             private_data_dir='/opt/www',
-            playbook=playbook.file.path,
+            playbook=temp_pb_path,
             inventory=inventory_path
         )
 
-        # Remove temporary inventory file
+        # Eliminar archivos temporales
         os.remove(inventory_path)
+        os.remove(temp_pb_path)
 
         output = result.stdout.read()
         status, output = get_ansible_status(output)
@@ -210,7 +231,8 @@ def deploy_to_group(request):
         logger.info(result.stats)
         return redirect('deploy_success')
     else:
-        playbooks = Playbook.objects.all()
+        # Solo playbooks de tipo 'group'
+        playbooks = Playbook.objects.filter(playbook_type='group')
         groups = Group.objects.all()
         environments = Environment.objects.all()
         return render(request, 'deploy/deploy_to_group.html', {'playbooks': playbooks, 'groups': groups, 'environments': environments})

@@ -3,21 +3,29 @@
   <div class="container mt-4">
     <h2>Deploy to Group</h2>
     <form method="post" id="deploy-form">
+      <div class="form-group">
+        <label for="environment">Select Environment:</label>
+        <select class="form-control" id="environment" name="environment">
+          <option value="">-------------</option>
+          {% for env in environments %}
+            <option value="{{ env.id }}">{{ env.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
       {% csrf_token %}
       <div class="form-group">
-        <label for="playbook">Select Playbook:</label>
-        <select class="form-control" id="playbook" name="playbook">
-          {% for playbook in playbooks %}
-            <option value="{{ playbook.id }}">{{ playbook.name }}</option>
+        <label for="group">Select Group:</label>
+        <select class="form-control" id="group" name="group">
+          <option value="">-------------</option>
+          {% for group in groups %}
+            <option value="{{ group.id }}">{{ group.name }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="form-group">
-        <label for="group">Select Group:</label>
-        <select class="form-control" id="group" name="group">
-          {% for group in groups %}
-            <option value="{{ group.id }}">{{ group.name }}</option>
-          {% endfor %}
+        <label for="playbook">Select Playbook:</label>
+        <select class="form-control" id="playbook" name="playbook">
+          <option value="">-------------</option>
         </select>
       </div>
       <button type="submit" class="btn btn-primary">Deploy</button>
@@ -33,11 +41,57 @@
     // Mostrar spinner al enviar el formulario
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('deploy-form');
+      const envSelect = document.getElementById('environment');
+      const groupSelect = document.getElementById('group');
       if (form) {
         form.addEventListener('submit', function(e) {
           document.getElementById('progress-bar').style.display = 'block';
           e.preventDefault();
           setTimeout(() => form.submit(), 50);
+        });
+      }
+      if (envSelect && groupSelect) {
+        envSelect.addEventListener('change', function() {
+          const envId = this.value;
+          groupSelect.innerHTML = '<option value="">-------------</option>';
+          if (!envId) {
+            return;
+          }
+          fetch(`/deploy/api/groups/?environment_id=${envId}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.groups && data.groups.length > 0) {
+                data.groups.forEach(group => {
+                  const opt = document.createElement('option');
+                  opt.value = group.id;
+                  opt.textContent = group.name;
+                  groupSelect.appendChild(opt);
+                });
+              }
+            });
+        });
+      }
+      // Select dinámico de playbooks por grupo
+      if (groupSelect) {
+        groupSelect.addEventListener('change', function() {
+          const groupId = this.value;
+          const playbookSelect = document.getElementById('playbook');
+          playbookSelect.innerHTML = '<option value="">-------------</option>';
+          if (!groupId) {
+            return;
+          }
+          fetch(`/deploy/api/playbooks/?group_id=${groupId}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.playbooks && data.playbooks.length > 0) {
+                data.playbooks.forEach(pb => {
+                  const opt = document.createElement('option');
+                  opt.value = pb.id;
+                  opt.textContent = pb.name;
+                  playbookSelect.appendChild(opt);
+                });
+              }
+            });
         });
       }
     });

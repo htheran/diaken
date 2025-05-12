@@ -10,6 +10,14 @@ def playbook_list(request):
     playbooks = Playbook.objects.all()
     return render(request, 'playbooks/playbook_list.html', {'playbooks': playbooks})
 
+def playbook_list_host(request):
+    playbooks = Playbook.objects.filter(playbook_type='host')
+    return render(request, 'playbooks/playbook_list.html', {'playbooks': playbooks})
+
+def playbook_list_group(request):
+    playbooks = Playbook.objects.filter(playbook_type='group')
+    return render(request, 'playbooks/playbook_list.html', {'playbooks': playbooks})
+
 
 def playbook_upload(request):
     if request.method == 'POST':

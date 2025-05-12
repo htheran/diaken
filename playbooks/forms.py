@@ -4,4 +4,4 @@ from .models import Playbook
 class PlaybookForm(forms.ModelForm):
     class Meta:
         model = Playbook
-        fields = ['name', 'operating_system', 'file']
+        fields = ['name', 'operating_system', 'file', 'playbook_type']

@@ -15,12 +15,20 @@
       </thead>
       <tbody>
         {% for history in page_obj %}
-        <tr>
+        <tr{% if history.group %} class="table-info"{% endif %}>
           <td>{{ history.playbook.name }}</td>
           <td>{{ history.user.username }}</td>
-          <td>{% if history.group %}{{ history.group.name }}{% else %}{{ history.host.name }}{% endif %}</td>
+          <td>{% if history.group %}<span style="text-decoration: underline; font-weight: bold;">{{ history.group.name }}</span>{% else %}{{ history.host.name }}{% endif %}</td>
           <td>{{ history.date }}</td>
-          <td>{{ history.status }}</td>
+          <td>
+             {% if history.status == 'successful' %}
+               <span class="text-success"><strong>{{ history.status }}</strong></span>
+             {% elif history.status == 'failed' %}
+               <span class="text-danger"><strong>{{ history.status }}</strong></span>
+             {% else %}
+               {{ history.status }}
+             {% endif %}
+          </td>
           <td><a href="{% url 'history_detail' history.id %}">View</a></td>
         </tr>
         {% endfor %}

@@ -6,7 +6,12 @@
         <h2>Playbooks</h2>
       </div>
       <div class="card-body">
-        <a href="{% url 'playbook_upload' %}" class="btn btn-primary mb-3">Upload New Playbook</a>
+        <h2>Playbooks</h2>
+        <div class="mb-3">
+          <a href="{% url 'playbook_list_host' %}" class="btn btn-outline-info {% if request.path == '/playbooks/host/' %}active{% endif %}">Host Playbooks</a>
+          <a href="{% url 'playbook_list_group' %}" class="btn btn-outline-info {% if request.path == '/playbooks/group/' %}active{% endif %}">Group Playbooks</a>
+          <a href="{% url 'playbook_upload' %}" class="btn btn-primary">Upload New Playbook</a>
+        </div>
         <ul class="list-group">
           {% for playbook in playbooks %}
             <li class="list-group-item d-flex justify-content-between align-items-center">

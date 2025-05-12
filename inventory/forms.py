@@ -15,7 +15,7 @@ from app_settings.models import DeploymentCredential
 
 class HostForm(forms.ModelForm):
     deployment_credential = forms.ModelChoiceField(queryset=DeploymentCredential.objects.all(), required=False, label="Deployment Credential")
-    ansible_user = forms.CharField(required=False, label="Usuario (Windows)")
+    ansible_user = forms.CharField(required=False, label="Usuario (Windows)", widget=forms.HiddenInput())
     ansible_password = forms.CharField(required=False, label="Contraseña (Windows)", widget=forms.PasswordInput())
     class Meta:
         model = Host
@@ -53,6 +53,52 @@ class HostForm(forms.ModelForm):
             if not ansible_password:
                 self.add_error('ansible_password', 'La contraseña es obligatoria para hosts Windows.')
         else:
-            # Ya filtramos el queryset, así que no es necesario validar aquí
-            pass
+            # Validación SSH para hosts no-Windows
+            import socket
+            import subprocess
+            ip = cleaned_data.get('ip')
+            cred = cleaned_data.get('deployment_credential')
+            user = cred.user if cred and hasattr(cred, 'user') else None
+            keyfile = None
+            if cred and hasattr(cred, 'get_ssh_private_key'):
+                ssh_key = cred.get_ssh_private_key()
+                if ssh_key:
+                    import tempfile
+                    keyfile = tempfile.NamedTemporaryFile(delete=False, mode='w')
+                    keyfile.write(ssh_key.strip() + '\n')
+                    keyfile.close()
+                    # Validar que la llave privada permita generar la pública
+                    import subprocess
+                    try:
+                        result = subprocess.run(['ssh-keygen', '-y', '-f', keyfile.name], capture_output=True, timeout=5)
+                        if result.returncode != 0:
+                            self.add_error('deployment_credential', 'La llave privada de la credencial seleccionada es inválida o está corrupta. No se pudo generar la llave pública.')
+                    except Exception as e:
+                        self.add_error('deployment_credential', f'Error al validar la llave privada: {e}')
+            # Intentar conexión SSH
+            if ip:
+                ssh_args = [
+                    'ssh',
+                    '-o', 'BatchMode=yes',
+                    '-o', 'ConnectTimeout=5',
+                    '-o', 'StrictHostKeyChecking=no',
+                ]
+                if keyfile:
+                    ssh_args += ['-i', keyfile.name]
+                ssh_args += [f'{user}@{ip}', 'echo ok']
+                try:
+                    result = subprocess.run(ssh_args, capture_output=True, timeout=8)
+                    if result.returncode != 0:
+                        import datetime
+                        error_msg = result.stderr.decode().strip()
+                        self.add_error('ip', f'No se pudo conectar por SSH: {error_msg}')
+                        # Guardar log
+                        with open('/opt/www/inventory/host_connection_errors.log', 'a') as logf:
+                            logf.write(f"[{datetime.datetime.now()}] {user}@{ip} - {error_msg}\n")
+                except Exception as e:
+                    self.add_error('ip', f'Error de conexión SSH: {e}')
+                finally:
+                    if keyfile:
+                        import os
+                        os.unlink(keyfile.name)
         return cleaned_data

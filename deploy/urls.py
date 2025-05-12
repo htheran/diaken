@@ -7,4 +7,5 @@ urlpatterns = [
     path('success/', views.deploy_success, name='deploy_success'),
     path('api/groups/', views.api_groups, name='api_groups'),
     path('api/hosts/', views.api_hosts, name='api_hosts'),
+    path('api/playbooks/', __import__('deploy.views_api').views_api.api_playbooks, name='api_playbooks'),
 ]

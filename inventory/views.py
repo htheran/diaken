@@ -64,7 +64,20 @@ def host_create(request):
     if request.method == "POST":
         form = HostForm(request.POST)
         if form.is_valid():
-            form.save()
+            host = form.save()
+            # Escribir en /etc/hosts si no existe la entrada
+            if host.name and host.ip:
+                try:
+                    with open('/etc/hosts', 'r+') as f:
+                        lines = f.readlines()
+                        exists = any(
+                            (host.ip in l or host.name in l) and not l.strip().startswith('#')
+                            for l in lines
+                        )
+                        if not exists:
+                            f.write(f"{host.ip}\t{host.name}\n")
+                except Exception as e:
+                    print(f"[WARN] No se pudo escribir en /etc/hosts: {e}")
             return redirect('host_list')
     else:
         form = HostForm()

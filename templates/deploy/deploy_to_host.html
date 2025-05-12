@@ -5,14 +5,6 @@
     <form method="post" id="deploy-form">
       {% csrf_token %}
       <div class="form-group">
-        <label for="playbook">Select Playbook:</label>
-        <select class="form-control" id="playbook" name="playbook">
-          {% for playbook in playbooks %}
-            <option value="{{ playbook.id }}">{{ playbook.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="form-group">
         <label for="environment">Select Environment:</label>
         <select class="form-control" id="environment" name="environment">
           <option value="">Select Environment</option>
@@ -31,6 +23,12 @@
         <label for="host">Select Host:</label>
         <select class="form-control" id="host" name="host" disabled>
           <option value="">Select Host</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="playbook">Select Playbook:</label>
+        <select class="form-control" id="playbook" name="playbook">
+          <option value="">Select Playbook</option>
         </select>
       </div>
       <button type="submit" class="btn btn-primary">Deploy</button>
@@ -81,7 +79,31 @@
             hostSelect.innerHTML += `<option value="${host.id}">${host.name}</option>`;
           });
           hostSelect.disabled = false;
+          // Vacía el select de playbooks hasta que se seleccione un host
+          var playbookSelect = document.getElementById('playbook');
+          playbookSelect.innerHTML = '<option value="">Select Playbook</option>';
         });
+    });
+
+    // Actualiza playbooks cuando se selecciona un host
+    document.getElementById('host').addEventListener('change', function() {
+      var hostId = this.value;
+      var playbookSelect = document.getElementById('playbook');
+      playbookSelect.innerHTML = '<option value="">Select Playbook</option>';
+      if (hostId) {
+        fetch(`/deploy/api/playbooks/?host_id=${hostId}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.playbooks && data.playbooks.length > 0) {
+              data.playbooks.forEach(pb => {
+                var opt = document.createElement('option');
+                opt.value = pb.id;
+                opt.textContent = pb.name;
+                playbookSelect.appendChild(opt);
+              });
+            }
+          });
+      }
     });
   </script>
 {% endblock %}

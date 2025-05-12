@@ -1,0 +1,8 @@
+
+PLAY [Actualizar sistema RedHat/CentOS/Oracle Linux] ***************************
+
+TASK [Gathering Facts] *********************************************************
+[1;31mfatal: [demo01]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '10.100.0.121' (ED25519) to the list of known hosts.\r\nroot@10.100.0.121: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).", "unreachable": true}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo01[0m                     : ok=0    changed=0    [1;31munreachable=1   [0m failed=0    skipped=0    rescued=0    ignored=0   

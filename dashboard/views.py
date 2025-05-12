@@ -10,6 +10,7 @@ from django.db.models import Count
 import json
 
 def playbook_executions_view(request):
+    import logging
     from collections import defaultdict
     import json as pyjson
     from django.db import connection
@@ -31,32 +32,33 @@ def playbook_executions_view(request):
             'playbook_name': row[0],
             'operating_system': row[1],
             'status': row[2],
-            'date': row[3].strftime('%Y-%m-%d'),
+            'date': row[3],
             'count': row[4]
         })
 
-    counter = Counter((r['playbook_name'], r['operating_system'], r['status'], r['date']) for r in records)
+    # Agrupa por combinación única de playbook+SO+status y cuenta ejecuciones por fecha
     all_dates = sorted({r['date'] for r in records})
-    labels = [date for date in all_dates]
-    legend = []
-    grouped = {}
-    for (playbook, os, status, date), count in counter.items():
-        key = f"{playbook} [{os}] ({status})"
-        if key not in legend:
-            legend.append(key)
-        if key not in grouped:
-            grouped[key] = [0]*len(labels)
-        idx = labels.index(date)
-        grouped[key][idx] = count
+    labels = all_dates
+    unique_keys = sorted({(r['playbook_name'], r['operating_system'], r['status']) for r in records})
+    grouped = {key: [0]*len(labels) for key in unique_keys}
+    key_labels = []
+    for key in unique_keys:
+        playbook, os, status = key
+        key_labels.append(f"{playbook} [{os}] ({status})")
+    key_label_map = {key: lbl for key, lbl in zip(unique_keys, key_labels)}
+    for r in records:
+        key = (r['playbook_name'], r['operating_system'], r['status'])
+        idx = labels.index(r['date'])
+        grouped[key][idx] = r['count']
 
     color_palette = [
         'rgba(75,192,192,0.85)', 'rgba(255,99,132,0.7)', 'rgba(54,162,235,0.7)',
         'rgba(255,206,86,0.7)', 'rgba(153,102,255,0.7)', 'rgba(255,159,64,0.7)'
     ]
     datasets = []
-    for i, key in enumerate(legend):
+    for i, key in enumerate(unique_keys):
         datasets.append({
-            'label': key,
+            'label': key_label_map[key],
             'data': grouped[key],
             'backgroundColor': color_palette[i % len(color_palette)],
             'borderColor': color_palette[i % len(color_palette)].replace('0.7', '1'),
@@ -67,30 +69,15 @@ def playbook_executions_view(request):
     logger.info('Playbook Executions Chart - labels: %s', labels)
     logger.info('Playbook Executions Chart - datasets: %s', datasets)
 
-    raw_metric = [
-        {
-            'playbook_name': playbook_name,
-            'operating_system': operating_system,
-            'status': status,
-            'date': date,
-            'count': count
-        }
-        for (playbook_name, operating_system, status, date), count in counter.items()
-    ]
-
     if request.GET.get('ajax') == '1':
         from django.http import JsonResponse
         return JsonResponse({
             'labels': labels,
             'datasets': datasets,
         })
-    elif request.GET.get('debug') == '1':
-        from django.http import JsonResponse
-        return JsonResponse(raw_metric, safe=False)
     context = {
         'labels': pyjson.dumps(labels),
         'datasets': pyjson.dumps(datasets),
-        'raw_metric': pyjson.dumps(raw_metric),
     }
     return render(request, 'dashboard/playbook_executions.html', context)
 

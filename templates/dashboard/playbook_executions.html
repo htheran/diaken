@@ -4,9 +4,15 @@
 
 {% block content %}
 <div class="container mt-4">
-  <h2 class="mb-4">Playbook Executions</h2>
-  <div class="d-flex justify-content-center" style="padding-bottom: 2rem;">
-    <canvas id="executionsHistogram" height="180" style="max-width: 700px;"></canvas>
+  <div class="card card-primary card-outline">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fas fa-chart-bar mr-2"></i> Ejecuciones de Playbooks</h3>
+    </div>
+    <div class="card-body">
+      <div class="chart">
+        <canvas id="executionsHistogram" style="width:100%;height:320px;"></canvas>
+      </div>
+    </div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,6 +27,7 @@
     executionsChart.data.datasets = newDatasets.map(ds => ({
       ...ds,
       borderWidth: 2,
+      borderRadius: 8,
       borderColor: ds.borderColor || '#222',
       backgroundColor: ds.backgroundColor,
       barPercentage: 0.6,
@@ -41,7 +48,6 @@
       });
   }, 15000);
 
-  // Calcular el valor máximo de todas las barras para sugerir un límite superior cómodo
   let allValues = datasets.flatMap(ds => ds.data);
   let maxValue = Math.max(...allValues, 1); // evitar 0
   let suggestedMax = Math.ceil(maxValue * 1.2);
@@ -50,41 +56,62 @@
     type: 'bar',
     data: {
       labels: labels,
-      datasets: datasets.map(ds => ({
-        ...ds,
-        borderWidth: 2,
-        borderColor: '#222',
-        backgroundColor: ds.backgroundColor,
-        barPercentage: 0.6,
-        categoryPercentage: 0.6,
-      }))
+      // Paleta de 20 colores distintos (tipo d3.schemeCategory20)
+      datasets: datasets.map((ds, i) => {
+        const palette = [
+          '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+          '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173', '#5254a3', '#9c9ede', '#cedb9c', '#e7ba52', '#ad494a'
+        ];
+        return {
+          ...ds,
+          borderWidth: 2,
+          borderRadius: 8,
+          borderColor: palette[i % palette.length],
+          backgroundColor: palette[i % palette.length],
+          barPercentage: 0.6,
+          categoryPercentage: 0.6,
+        };
+      })
     },
     options: {
       responsive: true,
       plugins: {
         legend: {
           display: true,
-          position: 'top',
-          labels: { font: { size: 16 }, color: '#222' }
-        },
-        title: {
-          display: true,
-          text: 'Ejecuciones de Playbooks por Día',
-          font: { size: 28, weight: 'bold' },
-          color: '#222',
-          align: 'center',
-          padding: { top: 10, bottom: 30 }
+          position: 'bottom',
+          align: 'start',
+          labels: {
+            font: { size: 13, family: 'Segoe UI, Arial, sans-serif', weight: 'bold' },
+            color: '#222',
+            padding: 10,
+            boxWidth: 18,
+            boxHeight: 14,
+            usePointStyle: true,
+            textAlign: 'left',
+            generateLabels: function(chart) {
+              // Cada métrica en una línea
+              const datasets = chart.data.datasets || [];
+              return datasets.map((ds, i) => ({
+                text: ds.label,
+                fillStyle: ds.backgroundColor,
+                strokeStyle: ds.borderColor,
+                lineWidth: 2,
+                hidden: !chart.isDatasetVisible(i),
+                index: i
+              }));
+            }
+          }
         },
         datalabels: {
-          display: true,
-          color: '#222',
-          font: { weight: 'bold', size: 16 },
           anchor: 'end',
-          align: 'top',
-          backgroundColor: '#fff',
-          borderRadius: 3,
-          padding: 3,
-          formatter: Math.round
+          align: 'end',
+          color: '#222',
+          font: { weight: 'bold', size: 16, family: 'Segoe UI, Arial, sans-serif' },
+          formatter: Math.round,
+          padding: 4
+        },
+        title: {
+          display: false
         },
         tooltip: {
           enabled: true,
@@ -92,30 +119,28 @@
           titleColor: '#fff',
           bodyColor: '#fff',
           borderColor: '#fff',
-          borderWidth: 1
+          borderWidth: 1,
+          padding: 12,
+          titleFont: { size: 17, weight: 'bold' },
+          bodyFont: { size: 15 }
         }
-      },
-      layout: {
-        padding: { left: 10, right: 10, top: 10, bottom: 10 }
       },
       scales: {
         x: {
-          title: { display: true, text: 'Fecha', font: { size: 18, weight: 'bold' }, color: '#222' },
-          ticks: { font: { size: 15 }, color: '#222' },
           grid: { display: false },
-          stacked: true,
-          categoryPercentage: 0.6,
-          barPercentage: 0.6
+          ticks: { font: { size: 16, family: 'Segoe UI, Arial, sans-serif' }, color: '#222' }
         },
         y: {
           beginAtZero: true,
-          suggestedMax: suggestedMax,
-          stacked: true,
-          title: { display: true, text: 'Ejecuciones', font: { size: 18, weight: 'bold' }, color: '#222' },
-          ticks: { font: { size: 15 }, color: '#222', stepSize: 1 },
-          grid: { color: '#bbb', borderDash: [3, 2] }
+          max: 14,
+          grid: { color: '#eee' },
+          ticks: { font: { size: 16, family: 'Segoe UI, Arial, sans-serif' }, color: '#222' }
         }
-      }
+      },
+      layout: {
+        padding: 30
+      },
+      backgroundColor: '#f9fafd'
     },
     plugins: [ChartDataLabels]
   });

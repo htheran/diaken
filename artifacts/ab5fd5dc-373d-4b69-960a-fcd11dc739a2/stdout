@@ -1,0 +1,6 @@
+[1;35m[WARNING]: Could not match supplied host pattern, ignoring: target_group[0m
+
+PLAY [Instalar epel-release en todos los hosts de un grupo] ********************
+[0;36mskipping: no hosts matched[0m
+
+PLAY RECAP *********************************************************************
