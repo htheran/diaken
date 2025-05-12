@@ -1,0 +1,2 @@
+# Ejecutar el comando de despliegue programado cada minuto
+* * * * * /opt/www/venv/bin/python /opt/www/manage.py run_scheduled_deployments >> /opt/www/scheduled_deployments.log 2>&1

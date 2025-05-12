@@ -1,0 +1,81 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  {% if messages %}
+    <div class="container mt-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <div class="container mt-4">
+    <h2>Scheduled Playbook Executions</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Playbook</th>
+          <th>User</th>
+          <th>Type</th>
+          <th>Group/Host</th>
+          <th>Scheduled Time</th>
+<th>Executed At</th>
+<th>Status</th>
+<th>Output</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sched in scheduled_list %}
+        <tr{% if sched.group %} class="table-info"{% endif %}>
+          <td>{{ sched.playbook.name }}</td>
+          <td>{{ sched.user.username }}</td>
+          <td>{{ sched.get_deploy_type_display }}</td>
+          <td>{% if sched.group %}<span style="text-decoration: underline; font-weight: bold;">{{ sched.group.name }}</span>{% else %}{{ sched.host.name }}{% endif %}</td>
+          <td>{{ sched.scheduled_time|date:'Y-m-d H:i' }}</td>
+<td>{% if sched.executed_at %}{{ sched.executed_at|date:'Y-m-d H:i' }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
+<td>
+  {% if sched.status == 'successful' %}
+    <span class="badge badge-success"><i class="fas fa-check-circle"></i> Success</span>
+  {% elif sched.status == 'failed' %}
+    <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Failed</span>
+  {% elif sched.status == 'pending' %}
+    <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+  {% elif sched.status == 'running' %}
+    <span class="badge badge-info"><i class="fas fa-spinner fa-spin"></i> Running</span>
+  {% else %}
+    <span class="badge badge-secondary">{{ sched.status }}</span>
+  {% endif %}
+</td>
+<td>
+  {% if sched.output %}
+    <span style="white-space: pre-line;">{{ sched.output|truncatechars:80 }}</span>
+    <a href="#" data-toggle="modal" data-target="#outputModal{{ sched.id }}">Ver todo</a>
+  {% else %}
+    <span class="text-muted">-</span>
+  {% endif %}
+</td>
+        </tr>
+        <!-- Modal for Output -->
+        <div class="modal fade" id="outputModal{{ sched.id }}" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel{{ sched.id }}" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="outputModalLabel{{ sched.id }}">Execution Output</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <pre>{{ sched.output }}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

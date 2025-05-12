@@ -1,0 +1,14 @@
+
+PLAY [Instalar epel-release en todos los hosts de un grupo] ********************
+
+TASK [Gathering Facts] *********************************************************
+ok: [demo02]
+ok: [demo03]
+
+TASK [Instalar epel-release (DNF)] *********************************************
+ok: [demo03]
+ok: [demo02]
+
+PLAY RECAP *********************************************************************
+demo02                     : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+demo03                     : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
