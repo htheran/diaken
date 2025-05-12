@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+# Clave para cifrado de campos sensibles (SSH, contraseñas)
+FIELD_ENCRYPTION_KEY = b'7J5p3NQy8H8t2e1z1n3R5a0l7Jp8Zq5QKQ8w6X4rJ7E='
+
 from pathlib import Path
 import os
 
@@ -40,7 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'apps.authentication',
-    'apps.dashboard',
+    'dashboard',
+    'inventory',
+    'playbooks',
+    'history',
+    'app_settings',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +81,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'diaken.wsgi.application'
 
 
-# Databaseos.path.join(BASE_DIR, 'templates')
+# Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
@@ -107,9 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-co'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
@@ -123,8 +130,17 @@ STATIC_URL = 'static/'
 
 # URLs de autenticación
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'index'
+LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Ensure yml directory exists
+YML_ROOT = os.path.join(MEDIA_ROOT, 'yml')
+if not os.path.exists(YML_ROOT):
+    os.makedirs(YML_ROOT)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -142,4 +158,3 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # Autenticación personalizada
 AUTH_USER_MODEL = 'accounts.CustomUser'
 AUTHENTICATION_BACKENDS = ['accounts.backends.CustomAuthBackend']
-

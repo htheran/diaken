@@ -1,7 +1,7 @@
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <!-- Brand Logo -->
-  <a href="{% url 'index' %}" class="brand-link">
+  <a href="{% url 'dashboard' %}" class="brand-link">
     <span class="brand-text font-weight-light">Diaken</span>
   </a>
 
@@ -22,7 +22,7 @@
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <!-- Menú 1 -->
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="{% url 'dashboard' %}" class="nav-link">
             <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>
               Dashboard
@@ -49,161 +49,126 @@
               </a>
             </li>
           </ul>
-        </li>
+        </li>     
         
-        <!-- Menú 2 -->
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-users"></i>
-            <p>
-              Usuarios
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Lista de Usuarios</p>
+              <a href="{% url 'playbook_executions' %}" class="nav-link">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <p>Playbook Executions</p>
               </a>
             </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Roles</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Permisos</p>
-              </a>
-            </li>
-          </ul>
-        </li>
         
-        <!-- Menú 3 -->
+        <!-- Settings Menu -->
         <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-cogs"></i>
             <p>
-              Configuración
+              Settings
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{% url 'global_setting_list' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>General</p>
+                <p>Global Variables</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{% url 'credential_list' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Seguridad</p>
+                <p>Deployment Credentials</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+        <!-- Inventory Menu -->
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-box"></i>
+            <p>
+              Inventory
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{% url 'environment_list' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Environments</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{% url 'group_list' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Sistema</p>
+                <p>Groups</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'host_list' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Hosts</p>
               </a>
             </li>
           </ul>
         </li>
         
-        <!-- Menú 4 -->
+        <!-- Deploy Menu -->
         <li class="nav-item">
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-chart-bar"></i>
+            <i class="nav-icon fas fa-play"></i>
             <p>
-              Reportes
+              Deploy
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{% url 'deploy_to_host' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Diarios</p>
+                <p>Deploy to Host</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{% url 'deploy_to_group' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Mensuales</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Anuales</p>
+                <p>Deploy to Group</p>
               </a>
             </li>
           </ul>
         </li>
         
-        <!-- Menú 5 -->
+        <!-- Playbooks Menu -->
         <li class="nav-item">
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-folder"></i>
+            <i class="nav-icon fas fa-book"></i>
             <p>
-              Documentos
+              Playbooks
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{% url 'playbook_list' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Subir</p>
+                <p>List Playbooks</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{% url 'playbook_upload' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Visualizar</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Categorías</p>
+                <p>Upload Playbook</p>
               </a>
             </li>
           </ul>
         </li>
         
-        <!-- Menú 6 -->
+        <!-- History Menu -->
         <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-tools"></i>
-            <p>
-              Herramientas
-              <i class="right fas fa-angle-left"></i>
-            </p>
+          <a href="{% url 'history_list' %}" class="nav-link">
+            <i class="nav-icon fas fa-history"></i>
+            <p>History</p>
           </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Respaldos</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Logs</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Auditoría</p>
-              </a>
-            </li>
-          </ul>
         </li>
         
         <!-- Cerrar Sesión -->

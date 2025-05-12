@@ -1,0 +1,19 @@
+
+PLAY [Actualizar sistema RedHat/CentOS/Oracle Linux] ***************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Actualizar todos los paquetes (DNF/YUM)] *********************************
+[0;33mchanged: [demo02][0m
+
+TASK [Reiniciar el sistema si es necesario (solo si hubo actualizaciones importantes)] ***
+[0;33mchanged: [demo02][0m
+
+TASK [Mostrar mensaje de actualización] ****************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "¡El sistema ha sido actualizado y reiniciado si fue necesario!"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo02[0m                     : [0;32mok=4   [0m [0;33mchanged=2   [0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

@@ -1,0 +1,28 @@
+{% extends 'base/base.html' %}
+{% block page_title %}Global Variables{% endblock %}
+{% block breadcrumb %}<li class="breadcrumb-item active">Global Variables</li>{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <a href="{% url 'global_setting_create' %}" class="btn btn-primary">Add New Variable</a>
+    </div>
+    <ul class="list-group list-group-flush">
+      {% for setting in settings %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ setting.key }}</strong><br>
+          <span class="text-muted small">{{ setting.description }}</span>
+        </div>
+        <div>
+          <span class="mr-3">{{ setting.value }}</span>
+          <a href="{% url 'global_setting_update' setting.pk %}" class="btn btn-warning btn-sm">Edit</a>
+        </div>
+      </li>
+      {% empty %}
+      <li class="list-group-item text-center text-muted">No global variables found.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

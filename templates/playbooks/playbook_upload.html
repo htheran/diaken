@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  <div class="container mt-4">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h2>Upload Playbook</h2>
+      </div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data" class="form-horizontal">
+          {% csrf_token %}
+          <div class="form-group row">
+            <label for="id_name" class="col-sm-2 col-form-label font-weight-bold">Name:</label>
+            <div class="col-sm-10">
+              <input type="text" name="name" class="form-control" id="id_name">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="id_operating_system" class="col-sm-2 col-form-label font-weight-bold">Operating system:</label>
+            <div class="col-sm-10">
+              <select name="operating_system" class="form-control" id="id_operating_system">
+                <option value="">---------</option>
+                <option value="Windows">Windows</option>
+                <option value="RedHat">RedHat</option>
+                <option value="Debian">Debian</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="id_file" class="col-sm-2 col-form-label font-weight-bold">File:</label>
+            <div class="col-sm-10">
+              <input type="file" name="file" class="form-control" id="id_file">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success">Upload</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

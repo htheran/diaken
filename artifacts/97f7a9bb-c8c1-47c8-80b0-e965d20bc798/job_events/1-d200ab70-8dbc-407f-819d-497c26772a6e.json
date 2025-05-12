@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "d200ab70-8dbc-407f-819d-497c26772a6e", "counter": 1, "stdout": "\u001b[0;31mERROR! the playbook: /opt/www/media/yml/Install-Vim_7bgkXGX.yml could not be found\u001b[0m", "start_line": 0, "end_line": 1, "runner_ident": "97f7a9bb-c8c1-47c8-80b0-e965d20bc798", "created": "2025-05-11T23:13:41.137000+00:00"}

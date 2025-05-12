@@ -1,75 +1,122 @@
 {% extends 'base/base.html' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Inventory{% endblock %}
 
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-lg-3 col-6">
-    <div class="small-box bg-info">
-      <div class="inner">
-        <h3>150</h3>
-        <p>Nuevos Registros</p>
+  <div class="container mt-4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      .dashboard-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 1.5rem 0 0.5rem 0;
+        color: #444;
+        letter-spacing: 1px;
+      }
+      .dashboard-card {
+        min-width: 150px;
+        max-width: 220px;
+        min-height: 90px;
+        max-height: 130px;
+        font-size: 0.98rem;
+        margin: 0 auto;
+      }
+      .dashboard-card .card-header {
+        font-size: 1rem;
+        padding: 0.4rem 0.7rem;
+      }
+      .dashboard-card .card-title {
+        font-size: 1.5rem;
+        margin: 0.2rem 0 0 0;
+      }
+    </style>
+    <div class="dashboard-section-title">General Metrics</div>
+    <div class="row g-2 mb-2 justify-content-center">
+      <div class="col-sm-6 col-md-3">
+        <div class="card dashboard-card text-white bg-primary h-100 d-flex flex-column justify-content-center align-items-center" title="Number of environments configured" data-bs-toggle="tooltip">
+          <div class="card-header text-center"><i class="fas fa-globe"></i> Environments</div>
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h5 class="card-title">{{ environments_count }}</h5>
+          </div>
+        </div>
       </div>
-      <div class="icon">
-        <i class="fas fa-users"></i>
+      <div class="col-sm-6 col-md-3">
+        <div class="card dashboard-card text-white bg-success h-100 d-flex flex-column justify-content-center align-items-center" title="Number of groups in the inventory" data-bs-toggle="tooltip">
+          <div class="card-header text-center"><i class="fas fa-users"></i> Groups</div>
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h5 class="card-title">{{ groups_count }}</h5>
+          </div>
+        </div>
       </div>
-      <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
-    </div>
-  </div>
-  
-  <div class="col-lg-3 col-6">
-    <div class="small-box bg-success">
-      <div class="inner">
-        <h3>53<sup style="font-size: 20px">%</sup></h3>
-        <p>Tasa de Conversión</p>
-      </div>
-      <div class="icon">
-        <i class="fas fa-chart-line"></i>
-      </div>
-      <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
-    </div>
-  </div>
-  
-  <div class="col-lg-3 col-6">
-    <div class="small-box bg-warning">
-      <div class="inner">
-        <h3>44</h3>
-        <p>Procesos Pendientes</p>
-      </div>
-      <div class="icon">
-        <i class="fas fa-tasks"></i>
-      </div>
-      <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
-    </div>
-  </div>
-  
-  <div class="col-lg-3 col-6">
-    <div class="small-box bg-danger">
-      <div class="inner">
-        <h3>65</h3>
-        <p>Alertas</p>
-      </div>
-      <div class="icon">
-        <i class="fas fa-bell"></i>
-      </div>
-      <a href="#" class="small-box-footer">Más info <i class="fas fa-arrow-circle-right"></i></a>
-    </div>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Bienvenido al Panel de Administración</h3>
-      </div>
-      <div class="card-body">
-        <p>Este es el panel de administración de Diaken. Aquí podrás gestionar todos los aspectos de tu aplicación.</p>
-        <p>Utiliza el menú lateral para navegar entre las diferentes secciones.</p>
+      <div class="col-sm-6 col-md-3">
+        <div class="card dashboard-card text-white bg-info h-100 d-flex flex-column justify-content-center align-items-center" title="Number of registered hosts" data-bs-toggle="tooltip">
+          <div class="card-header text-center"><i class="fas fa-server"></i> Hosts</div>
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h5 class="card-title">{{ hosts_count }}</h5>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="dashboard-section-title">Playbooks</div>
+    <div class="row g-2 mb-2 justify-content-center">
+      <div class="col-sm-6 col-md-3">
+        <div class="card dashboard-card text-white bg-dark h-100 d-flex flex-column justify-content-center align-items-center" title="Number of playbooks for individual hosts" data-bs-toggle="tooltip">
+          <div class="card-header text-center"><i class="fas fa-file-code"></i> Playbooks (Host)</div>
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h5 class="card-title">{{ playbooks_host_count }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <div class="card dashboard-card text-white bg-secondary h-100 d-flex flex-column justify-content-center align-items-center" title="Number of playbooks for groups of hosts" data-bs-toggle="tooltip">
+          <div class="card-header text-center"><i class="fas fa-file-alt"></i> Playbooks (Group)</div>
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h5 class="card-title">{{ playbooks_group_count }}</h5>
+          </div>
+        </div>
+      </div>
+      {% for os in playbooks_os %}
+      <div class="col-sm-6 col-md-3">
+        <div class="card dashboard-card text-white {% cycle 'bg-danger' 'bg-warning' 'bg-success' 'bg-primary' 'bg-info' %} h-100 d-flex flex-column justify-content-center align-items-center" title="Number of playbooks for {{ os.operating_system }} hosts" data-bs-toggle="tooltip">
+          <div class="card-header text-center">
+            <i class="fas fa-book"></i> Playbooks - {{ os.operating_system }}
+          </div>
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h5 class="card-title">{{ os.count }}</h5>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="dashboard-section-title">Hosts by Operating System</div>
+    <div class="row g-2 mb-2 justify-content-center">
+      {% for os in os_distribution %}
+      <div class="col-sm-6 col-md-3 d-flex">
+        <div class="card dashboard-card flex-fill text-white {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-danger' 'bg-primary' %} h-100 d-flex flex-column justify-content-center align-items-center" 
+             title="Number of hosts with the {{ os.operating_system }} operating system" data-bs-toggle="tooltip">
+          <div class="card-header text-center">
+            <i class="fas fa-desktop"></i> Hosts - {{ os.operating_system }}
+          </div>
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h5 class="card-title">{{ os.count }}</h5>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+      });
+    </script>
   </div>
-</div>
+    });
+  });
+</script>
+  </div>
 {% endblock %}

@@ -1,0 +1,33 @@
+- name: Provision deployment user with SSH and sudo
+  hosts: all
+  become: yes
+  vars:
+    deploy_user: "{{ deploy_user }}"
+    ssh_pubkey: "{{ ssh_pubkey }}"
+  tasks:
+    - name: Ensure deploy user exists
+      user:
+        name: "{{ deploy_user }}"
+        shell: /bin/bash
+        state: present
+
+    - name: Ensure .ssh directory exists
+      file:
+        path: "/home/{{ deploy_user }}/.ssh"
+        state: directory
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: 0700
+
+    - name: Add authorized key
+      authorized_key:
+        user: "{{ deploy_user }}"
+        key: "{{ ssh_pubkey }}"
+
+    - name: Add sudoers file
+      copy:
+        dest: "/etc/sudoers.d/{{ deploy_user }}"
+        content: "{{ deploy_user }} ALL=(ALL) NOPASSWD:ALL\n"
+        owner: root
+        group: root
+        mode: 0440

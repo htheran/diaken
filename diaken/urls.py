@@ -16,10 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('apps.dashboard.urls')),
+    path('dashboard/', include('dashboard.urls')),
+    path('', include('dashboard.urls')),
     path('auth/', include('apps.authentication.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-]
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('playbooks/', include('playbooks.urls')),
+    path('deploy/', include('deploy.urls')),
+    path('inventory/', include('inventory.urls')),
+    path('history/', include('history.urls')),
+    path('settings/', include('app_settings.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

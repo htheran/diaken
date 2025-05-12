@@ -1,0 +1,14 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  <h2>Host Detail</h2>
+  <p>Name: {{ host.name }}</p>
+  <p>IP: {{ host.ip }}</p>
+  <p>Operating System: {{ host.operating_system }}</p>
+  <p>Ansible Python Interpreter: {{ host.ansible_python_interpreter }} <a href="{% url 'update_python_interpreter' host.pk %}" class="btn btn-sm btn-primary">Actualizar Intérprete</a></p>
+  <p>Status: {{ host.status }}</p>
+  <p>Tags: {{ host.tags }}</p>
+  <p>Notes: {{ host.notes }}</p>
+  <a href="{% url 'host_update' host.pk %}">Edit</a>
+  <a href="{% url 'host_delete' host.pk %}">Delete</a>
+  <a href="{% url 'host_list' %}">Back to list</a>
+{% endblock %}

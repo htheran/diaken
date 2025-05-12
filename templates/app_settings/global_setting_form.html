@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+{% block page_title %}{% if setting %}Edit{% else %}New{% endif %} Global Variable{% endblock %}
+{% block breadcrumb %}<li class="breadcrumb-item"><a href="{% url 'global_setting_list' %}">Global Variables</a></li>{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card card-primary">
+      <div class="card-header">
+        <h3 class="card-title">{% if setting %}Edit{% else %}New{% endif %} Global Variable</h3>
+      </div>
+      <form method="post">
+        <div class="card-body">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="id_key">Key</label>
+            <input type="text" name="key" class="form-control" id="id_key" value="{{ form.initial.key|default_if_none:'' }}">
+          </div>
+          <div class="form-group">
+            <label for="id_value">Value</label>
+            <textarea name="value" class="form-control" id="id_value">{{ form.initial.value|default_if_none:'' }}</textarea>
+          </div>
+          <div class="form-group">
+            <label for="id_description">Description</label>
+            <textarea name="description" class="form-control" id="id_description">{{ form.initial.description|default_if_none:'' }}</textarea>
+          </div>
+        </div>
+        <div class="card-footer text-right">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{% url 'global_setting_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

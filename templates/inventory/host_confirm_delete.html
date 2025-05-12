@@ -1,0 +1,10 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  <h2>Confirm Delete Host</h2>
+  <p>Are you sure you want to delete "{{ host.name }}"?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirm</button>
+  </form>
+  <a href="{% url 'host_list' %}">Cancel</a>
+{% endblock %}

@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "fd4d9f98-8e18-4e8b-81fc-c545e98c1a6c", "counter": 6, "stdout": "\u001b[1;35minterpreter at /opt/www/venv/bin/python3.11, but future installation of another\u001b[0m", "start_line": 5, "end_line": 6, "runner_ident": "f6a42c79-4f53-4a6d-8c8f-1a97a74fc54e", "created": "2025-05-08T02:16:11.195658+00:00"}

@@ -1,0 +1,11 @@
+
+PLAY [Instalar paquete básico] *************************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo01][0m
+
+TASK [Instalar paquete vim] ****************************************************
+[0;33mchanged: [demo01][0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo01[0m                     : [0;32mok=2   [0m [0;33mchanged=1   [0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

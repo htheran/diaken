@@ -1,0 +1,11 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  <div class="container mt-4">
+    <div class="alert alert-success" role="alert">
+      <h4 class="alert-heading">Deployment Successful!</h4>
+      <p>Your playbook has been successfully deployed.</p>
+      <hr>
+      <a href="{% url 'deploy_to_host' %}" class="btn btn-primary">Deploy Another</a>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,8 @@
+
+PLAY [Instalar paquete básico] *************************************************
+
+TASK [Gathering Facts] *********************************************************
+[1;31mfatal: [10.100.0.19]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: root@10.100.0.19: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).", "unreachable": true}[0m
+
+PLAY RECAP *********************************************************************
+[0;31m10.100.0.19[0m                : ok=0    changed=0    [1;31munreachable=1   [0m failed=0    skipped=0    rescued=0    ignored=0   

@@ -1,0 +1,25 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  <div class="container mt-4">
+    <div class="card">
+      <div class="card-header">
+        <h2>{% if form.instance.pk %}Edit{% else %}Create{% endif %} Environment</h2>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="id_name">Name:</label>
+            <input type="text" name="name" class="form-control" id="id_name">
+          </div>
+          <div class="form-group">
+            <label for="id_description">Description:</label>
+            <textarea name="description" class="form-control" id="id_description"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{% url 'environment_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  <div class="container mt-4">
+    <div class="card">
+      <div class="card-header">
+        <h2>Actualizar Intérprete de Python para {{ host.name }}</h2>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="id_ansible_python_interpreter">Intérprete de Python:</label>
+            <input type="text" name="ansible_python_interpreter" class="form-control" id="id_ansible_python_interpreter" value="{{ host.ansible_python_interpreter }}">
+          </div>
+          <button type="submit" class="btn btn-primary">Actualizar</button>
+          <a href="{% url 'host_detail' host.pk %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
