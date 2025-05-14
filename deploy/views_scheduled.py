@@ -190,3 +190,54 @@ class Command:
 def scheduled_history(request):
     scheduled_list = ScheduledDeployment.objects.all().order_by('-scheduled_time')
     return render(request, 'history/scheduled_history_list.html', {'scheduled_list': scheduled_list})
+
+
+def api_scheduled_status(request):
+    """Endpoint API para obtener el estado actual de las tareas programadas"""
+    from django.http import JsonResponse
+    
+    # Obtener el parámetro de filtro por estado (si existe)
+    status_filter = request.GET.get('status', None)
+    
+    # Filtrar las tareas programadas según el estado solicitado
+    if status_filter:
+        scheduled_list = ScheduledDeployment.objects.filter(status=status_filter).order_by('-scheduled_time')
+    else:
+        scheduled_list = ScheduledDeployment.objects.all().order_by('-scheduled_time')
+    
+    # Preparar los datos para la respuesta JSON
+    tasks = []
+    for sched in scheduled_list:
+        task = {
+            'id': sched.id,
+            'status': sched.status,
+            'status_html': get_status_html(sched.status),
+            'output': sched.output,
+            'output_html': get_output_html(sched)
+        }
+        tasks.append(task)
+    
+    return JsonResponse({'tasks': tasks})
+
+
+def get_status_html(status):
+    """Genera el HTML para mostrar el estado de una tarea programada"""
+    if status == 'successful':
+        return '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Success</span>'
+    elif status == 'failed':
+        return '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Failed</span>'
+    elif status == 'pending':
+        return '<span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>'
+    elif status == 'running':
+        return '<span class="badge badge-info"><i class="fas fa-spinner fa-spin"></i> Running</span>'
+    else:
+        return f'<span class="badge badge-secondary">{status}</span>'
+
+
+def get_output_html(sched):
+    """Genera el HTML para mostrar el output de una tarea programada"""
+    if sched.output:
+        truncated_output = sched.output[:80] + '...' if len(sched.output) > 80 else sched.output
+        return f'<span style="white-space: pre-line;">{truncated_output}</span> <a href="#" data-toggle="modal" data-target="#outputModal{sched.id}">Ver todo</a>'
+    else:
+        return '<span class="text-muted">-</span>'

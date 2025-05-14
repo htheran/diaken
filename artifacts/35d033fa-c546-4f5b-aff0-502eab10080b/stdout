@@ -1,0 +1,131 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [demo03]
+ok: [demo02]
+
+TASK [Actualizar sistema operativo] ********************************************
+ok: [demo03]
+ok: [demo02]
+
+TASK [Debug result_update] *****************************************************
+ok: [demo02] => {
+    "result_update": {
+        "changed": false,
+        "failed": false,
+        "msg": "Nothing to do",
+        "rc": 0,
+        "results": []
+    }
+}
+ok: [demo03] => {
+    "result_update": {
+        "changed": false,
+        "failed": false,
+        "msg": "Nothing to do",
+        "rc": 0,
+        "results": []
+    }
+}
+
+TASK [Instalar Apache (httpd)] *************************************************
+ok: [demo03]
+ok: [demo02]
+
+TASK [Crear directorios necesarios] ********************************************
+ok: [demo03] => (item={'path': '/opt/www/sites/demo03'})
+ok: [demo02] => (item={'path': '/opt/www/sites/demo02'})
+ok: [demo03] => (item={'path': '/var/log/httpd/demo03'})
+ok: [demo02] => (item={'path': '/var/log/httpd/demo02'})
+ok: [demo03] => (item={'path': '/etc/httpd/conf.d', 'mode': '0755'})
+ok: [demo02] => (item={'path': '/etc/httpd/conf.d', 'mode': '0755'})
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak si existe] *******
+ok: [demo03]
+ok: [demo02]
+
+TASK [Copiar el archivo httpd.conf desde la plantilla específica para grupos] ***
+ok: [demo03]
+ok: [demo02]
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Guardar nombre de app en /etc/hostname] **********************************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Copiar archivo index.html desde la plantilla específica para grupos] *****
+changed: [demo02]
+changed: [demo03]
+
+TASK [Copiar configuración de VirtualHost para Apache desde la plantilla específica para grupos] ***
+changed: [demo02]
+ok: [demo03]
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+ok: [demo02] => (item=firewalld)
+ok: [demo03] => (item=firewalld)
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+changed: [demo02]
+changed: [demo03]
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+changed: [demo02]
+changed: [demo03]
+
+TASK [Recargar firewalld] ******************************************************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+fatal: [demo02]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.009282", "end": "2025-05-14 15:20:26.746268", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 15:20:26.736986", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}
+...ignoring
+fatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.004706", "end": "2025-05-14 15:18:30.155213", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 15:18:30.150507", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+changed: [demo02]
+changed: [demo03]
+
+TASK [Reiniciar Apache explícitamente] *****************************************
+changed: [demo02]
+changed: [demo03]
+
+TASK [Mostrar resumen al finalizar el playbook] ********************************
+ok: [demo02] => {
+    "msg": [
+        "Resumen de la implementación:",
+        "Nombre del servidor: demo02.upb.edu.co",
+        "Ruta del aplicativo: /opt/www/sites/demo02/index.html",
+        "Logs: /var/log/httpd/demo02",
+        "Permisos: apache:apache para /opt/www/sites/demo02",
+        "Puertos: HTTP 80, HTTPS 443",
+        "Dominio: upb.edu.co",
+        "Timestamp de despliegue: 2025-05-14T20:20:05Z",
+        "El playbook se ha completado correctamente."
+    ]
+}
+ok: [demo03] => {
+    "msg": [
+        "Resumen de la implementación:",
+        "Nombre del servidor: demo03.upb.edu.co",
+        "Ruta del aplicativo: /opt/www/sites/demo03/index.html",
+        "Logs: /var/log/httpd/demo03",
+        "Permisos: apache:apache para /opt/www/sites/demo03",
+        "Puertos: HTTP 80, HTTPS 443",
+        "Dominio: upb.edu.co",
+        "Timestamp de despliegue: 2025-05-14T20:18:09Z",
+        "El playbook se ha completado correctamente."
+    ]
+}
+
+RUNNING HANDLER [Reiniciar Apache] *********************************************
+changed: [demo02]
+
+PLAY RECAP *********************************************************************
+demo02                     : ok=20   changed=11   unreachable=0    failed=0    skipped=0    rescued=0    ignored=1   
+demo03                     : ok=19   changed=9    unreachable=0    failed=0    skipped=0    rescued=0    ignored=1   

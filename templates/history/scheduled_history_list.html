@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% block content %}
+{% load static %}
   {% if messages %}
     <div class="container mt-4">
       {% for message in messages %}
@@ -36,7 +37,7 @@
           <td>{% if sched.group %}<span style="text-decoration: underline; font-weight: bold;">{{ sched.group.name }}</span>{% else %}{{ sched.host.name }}{% endif %}</td>
           <td>{{ sched.scheduled_time|date:'Y-m-d H:i' }}</td>
 <td>{% if sched.executed_at %}{{ sched.executed_at|date:'Y-m-d H:i' }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
-<td>
+<td id="status-{{ sched.id }}">
   {% if sched.status == 'successful' %}
     <span class="badge badge-success"><i class="fas fa-check-circle"></i> Success</span>
   {% elif sched.status == 'failed' %}
@@ -49,7 +50,7 @@
     <span class="badge badge-secondary">{{ sched.status }}</span>
   {% endif %}
 </td>
-<td>
+<td id="output-{{ sched.id }}">
   {% if sched.output %}
     <span style="white-space: pre-line;">{{ sched.output|truncatechars:80 }}</span>
     <a href="#" data-toggle="modal" data-target="#outputModal{{ sched.id }}">Ver todo</a>
@@ -69,7 +70,7 @@
                 </button>
               </div>
               <div class="modal-body">
-                <pre>{{ sched.output }}</pre>
+                <pre id="outputModalBody-{{ sched.id }}">{{ sched.output }}</pre>
               </div>
             </div>
           </div>
@@ -78,4 +79,97 @@
       </tbody>
     </table>
   </div>
+
+  <script>
+    // Almacenar los IDs de tareas que requieren actualización
+    let tasksToUpdate = new Set();
+    
+    // Función para identificar las tareas que necesitan actualización
+    function identifyTasksToUpdate() {
+      // Obtener todas las tareas
+      fetch('/deploy/api/scheduled-status/')
+        .then(response => response.json())
+        .then(data => {
+          // Limpiar el conjunto de tareas a actualizar
+          tasksToUpdate.clear();
+          
+          // Identificar tareas en estado 'running' o 'pending'
+          data.tasks.forEach(task => {
+            if (task.status === 'running' || task.status === 'pending') {
+              tasksToUpdate.add(task.id);
+            } else {
+              // Para tareas completadas o fallidas, actualizar una vez y luego dejar de actualizarlas
+              const statusCell = document.querySelector(`#status-${task.id}`);
+              const outputCell = document.querySelector(`#output-${task.id}`);
+              const modalBody = document.querySelector(`#outputModalBody-${task.id}`);
+              
+              if (statusCell) {
+                statusCell.innerHTML = task.status_html;
+              }
+              
+              if (outputCell) {
+                outputCell.innerHTML = task.output_html;
+              }
+              
+              if (modalBody && task.output) {
+                modalBody.textContent = task.output;
+              }
+            }
+          });
+          
+          console.log('Tareas a actualizar:', Array.from(tasksToUpdate));
+        })
+        .catch(error => console.error('Error al identificar tareas para actualizar:', error));
+    }
+    
+    // Función para actualizar solo las tareas en ejecución
+    function updateRunningTasks() {
+      if (tasksToUpdate.size === 0) {
+        return; // No hay tareas para actualizar
+      }
+      
+      fetch('/deploy/api/scheduled-status/?status=running')
+        .then(response => response.json())
+        .then(data => {
+          // Actualizar cada tarea en ejecución
+          data.tasks.forEach(task => {
+            // Actualizar el estado
+            const statusCell = document.querySelector(`#status-${task.id}`);
+            if (statusCell) {
+              statusCell.innerHTML = task.status_html;
+            }
+            
+            // Actualizar el output
+            const outputCell = document.querySelector(`#output-${task.id}`);
+            if (outputCell) {
+              outputCell.innerHTML = task.output_html;
+            }
+            
+            // Actualizar el contenido del modal
+            const modalBody = document.querySelector(`#outputModalBody-${task.id}`);
+            if (modalBody && task.output) {
+              modalBody.textContent = task.output;
+            }
+            
+            // Si la tarea ya no está en ejecución, eliminarla de la lista de actualización
+            if (task.status !== 'running' && task.status !== 'pending') {
+              tasksToUpdate.delete(task.id);
+            }
+          });
+        })
+        .catch(error => console.error('Error al actualizar las tareas en ejecución:', error));
+    }
+    
+    // Identificar tareas a actualizar cada 30 segundos
+    setInterval(identifyTasksToUpdate, 30000);
+    
+    // Actualizar tareas en ejecución cada 5 segundos
+    setInterval(updateRunningTasks, 5000);
+    
+    // Iniciar el proceso al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      identifyTasksToUpdate();
+      updateRunningTasks();
+    });
+  </script>
 {% endblock %}

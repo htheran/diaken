@@ -12,4 +12,5 @@ urlpatterns = [
     path('api/groups/', views.api_groups, name='api_groups'),
     path('api/hosts/', views.api_hosts, name='api_hosts'),
     path('api/playbooks/', __import__('deploy.views_api').views_api.api_playbooks, name='api_playbooks'),
+    path('api/scheduled-status/', views_scheduled.api_scheduled_status, name='api_scheduled_status'),
 ]
