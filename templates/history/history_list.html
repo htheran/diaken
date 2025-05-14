@@ -22,15 +22,45 @@
           <td>{{ history.date }}</td>
           <td>
              {% if history.status == 'successful' %}
-               <span class="text-success"><strong>{{ history.status }}</strong></span>
+               <span class="badge badge-success"><i class="fas fa-check-circle"></i> Success</span>
              {% elif history.status == 'failed' %}
-               <span class="text-danger"><strong>{{ history.status }}</strong></span>
+               <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Failed</span>
+             {% elif history.status == 'pending' %}
+               <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+             {% elif history.status == 'running' %}
+               <span class="badge badge-info"><i class="fas fa-spinner fa-spin"></i> Running</span>
              {% else %}
-               {{ history.status }}
+               <span class="badge badge-secondary">{{ history.status }}</span>
              {% endif %}
           </td>
-          <td><a href="{% url 'history_detail' history.id %}">View</a></td>
+          <td>
+            {% if history.output %}
+              <span style="white-space: pre-line;">{{ history.output|truncatechars:80 }}</span>
+              <a href="#" data-toggle="modal" data-target="#outputModal{{ history.id }}">Ver todo</a>
+            {% else %}
+              <span class="text-muted">-</span>
+            {% endif %}
+          </td>
         </tr>
+        <!-- Modal for Output -->
+        <div class="modal fade" id="outputModal{{ history.id }}" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel{{ history.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header" style="background-color: #1e3a5f; color: white;">
+                <h5 class="modal-title" id="outputModalLabel{{ history.id }}">Execution Output - {{ history.playbook.name }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" style="background-color: #f8f9fc;">
+                <pre style="max-height: 500px; overflow-y: auto; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px; background-color: #f8f9fc; border: 1px solid #e3e6f0; padding: 15px; border-radius: 5px;">{{ history.output }}</pre>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
         {% endfor %}
       </tbody>
     </table>
@@ -53,7 +83,5 @@
         {% endif %}
       </ul>
     </nav>
-      </tbody>
-    </table>
   </div>
 {% endblock %}

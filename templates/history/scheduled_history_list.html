@@ -29,7 +29,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for sched in scheduled_list %}
+        {% for sched in page_obj %}
         <tr{% if sched.group %} class="table-info"{% endif %}>
           <td>{{ sched.playbook.name }}</td>
           <td>{{ sched.user.username }}</td>
@@ -61,16 +61,19 @@
         </tr>
         <!-- Modal for Output -->
         <div class="modal fade" id="outputModal{{ sched.id }}" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel{{ sched.id }}" aria-hidden="true">
-          <div class="modal-dialog" role="document">
+          <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="outputModalLabel{{ sched.id }}">Execution Output</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <div class="modal-header" style="background-color: #1e3a5f; color: white;">
+                <h5 class="modal-title" id="outputModalLabel{{ sched.id }}">Execution Output - {{ sched.playbook.name }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
-                <pre id="outputModalBody-{{ sched.id }}">{{ sched.output }}</pre>
+              <div class="modal-body" style="background-color: #f8f9fc;">
+                <pre id="outputModalBody-{{ sched.id }}" style="max-height: 500px; overflow-y: auto; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px; background-color: #f8f9fc; border: 1px solid #e3e6f0; padding: 15px; border-radius: 5px;">{{ sched.output }}</pre>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -78,16 +81,42 @@
         {% endfor %}
       </tbody>
     </table>
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo; First</span></li>
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+          <li class="page-item disabled"><span class="page-link">Last &raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
   </div>
 
   <script>
     // Almacenar los IDs de tareas que requieren actualización
     let tasksToUpdate = new Set();
     
+    // Obtener el número de página actual de la URL
+    function getCurrentPage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('page') || '1';
+    }
+    
     // Función para identificar las tareas que necesitan actualización
     function identifyTasksToUpdate() {
-      // Obtener todas las tareas
-      fetch('/deploy/api/scheduled-status/')
+      // Obtener todas las tareas de la página actual
+      const currentPage = getCurrentPage();
+      fetch(`/deploy/api/scheduled-status/?page=${currentPage}`)
         .then(response => response.json())
         .then(data => {
           // Limpiar el conjunto de tareas a actualizar
@@ -128,32 +157,33 @@
         return; // No hay tareas para actualizar
       }
       
+      // Obtener solo las tareas en ejecución
       fetch('/deploy/api/scheduled-status/?status=running')
         .then(response => response.json())
         .then(data => {
-          // Actualizar cada tarea en ejecución
+          // Actualizar cada tarea en ejecución que esté visible en la página actual
           data.tasks.forEach(task => {
-            // Actualizar el estado
+            // Actualizar solo si la tarea está en la página actual
             const statusCell = document.querySelector(`#status-${task.id}`);
             if (statusCell) {
               statusCell.innerHTML = task.status_html;
-            }
-            
-            // Actualizar el output
-            const outputCell = document.querySelector(`#output-${task.id}`);
-            if (outputCell) {
-              outputCell.innerHTML = task.output_html;
-            }
-            
-            // Actualizar el contenido del modal
-            const modalBody = document.querySelector(`#outputModalBody-${task.id}`);
-            if (modalBody && task.output) {
-              modalBody.textContent = task.output;
-            }
-            
-            // Si la tarea ya no está en ejecución, eliminarla de la lista de actualización
-            if (task.status !== 'running' && task.status !== 'pending') {
-              tasksToUpdate.delete(task.id);
+              
+              // Actualizar el output
+              const outputCell = document.querySelector(`#output-${task.id}`);
+              if (outputCell) {
+                outputCell.innerHTML = task.output_html;
+              }
+              
+              // Actualizar el contenido del modal
+              const modalBody = document.querySelector(`#outputModalBody-${task.id}`);
+              if (modalBody && task.output) {
+                modalBody.textContent = task.output;
+              }
+              
+              // Si la tarea ya no está en ejecución, eliminarla de la lista de actualización
+              if (task.status !== 'running' && task.status !== 'pending') {
+                tasksToUpdate.delete(task.id);
+              }
             }
           });
         })
@@ -170,6 +200,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       identifyTasksToUpdate();
       updateRunningTasks();
+    });
+    
+    // Actualizar cuando se cambia de página
+    document.querySelectorAll('.pagination .page-link').forEach(link => {
+      link.addEventListener('click', function() {
+        // Dar tiempo para que la página se cargue antes de actualizar
+        setTimeout(identifyTasksToUpdate, 500);
+      });
     });
   </script>
 {% endblock %}

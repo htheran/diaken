@@ -188,8 +188,12 @@ class Command:
         return pb_file.name
 
 def scheduled_history(request):
+    from django.core.paginator import Paginator
     scheduled_list = ScheduledDeployment.objects.all().order_by('-scheduled_time')
-    return render(request, 'history/scheduled_history_list.html', {'scheduled_list': scheduled_list})
+    paginator = Paginator(scheduled_list, 10)  # 10 por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'history/scheduled_history_list.html', {'page_obj': page_obj})
 
 
 def api_scheduled_status(request):
@@ -198,12 +202,21 @@ def api_scheduled_status(request):
     
     # Obtener el parámetro de filtro por estado (si existe)
     status_filter = request.GET.get('status', None)
+    # Obtener el parámetro de página (si existe)
+    page_number = request.GET.get('page', None)
     
     # Filtrar las tareas programadas según el estado solicitado
     if status_filter:
         scheduled_list = ScheduledDeployment.objects.filter(status=status_filter).order_by('-scheduled_time')
     else:
         scheduled_list = ScheduledDeployment.objects.all().order_by('-scheduled_time')
+    
+    # Si se especifica una página, paginar los resultados
+    if page_number:
+        from django.core.paginator import Paginator
+        paginator = Paginator(scheduled_list, 10)  # 10 por página
+        page_obj = paginator.get_page(page_number)
+        scheduled_list = page_obj
     
     # Preparar los datos para la respuesta JSON
     tasks = []
