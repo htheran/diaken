@@ -141,6 +141,9 @@ def deploy_to_host(request):
 
         # Obtener todas las variables de configuración automáticamente
         extravars = get_all_settings_as_dict()
+        
+        # Añadir target_host como variable para las plantillas
+        extravars['target_host'] = host.name
 
         # Crear copia temporal del playbook con reemplazo de hosts: target_host
         import tempfile

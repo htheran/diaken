@@ -1,0 +1,135 @@
+---
+- name: Configuración de servidor web en Oracle Linux 9
+  hosts: target_host
+  become: yes
+  vars:
+    deployment_timestamp: "{{ ansible_date_time.iso8601 }}"
+
+  tasks:
+    - name: Actualizar sistema operativo
+      dnf:
+        name: '*'
+        state: latest
+      register: result_update
+
+    - name: Debug result_update
+      debug:
+        var: result_update
+
+    - name: Instalar Apache (httpd)
+      dnf:
+        name:
+          - httpd
+          - mod_ssl
+        state: present
+
+    - name: Crear directorios necesarios
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('0755') }}"
+        owner: apache
+        group: apache
+      loop:
+        - path: "{{ server_root }}/{{ target_host }}"
+        - path: "{{ log_root }}/{{ target_host }}"
+        - path: "/etc/httpd/conf.d"
+          mode: "0755"
+
+    - name: Renombrar el archivo actual httpd.conf a httpd.conf.bak si existe
+      command:
+        cmd: mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
+      args:
+        creates: /etc/httpd/conf/httpd.conf.bak
+      ignore_errors: true
+
+    - name: Copiar el archivo httpd.conf desde la plantilla específica para hosts
+      template:
+        src: /opt/www/media/templates/host/httpd.conf.j2
+        dest: /etc/httpd/conf/httpd.conf
+        owner: root
+        group: root
+        mode: '0644'
+        force: yes
+      notify: Reiniciar Apache
+
+    - name: Limpiar archivo /etc/hostname
+      copy:
+        content: ""
+        dest: "/etc/hostname"
+        force: yes
+
+    - name: Guardar nombre de app en /etc/hostname
+      lineinfile:
+        path: "/etc/hostname"
+        line: "{{ target_host }}.{{ domain }}"
+        
+    - name: Copiar archivo index.html desde la plantilla específica para hosts
+      template:
+        src: /opt/www/media/templates/host/index.html.j2
+        dest: "{{ server_root }}/{{ target_host }}/index.html"
+        owner: apache
+        group: apache
+        mode: '0644'
+        force: yes
+
+    - name: Copiar configuración de VirtualHost para Apache desde la plantilla específica para hosts
+      template:
+        src: /opt/www/media/templates/host/virtualhost.conf.j2
+        dest: "/etc/httpd/conf.d/{{ target_host }}.conf"
+        owner: root
+        group: root
+        mode: '0644'
+        force: yes
+      notify: Reiniciar Apache
+
+    - name: Asegurar que los servicios httpd y firewalld estén iniciados y habilitados
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - httpd
+        - firewalld
+      ignore_errors: true
+
+    - name: Abrir puerto HTTP permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ http_port }}/tcp
+      ignore_errors: true
+
+    - name: Abrir puerto HTTPS permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ https_port }}/tcp
+      ignore_errors: true
+
+    - name: Recargar firewalld
+      systemd:
+        name: firewalld
+        state: reloaded
+      ignore_errors: true
+
+    - name: Deshabilitar SELinux (temporalmente)
+      command: setenforce 0
+      ignore_errors: true
+
+    - name: Deshabilitar SELinux permanentemente
+      command: echo "SELINUX=disabled" > /etc/selinux/config
+      ignore_errors: true
+
+    - name: Mostrar resumen al finalizar el playbook
+      debug:
+        msg:
+          - "Resumen de la implementación:"
+          - "Nombre del servidor: {{ target_host }}.{{ domain }}"
+          - "Ruta del aplicativo: {{ server_root }}/{{ target_host }}/index.html"
+          - "Logs: {{ log_root }}/{{ target_host }}"
+          - "Permisos: apache:apache para {{ server_root }}/{{ target_host }}"
+          - "Puertos: HTTP {{ http_port }}, HTTPS {{ https_port }}"
+          - "Dominio: {{ domain }}"
+          - "Timestamp de despliegue: {{ deployment_timestamp }}"
+          - "El playbook se ha completado correctamente."
+
+  handlers:
+    - name: Reiniciar Apache
+      systemd:
+        name: httpd
+        state: restarted

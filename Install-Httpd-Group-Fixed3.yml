@@ -1,0 +1,124 @@
+---
+- name: Configuración de servidor web en Oracle Linux 9
+  hosts: target_group
+  become: yes
+  vars:
+    subdomain: "{{ target_group }}"
+
+  tasks:
+    - name: Actualizar sistema operativo
+      dnf:
+        name: '*'
+        state: latest
+      register: result_update
+
+    - name: Debug result_update
+      debug:
+        var: result_update
+
+    - name: Instalar Apache (httpd)
+      dnf:
+        name:
+          - httpd
+        state: present
+
+    - name: Asegurar que los servicios httpd y firewalld estén iniciados y habilitados
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - httpd
+        - firewalld
+
+    - name: Abrir puerto HTTP permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ http_port }}/tcp
+      ignore_errors: true
+
+    - name: Abrir puerto HTTPS permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ https_port }}/tcp
+      ignore_errors: true
+
+    - name: Recargar firewalld
+      systemd:
+        name: firewalld
+        state: reloaded
+
+    - name: Deshabilitar SELinux (temporalmente)
+      command: setenforce 0
+      ignore_errors: true
+
+    - name: Deshabilitar SELinux permanentemente
+      command: echo "SELINUX=disabled" > /etc/selinux/config
+      ignore_errors: true
+
+    - name: Crear directorios necesarios
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default(omit) }}"
+      loop:
+        - path: "{{ server_root }}/{{ target_group }}"
+        - path: "{{ log_root }}/{{ target_group }}"
+        - path: "/etc/httpd/conf.d"
+          mode: "0755"
+          
+    - name: Renombrar el archivo actual httpd.conf a httpd.conf.bak
+      command:
+        cmd: mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak        
+      args:
+        creates: /etc/httpd/conf/httpd.conf.bak
+
+    - name: Copiar el archivo httpd.conf desde la plantilla
+      template:
+        src: /opt/www/media/templates/httpd.conf.j2
+        dest: /etc/httpd/conf/httpd.conf
+
+    - name: Limpiar archivo /etc/hostname
+      copy:
+        content: ""
+        dest: "/etc/hostname"
+        force: yes
+
+    - name: Guardar nombre de app en /etc/hostname
+      lineinfile:
+        path: "/etc/hostname"
+        line: "{{ target_group }}.{{ domain }}"
+
+    - name: Copiar archivo index.html
+      template:
+        src: "/opt/www/media/templates/index.html.j2"
+        dest: "{{ server_root }}/{{ target_group }}/index.html"
+
+    - name: Copiar configuración de VirtualHost para Apache
+      template:
+        src: "/opt/www/media/templates/virtualhost.conf.j2"
+        dest: "/etc/httpd/conf.d/{{ target_group }}.conf"
+      register: result
+      ignore_errors: true
+      notify: Reiniciar Apache
+
+    - name: Mostrar información detallada si Apache falla al reiniciar
+      debug:
+        var: result
+      when: result is failed
+
+    - name: Cambiar propietario y grupo de archivos y directorios
+      command: chown -R apache:apache {{ server_root }}/{{ target_group }}
+
+    - name: Mostrar resumen al finalizar el playbook
+      debug:
+        msg:
+          - "Resumen de la implementación:"
+          - "Ruta del aplicativo: {{ server_root }}/{{ target_group }}/index.html"
+          - "Logs: {{ log_root }}/{{ target_group }}"
+          - "Permisos: apache:apache para {{ server_root }}/{{ target_group }}"
+          - "Puertos: HTTP {{ http_port }}, HTTPS {{ https_port }}"
+          - "Dominio: {{ domain }}"
+          - "El playbook se ha completado correctamente."
+
+  handlers:
+    - name: Reiniciar Apache
+      systemd:
+        name: httpd
+        state: restarted

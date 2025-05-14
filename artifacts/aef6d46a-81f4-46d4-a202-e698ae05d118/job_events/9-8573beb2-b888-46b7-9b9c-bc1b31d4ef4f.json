@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "8573beb2-b888-46b7-9b9c-bc1b31d4ef4f", "counter": 9, "stdout": "\u001b[0;31m    - name: Deshabilitar SELinux permanentemente\u001b[0m", "start_line": 8, "end_line": 9, "runner_ident": "aef6d46a-81f4-46d4-a202-e698ae05d118", "created": "2025-05-14T16:05:10.872101+00:00"}

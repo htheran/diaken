@@ -1,0 +1,11 @@
+
+PLAY [Instalar epel-release en un host] ****************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar epel-release (DNF)] *********************************************
+[0;32mok: [demo03][0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo03[0m                     : [0;32mok=2   [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
