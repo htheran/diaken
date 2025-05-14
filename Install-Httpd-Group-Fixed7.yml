@@ -52,7 +52,7 @@
 
     - name: Copiar el archivo httpd.conf desde la plantilla específica para grupos
       template:
-        src: /opt/www/media/templates/httpd.conf.j2.group
+        src: /opt/www/media/templates/group/httpd.conf.j2
         dest: /etc/httpd/conf/httpd.conf
         owner: root
         group: root
@@ -73,7 +73,7 @@
         
     - name: Copiar archivo index.html desde la plantilla específica para grupos
       template:
-        src: /opt/www/media/templates/index.html.j2.group
+        src: /opt/www/media/templates/group/index.html.j2
         dest: "{{ server_root }}/{{ inventory_hostname }}/index.html"
         owner: apache
         group: apache
@@ -82,7 +82,7 @@
 
     - name: Copiar configuración de VirtualHost para Apache desde la plantilla específica para grupos
       template:
-        src: /opt/www/media/templates/virtualhost.conf.j2.group
+        src: /opt/www/media/templates/group/virtualhost.conf.j2
         dest: "/etc/httpd/conf.d/{{ inventory_hostname }}.conf"
         owner: root
         group: root

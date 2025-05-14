@@ -92,7 +92,7 @@
 
     - name: Copiar configuración de VirtualHost para Apache
       template:
-        src: "/opt/www/media/templates/virtualhost.conf.j2"
+        src: "/opt/www/media/templates/group/virtualhost.conf.j2"
         dest: "/etc/httpd/conf.d/{{ target_group }}-{{ inventory_hostname }}.conf"
       register: result
       ignore_errors: true
