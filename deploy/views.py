@@ -210,8 +210,10 @@ def deploy_to_group(request):
     if request.method == 'POST':
         playbook_id = request.POST.get('playbook')
         group_id = request.POST.get('group')
+        environment_id = request.POST.get('environment')
         playbook = Playbook.objects.get(id=playbook_id)
         group = Group.objects.get(id=group_id)
+        environment = Environment.objects.get(id=environment_id) if environment_id else None
 
         # Genera archivo de inventario temporal
         inventory_path = generate_temporary_inventory(group_id=group_id)
@@ -221,6 +223,10 @@ def deploy_to_group(request):
         
         # Añadir target_group al diccionario de variables
         extravars['target_group'] = group.name
+        
+        # Añadir environment al diccionario de variables si existe
+        if environment:
+            extravars['environment'] = environment.name
 
         # Crear copia temporal del playbook con reemplazo de hosts: target_group
         import tempfile
@@ -247,19 +253,25 @@ def deploy_to_group(request):
         status, output = get_ansible_status(output)
 
         # Save history
-        History.objects.create(
+        history_entry = History.objects.create(
             playbook=playbook,
             user=request.user,
             group=group,
             status=status,
             output=output
         )
+        
+        # Guardar el ambiente en el historial si existe
+        if environment:
+            history_entry.environment = environment
+            history_entry.save()
         logger.info(result.stats)
         return redirect('deploy_success')
     else:
         # Solo playbooks de tipo 'group'
         playbooks = Playbook.objects.filter(playbook_type='group')
-        groups = Group.objects.all()
+        # Inicialmente no mostrar grupos hasta que se seleccione un ambiente
+        groups = Group.objects.none()
         environments = Environment.objects.all()
         return render(request, 'deploy/deploy_to_group.html', {'playbooks': playbooks, 'groups': groups, 'environments': environments})
 

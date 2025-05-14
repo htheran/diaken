@@ -38,17 +38,72 @@
     </div>
   </div>
   <script>
-    // Mostrar spinner al enviar el formulario
+    // Mostrar spinner al enviar el formulario y filtrar grupos por ambiente
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('deploy-form');
       const envSelect = document.getElementById('environment');
       const groupSelect = document.getElementById('group');
+      const playbookSelect = document.getElementById('playbook');
+      
+      // Deshabilitar inicialmente el selector de grupos
+      groupSelect.disabled = true;
+      
       if (form) {
         form.addEventListener('submit', function(e) {
           document.getElementById('progress-bar').style.display = 'block';
           e.preventDefault();
           setTimeout(() => form.submit(), 50);
         });
+        
+        // Función para filtrar los grupos según el ambiente seleccionado
+        function filterGroupsByEnvironment() {
+          const selectedEnvironmentId = envSelect.value;
+          
+          // Limpiar el select de grupos
+          groupSelect.innerHTML = '';
+          groupSelect.disabled = true;
+          
+          // Añadir la opción por defecto
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = '-------------';
+          groupSelect.appendChild(defaultOption);
+          
+          if (!selectedEnvironmentId) {
+            groupSelect.disabled = true;
+            return;
+          }
+          
+          // Hacer una petición AJAX para obtener los grupos del ambiente seleccionado
+          fetch(`/inventory/api/groups-by-environment/${selectedEnvironmentId}/`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.groups && data.groups.length > 0) {
+                data.groups.forEach(group => {
+                  const option = document.createElement('option');
+                  option.value = group.id;
+                  option.textContent = group.name;
+                  groupSelect.appendChild(option);
+                });
+                groupSelect.disabled = false;
+              } else {
+                console.log('No se encontraron grupos para este ambiente');
+                groupSelect.disabled = true;
+              }
+            })
+            .catch(error => {
+              console.error('Error al obtener los grupos:', error);
+              groupSelect.disabled = true;
+            });
+        }
+        
+        // Filtrar los grupos cuando cambia el ambiente
+        envSelect.addEventListener('change', filterGroupsByEnvironment);
+        
+        // Iniciar la carga de grupos si ya hay un ambiente seleccionado
+        if (envSelect.value) {
+          filterGroupsByEnvironment();
+        }
       }
       if (envSelect && groupSelect) {
         envSelect.addEventListener('change', function() {

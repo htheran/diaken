@@ -131,6 +131,7 @@ def schedule_to_group(request):
             sched = form.save(commit=False)
             sched.user = request.user
             sched.deploy_type = 'group'
+            sched.environment = form.cleaned_data.get('environment')
             now = timezone.localtime(timezone.now())
             sched_time = timezone.localtime(sched.scheduled_time)
             delta_seconds = (sched_time - now).total_seconds()
@@ -140,12 +141,27 @@ def schedule_to_group(request):
                 sched.status = 'running'
                 sched.save()
                 try:
+                    # Obtener todas las variables de configuración global
+                    from deploy.views import get_all_settings_as_dict
+                    extravars = get_all_settings_as_dict()
+                    
+                    # Asegurar que las variables críticas estén definidas
+                    _ensure_critical_variables(extravars)
+                    
+                    # Añadir target_group como variable para las plantillas
+                    extravars['target_group'] = sched.group.name
+                    
+                    # Añadir environment como variable para las plantillas
+                    environment = form.cleaned_data.get('environment')
+                    extravars['environment'] = environment.name if environment else ''
+                    
                     inventory_path = generate_temporary_inventory(group_id=sched.group.id)
                     pb_path = Command.prepare_playbook_static(sched.playbook.file.path, 'hosts: target_group', f'hosts: {sched.group.name}')
                     result = ansible_runner.run(
                         private_data_dir='/opt/www',
                         playbook=pb_path,
-                        inventory=inventory_path
+                        inventory=inventory_path,
+                        extravars=extravars
                     )
                     output = result.stdout.read()
                     sched.output = output

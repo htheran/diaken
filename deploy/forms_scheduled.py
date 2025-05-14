@@ -39,14 +39,39 @@ class ScheduledDeploymentHostForm(forms.ModelForm):
         self.fields['playbook'].queryset = Playbook.objects.filter(playbook_type='host').order_by('name')
 
 class ScheduledDeploymentGroupForm(forms.ModelForm):
+    # Campo adicional para el ambiente
+    environment = forms.ModelChoiceField(
+        queryset=None,
+        required=True,
+        empty_label="Seleccione un ambiente",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
     class Meta:
         model = ScheduledDeployment
         fields = ['playbook', 'group', 'scheduled_time']
         widgets = {
             'scheduled_time': DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control', 'step': '1'}),
+            'playbook': forms.Select(attrs={'class': 'form-control'}),
+            'group': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        from inventory.models import Environment
+        
+        # Configurar los querysets iniciales
+        self.fields['environment'].queryset = Environment.objects.all().order_by('name')
+        
+        # Inicialmente, no mostrar ningún grupo hasta que se seleccione un ambiente
+        if self.data.get('environment'):
+            try:
+                environment_id = int(self.data.get('environment'))
+                self.fields['group'].queryset = Group.objects.filter(environment_id=environment_id).order_by('name')
+            except (ValueError, TypeError):
+                self.fields['group'].queryset = Group.objects.none()
+        else:
+            self.fields['group'].queryset = Group.objects.none()
+            
+        # Configurar los playbooks disponibles
         self.fields['playbook'].queryset = Playbook.objects.filter(playbook_type='group').order_by('name')
-        self.fields['group'].queryset = Group.objects.all().order_by('name')

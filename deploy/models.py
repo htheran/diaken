@@ -1,5 +1,5 @@
 from django.db import models
-from inventory.models import Host, Group
+from inventory.models import Host, Group, Environment
 from playbooks.models import Playbook
 
 
@@ -19,6 +19,7 @@ class ScheduledDeployment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     host = models.ForeignKey(Host, null=True, blank=True, on_delete=models.SET_NULL)
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.SET_NULL)
+    environment = models.ForeignKey(Environment, null=True, blank=True, on_delete=models.SET_NULL)
     deploy_type = models.CharField(max_length=10, choices=DEPLOY_TYPE_CHOICES)
     scheduled_time = models.DateTimeField()
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='pending')

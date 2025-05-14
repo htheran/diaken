@@ -2,8 +2,13 @@ from django.urls import path
 from . import views
 from .views import update_python_interpreter_view
 from .views_inventory import descargar_inventario_ansible, host_list_with_filters
+from .api_views import groups_by_environment
 
 urlpatterns = [
+    # API endpoints
+    path('api/groups-by-environment/<int:environment_id>/', groups_by_environment, name='api_groups_by_environment'),
+    
+    # Regular views
     path('environments/', views.environment_list, name='environment_list'),
     path('environments/<int:pk>/', views.environment_detail, name='environment_detail'),
     path('environments/create/', views.environment_create, name='environment_create'),
