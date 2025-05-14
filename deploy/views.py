@@ -264,7 +264,9 @@ def deploy_to_group(request):
         return render(request, 'deploy/deploy_to_group.html', {'playbooks': playbooks, 'groups': groups, 'environments': environments})
 
 def deploy_success(request):
-    return render(request, 'deploy/success.html')
+    # Redirigir a la página de despliegue con un parámetro para mostrar el modal
+    from django.urls import reverse
+    return redirect(reverse('deploy_to_host') + '?show_result_modal=true')
 
 def api_groups(request):
     environment_id = request.GET.get('environment_id')

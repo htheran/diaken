@@ -1,0 +1,93 @@
+
+PLAY [Instalar paquete básico] *************************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar paquete vim (DNF)] **********************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar versión de vim instalada] **************************************
+[0;32mok: [demo03][0m
+
+TASK [debug] *******************************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "vim_version.stdout_lines": [[0m
+[0;32m        "VIM - Vi IMproved 8.2 (2019 Dec 12, compiled Oct 25 2024 00:00:00)",[0m
+[0;32m        "Included patches: 1-2637",[0m
+[0;32m        "Modified by Oracle Corporation",[0m
+[0;32m        "Compiled by Oracle Corporation",[0m
+[0;32m        "Huge version without GUI.  Features included (+) or not (-):",[0m
+[0;32m        "+acl               -farsi             +mouse_sgr         +tag_binary",[0m
+[0;32m        "+arabic            +file_in_path      -mouse_sysmouse    -tag_old_static",[0m
+[0;32m        "+autocmd           +find_in_path      +mouse_urxvt       -tag_any_white",[0m
+[0;32m        "+autochdir         +float             +mouse_xterm       -tcl",[0m
+[0;32m        "-autoservername    +folding           +multi_byte        +termguicolors",[0m
+[0;32m        "-balloon_eval      -footer            +multi_lang        +terminal",[0m
+[0;32m        "+balloon_eval_term +fork()            -mzscheme          +terminfo",[0m
+[0;32m        "-browse            +gettext           +netbeans_intg     +termresponse",[0m
+[0;32m        "++builtin_terms    -hangul_input      +num64             +textobjects",[0m
+[0;32m        "+byte_offset       +iconv             +packages          +textprop",[0m
+[0;32m        "+channel           +insert_expand     +path_extra        +timers",[0m
+[0;32m        "+cindent           +ipv6              +perl/dyn          +title",[0m
+[0;32m        "-clientserver      +job               +persistent_undo   -toolbar",[0m
+[0;32m        "-clipboard         +jumplist          +popupwin          +user_commands",[0m
+[0;32m        "+cmdline_compl     +keymap            +postscript        +vartabs",[0m
+[0;32m        "+cmdline_hist      +lambda            +printer           +vertsplit",[0m
+[0;32m        "+cmdline_info      +langmap           +profile           +virtualedit",[0m
+[0;32m        "+comments          +libcall           -python            +visual",[0m
+[0;32m        "+conceal           +linebreak         +python3/dyn       +visualextra",[0m
+[0;32m        "+cryptv            +lispindent        +quickfix          +viminfo",[0m
+[0;32m        "+cscope            +listcmds          +reltime           +vreplace",[0m
+[0;32m        "+cursorbind        +localmap          +rightleft         +wildignore",[0m
+[0;32m        "+cursorshape       +lua/dyn           +ruby/dyn          +wildmenu",[0m
+[0;32m        "+dialog_con        +menu              +scrollbind        +windows",[0m
+[0;32m        "+diff              +mksession         +signs             +writebackup",[0m
+[0;32m        "+digraphs          +modify_fname      +smartindent       -X11",[0m
+[0;32m        "-dnd               +mouse             -sound             -xfontset",[0m
+[0;32m        "-ebcdic            -mouseshape        +spell             -xim",[0m
+[0;32m        "+emacs_tags        +mouse_dec         +startuptime       -xpm",[0m
+[0;32m        "+eval              +mouse_gpm         +statusline        -xsmp",[0m
+[0;32m        "+ex_extra          -mouse_jsbterm     -sun_workshop      -xterm_clipboard",[0m
+[0;32m        "+extra_search      +mouse_netterm     +syntax            -xterm_save",[0m
+[0;32m        "   system vimrc file: \"/etc/vimrc\"",[0m
+[0;32m        "     user vimrc file: \"$HOME/.vimrc\"",[0m
+[0;32m        " 2nd user vimrc file: \"~/.vim/vimrc\"",[0m
+[0;32m        "      user exrc file: \"$HOME/.exrc\"",[0m
+[0;32m        "       defaults file: \"$VIMRUNTIME/defaults.vim\"",[0m
+[0;32m        "  fall-back for $VIM: \"/etc\"",[0m
+[0;32m        " f-b for $VIMRUNTIME: \"/usr/share/vim/vim82\"",[0m
+[0;32m        "Compilation: gcc -c -I. -Iproto -DHAVE_CONFIG_H -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64-v2 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_REENTRANT -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1 ",[0m
+[0;32m        "Linking: gcc -L. -Wl,-z,relro -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed -Wl,--enable-new-dtags -Wl,-z,relro -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,-z,relro -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -L/usr/local/lib -Wl,--as-needed -o vim -lm -lselinux -lncurses -lacl -lattr -lgpm -Wl,--enable-new-dtags -Wl,-z,relro -Wl,--as-needed -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,-z,relro -Wl,--as-needed -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -fstack-protector-strong -L/usr/local/lib -L/usr/lib64/perl5/CORE -lperl -lpthread -lresolv -ldl -lm -lcrypt -lutil -lc "[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar que vim está instalado] ****************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar resultado de verificación] ***************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "vim_check": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "cmd": [[0m
+[0;32m            "which",[0m
+[0;32m            "vim"[0m
+[0;32m        ],[0m
+[0;32m        "delta": "0:00:00.008842",[0m
+[0;32m        "end": "2025-05-14 16:02:00.673798",[0m
+[0;32m        "failed": false,[0m
+[0;32m        "failed_when_result": false,[0m
+[0;32m        "msg": "",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "start": "2025-05-14 16:02:00.664956",[0m
+[0;32m        "stderr": "",[0m
+[0;32m        "stderr_lines": [],[0m
+[0;32m        "stdout": "/bin/vim",[0m
+[0;32m        "stdout_lines": [[0m
+[0;32m            "/bin/vim"[0m
+[0;32m        ][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo03[0m                     : [0;32mok=6   [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

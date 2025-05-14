@@ -41,7 +41,42 @@
     </div>
   </div>
 
+  <!-- Modal de Resultado de Despliegue -->
+  <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #1e3a5f; color: white;">
+          <h5 class="modal-title" id="resultModalLabel">Playbook Execution</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="background-color: #f8f9fc;">
+          <p>Se realizó la ejecución de un playbook, favor revisar el historial para ver su estado y salida.</p>
+          <div class="alert alert-info">
+            <p>A playbook execution has been processed. Please check the history to see its status and output.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a href="{% url 'history_list' %}" class="btn btn-primary">View History</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Verificar si hay que mostrar el modal de resultado
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('show_result_modal') === 'true') {
+        $('#resultModal').modal('show');
+        // Limpiar la URL para evitar que el modal se muestre al refrescar
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    });
+    
     // Mostrar spinner al enviar el formulario
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('deploy-form');

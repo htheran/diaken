@@ -9,6 +9,36 @@ from django.db.models.functions import TruncDate
 from django.db.models import Count
 import json
 
+# Funciones auxiliares para manipular colores
+def hex_to_rgb(hex_color):
+    hex_color = hex_color.lstrip('#')
+    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+
+def rgb_to_hex(rgb):
+    return '#{:02x}{:02x}{:02x}'.format(int(rgb[0]), int(rgb[1]), int(rgb[2]))
+
+def darken_color(hex_color, factor=0.1):
+    r, g, b = hex_to_rgb(hex_color)
+    r = max(0, r * (1 - factor))
+    g = max(0, g * (1 - factor))
+    b = max(0, b * (1 - factor))
+    return rgb_to_hex((r, g, b))
+
+def lighten_color(hex_color, factor=0.1):
+    r, g, b = hex_to_rgb(hex_color)
+    r = min(255, r + (255 - r) * factor)
+    g = min(255, g + (255 - g) * factor)
+    b = min(255, b + (255 - b) * factor)
+    return rgb_to_hex((r, g, b))
+
+def desaturate_color(hex_color, factor=0.1):
+    r, g, b = hex_to_rgb(hex_color)
+    gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
+    r = r * (1 - factor) + gray * factor
+    g = g * (1 - factor) + gray * factor
+    b = b * (1 - factor) + gray * factor
+    return rgb_to_hex((r, g, b))
+
 def playbook_executions_view(request):
     import logging
     from collections import defaultdict
@@ -72,13 +102,43 @@ def playbook_executions_view(request):
     unique_keys = sorted({(r['playbook_name'], r['status']) for r in records})
     grouped = {key: [0]*len(labels) for key in unique_keys}
     
-    # Crear etiquetas más limpias
-    status_colors = {
-        'successful': '#28a745',  # Verde
-        'failed': '#dc3545',      # Rojo
-        'running': '#17a2b8',     # Azul
-        'pending': '#ffc107'      # Amarillo
-    }
+    # Crear una paleta de colores amplia y distintiva
+    color_palette = [
+        # Colores principales
+        '#FF5733', '#33FF57', '#3357FF', '#FF33F5', '#F5FF33', '#33FFF5', 
+        '#8033FF', '#FF8033', '#33FF80', '#8080FF', '#FF8080', '#80FF80',
+        # Colores secundarios
+        '#FF2D00', '#00FF2D', '#2D00FF', '#FF002D', '#2DFF00', '#002DFF',
+        '#AA00FF', '#FFAA00', '#00FFAA', '#00AAFF', '#FF00AA', '#AAFF00',
+        # Colores terciarios
+        '#CC5200', '#52CC00', '#0052CC', '#CC0052', '#00CC52', '#5200CC',
+        '#7A00CC', '#CC7A00', '#00CC7A', '#007ACC', '#CC007A', '#7ACC00',
+        # Tonos de azul
+        '#0000FF', '#0066FF', '#00CCFF', '#3300FF', '#3366FF', '#33CCFF',
+        # Tonos de verde
+        '#00FF00', '#00FF66', '#00FFCC', '#33FF00', '#33FF66', '#33FFCC',
+        # Tonos de rojo
+        '#FF0000', '#FF0066', '#FF00CC', '#FF3300', '#FF3366', '#FF33CC',
+        # Tonos de amarillo
+        '#FFFF00', '#FFFF66', '#FFFFCC', '#FFCC00', '#FFCC66', '#FFCCCC',
+        # Tonos de púrpura
+        '#9900FF', '#9933FF', '#9966FF', '#CC00FF', '#CC33FF', '#CC66FF',
+        # Tonos de naranja
+        '#FF9900', '#FF9933', '#FF9966', '#FFCC00', '#FFCC33', '#FFCC66'
+    ]
+    
+    # Crear un diccionario para asignar un color único a cada combinación de playbook+status
+    playbook_status_colors = {}
+    color_index = 0
+    
+    # Primero, identificar todos los playbooks únicos
+    unique_playbooks = sorted({key[0] for key in unique_keys})
+    
+    # Asignar un color base a cada playbook
+    playbook_base_colors = {}
+    for playbook in unique_playbooks:
+        playbook_base_colors[playbook] = color_palette[color_index % len(color_palette)]
+        color_index += 1
     
     key_labels = []
     key_colors = []
@@ -90,9 +150,29 @@ def playbook_executions_view(request):
         status_display = status.capitalize()
         key_labels.append(f"{playbook_display} ({status_display})")
         
-        # Asignar color según el estado
-        base_color = status_colors.get(status, '#6c757d')  # Gris por defecto
-        key_colors.append(base_color)
+        # Asignar color único para esta combinación
+        if (playbook, status) not in playbook_status_colors:
+            base_color = playbook_base_colors[playbook]
+            
+            # Modificar ligeramente el color según el estado
+            if status == 'successful':
+                # Mantener el color base para successful
+                color = base_color
+            elif status == 'failed':
+                # Oscurecer para failed
+                color = darken_color(base_color, 0.2)
+            elif status == 'running':
+                # Aclarar para running
+                color = lighten_color(base_color, 0.2)
+            elif status == 'pending':
+                # Desaturar para pending
+                color = desaturate_color(base_color, 0.3)
+            else:
+                color = base_color
+                
+            playbook_status_colors[(playbook, status)] = color
+        
+        key_colors.append(playbook_status_colors[(playbook, status)])
     
     # Mapear claves a etiquetas y colores
     key_label_map = {key: lbl for key, lbl in zip(unique_keys, key_labels)}
@@ -138,10 +218,28 @@ def playbook_executions_view(request):
     for r in records:
         os_counts[r['operating_system']] += r['count']
     
+    # Colores vibrantes para el gráfico de dona
+    os_colors = [
+        '#FF5733', '#33FF57', '#3357FF', '#FF33F5', '#F5FF33', '#33FFF5', 
+        '#8033FF', '#FF8033', '#33FF80', '#8080FF', '#FF8080', '#80FF80',
+        '#FF2D00', '#00FF2D', '#2D00FF', '#FF002D', '#2DFF00', '#002DFF',
+        '#AA00FF', '#FFAA00', '#00FFAA', '#00AAFF', '#FF00AA', '#AAFF00'
+    ]
+    
+    # Asegurar que cada sistema operativo tenga un color único y distintivo
+    os_labels = list(os_counts.keys())
+    os_values = list(os_counts.values())
+    os_color_map = {}
+    
+    for i, os_name in enumerate(os_labels):
+        os_color_map[os_name] = os_colors[i % len(os_colors)]
+    
+    os_colors_list = [os_color_map[os_name] for os_name in os_labels]
+    
     os_data = {
-        'labels': list(os_counts.keys()),
-        'data': list(os_counts.values()),
-        'colors': ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'][:len(os_counts)]
+        'labels': os_labels,
+        'data': os_values,
+        'colors': os_colors_list
     }
     
     # Si es una solicitud AJAX, devolver solo los datos del gráfico
