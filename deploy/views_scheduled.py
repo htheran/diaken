@@ -9,6 +9,7 @@ from django.utils import timezone
 import ansible_runner
 import os
 from deploy.views import generate_temporary_inventory
+from django.http import JsonResponse
 
 @login_required
 def schedule_to_host(request):
@@ -113,6 +114,12 @@ def schedule_to_group(request):
     return render(request, 'deploy/schedule_to_group.html', {'form': form})
 
 # Método utilitario para preparar el playbook, igual que en el comando
+
+def scheduled_status_fragment(request):
+    from .models import ScheduledDeployment
+    statuses = ScheduledDeployment.objects.all().values('id', 'status')
+    return JsonResponse({item['id']: item['status'] for item in statuses})
+
 class Command:
     @staticmethod
     def prepare_playbook_static(playbook_path, find_str, replace_str):
@@ -125,6 +132,11 @@ class Command:
         pb_file.close()
         return pb_file.name
 
+from django.core.paginator import Paginator
+
 def scheduled_history(request):
     scheduled_list = ScheduledDeployment.objects.all().order_by('-scheduled_time')
-    return render(request, 'history/scheduled_history_list.html', {'scheduled_list': scheduled_list})
+    paginator = Paginator(scheduled_list, 10)  # 10 por página
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'history/scheduled_history_list.html', {'page_obj': page_obj})

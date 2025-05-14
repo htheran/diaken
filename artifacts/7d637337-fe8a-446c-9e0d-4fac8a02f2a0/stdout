@@ -1,0 +1,6 @@
+[1;35m[WARNING]: Could not match supplied host pattern, ignoring: demo01[0m
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+[0;36mskipping: no hosts matched[0m
+
+PLAY RECAP *********************************************************************

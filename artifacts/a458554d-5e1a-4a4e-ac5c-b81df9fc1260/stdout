@@ -1,0 +1,51 @@
+
+PLAY [Instalar nano en RedHat/Oracle Linux] ************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [demo03]
+
+TASK [Instalar nano (DNF)] *****************************************************
+ok: [demo03]
+
+TASK [Verificar versión de nano instalada] *************************************
+ok: [demo03]
+
+TASK [debug] *******************************************************************
+ok: [demo03] => {
+    "nano_version.stdout_lines": [
+        " GNU nano, version 5.6.1",
+        " (C) 1999-2011, 2013-2021 Free Software Foundation, Inc.",
+        " (C) 2014-2021 the contributors to nano",
+        " Compiled options: --enable-utf8"
+    ]
+}
+
+TASK [Verificar que nano está instalado] ***************************************
+ok: [demo03]
+
+TASK [Mostrar resultado de verificación] ***************************************
+ok: [demo03] => {
+    "nano_check": {
+        "changed": false,
+        "cmd": [
+            "which",
+            "nano"
+        ],
+        "delta": "0:00:00.004758",
+        "end": "2025-05-12 18:29:17.502924",
+        "failed": false,
+        "failed_when_result": false,
+        "msg": "",
+        "rc": 0,
+        "start": "2025-05-12 18:29:17.498166",
+        "stderr": "",
+        "stderr_lines": [],
+        "stdout": "/bin/nano",
+        "stdout_lines": [
+            "/bin/nano"
+        ]
+    }
+}
+
+PLAY RECAP *********************************************************************
+demo03                     : ok=6    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
