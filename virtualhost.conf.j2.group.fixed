@@ -1,13 +1,54 @@
 <VirtualHost *:{{ http_port }}>
     ServerName {{ inventory_hostname }}.{{ domain }}
     ServerAlias {{ inventory_hostname }}
+    ServerAdmin webmaster@{{ domain }}
     DocumentRoot {{ server_root }}/{{ inventory_hostname }}
+
+    # Logs específicos para este virtualhost
     ErrorLog {{ log_root }}/{{ inventory_hostname }}/error.log
     CustomLog {{ log_root }}/{{ inventory_hostname }}/access.log combined
-    
+
     <Directory {{ server_root }}/{{ inventory_hostname }}>
-        Options Indexes FollowSymLinks
-        AllowOverride All
+        # Permitir solo métodos seguros
+        <LimitExcept GET POST HEAD>
+            Require all denied
+        </LimitExcept>
+
+        # Opciones seguras: sin indexación, sin includes, sin cgi, sin multivistas, solo symlinks seguros
+        Options -Indexes -Includes -ExecCGI -MultiViews +FollowSymLinks
+
+        # Deshabilitar .htaccess para mejor seguridad y rendimiento
+        AllowOverride None
+
+        # Control de acceso moderno
         Require all granted
+
+        # Cabeceras de seguridad
+        Header always set X-XSS-Protection "1; mode=block"
+        Header always set X-Frame-Options "SAMEORIGIN"
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+
+        # Proteger archivos sensibles y de backup
+        <FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$">
+            Require all denied
+        </FilesMatch>
     </Directory>
+
+    # Configuración de caché para recursos estáticos
+    <IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresDefault "access plus 1 month"
+        ExpiresByType image/jpg "access plus 1 year"
+        ExpiresByType image/jpeg "access plus 1 year"
+        ExpiresByType image/gif "access plus 1 year"
+        ExpiresByType image/png "access plus 1 year"
+        ExpiresByType text/css "access plus 1 month"
+        ExpiresByType application/javascript "access plus 1 month"
+    </IfModule>
+
+    # Compresión para mejorar rendimiento
+    <IfModule mod_deflate.c>
+        AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+    </IfModule>
 </VirtualHost>
