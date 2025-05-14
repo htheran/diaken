@@ -28,9 +28,9 @@ def _ensure_critical_variables(extravars):
 @login_required
 def schedule_to_host(request):
     if request.method == 'POST':
-        print(f"[DEBUG] POST data: {request.POST}")
+        # print(f"[DEBUG] POST data: {request.POST}")
         form = ScheduledDeploymentHostForm(request.POST)
-        print(f"[DEBUG] Form is valid: {form.is_valid()}")
+        # print(f"[DEBUG] Form is valid: {form.is_valid()}")
         if form.is_valid():
             # Obtener los campos del formulario
             environment = form.cleaned_data.get('environment')
@@ -39,7 +39,7 @@ def schedule_to_host(request):
             playbook = form.cleaned_data.get('playbook')
             scheduled_time = form.cleaned_data.get('scheduled_time')
             
-            print(f"[DEBUG] Datos del formulario: environment={environment}, group={group}, host={host}, playbook={playbook}, scheduled_time={scheduled_time}")
+            # print(f"[DEBUG] Datos del formulario: environment={environment}, group={group}, host={host}, playbook={playbook}, scheduled_time={scheduled_time}")
             
             # Validar que el host pertenezca al grupo seleccionado
             if host.group.id != group.id:
@@ -55,12 +55,12 @@ def schedule_to_host(request):
             sched.playbook = playbook
             sched.scheduled_time = scheduled_time
             
-            print(f"[DEBUG] Objeto de tarea programada: host={sched.host}, playbook={sched.playbook}, scheduled_time={sched.scheduled_time}")
+            # print(f"[DEBUG] Objeto de tarea programada: host={sched.host}, playbook={sched.playbook}, scheduled_time={sched.scheduled_time}")
             
             now = timezone.localtime(timezone.now())
             sched_time = timezone.localtime(sched.scheduled_time)
             delta_seconds = (sched_time - now).total_seconds()
-            print(f'[DEBUG] schedule_to_host | scheduled_time: {sched_time} | now: {now} | delta_seconds: {delta_seconds} | ejecutar_inmediato: {delta_seconds <= 60}')
+            # print(f'[DEBUG] schedule_to_host | scheduled_time: {sched_time} | now: {now} | delta_seconds: {delta_seconds} | ejecutar_inmediato: {delta_seconds <= 60}')
             from django.contrib import messages
             
             # Determinar si se debe ejecutar inmediatamente o programar para el futuro
@@ -79,7 +79,7 @@ def schedule_to_host(request):
                     # Añadir target_host como variable para las plantillas
                     extravars['target_host'] = sched.host.name
                     
-                    print(f"[DEBUG] Variables de configuración: {extravars}")
+                    # print(f"[DEBUG] Variables de configuración: {extravars}")
                     
                     inventory_path = generate_temporary_inventory(host_id=sched.host.id)
                     pb_path = Command.prepare_playbook_static(sched.playbook.file.path, 'hosts: target_host', f'hosts: {sched.host.name}')
@@ -134,7 +134,7 @@ def schedule_to_group(request):
             now = timezone.localtime(timezone.now())
             sched_time = timezone.localtime(sched.scheduled_time)
             delta_seconds = (sched_time - now).total_seconds()
-            print(f'[DEBUG] schedule_to_group | scheduled_time: {sched_time} | now: {now} | delta_seconds: {delta_seconds} | ejecutar_inmediato: {delta_seconds <= 60}')
+            # print(f'[DEBUG] schedule_to_group | scheduled_time: {sched_time} | now: {now} | delta_seconds: {delta_seconds} | ejecutar_inmediato: {delta_seconds <= 60}')
             from django.contrib import messages
             if delta_seconds <= 60:
                 sched.status = 'running'

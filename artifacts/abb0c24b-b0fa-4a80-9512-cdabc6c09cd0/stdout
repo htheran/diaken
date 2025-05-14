@@ -1,0 +1,104 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;32mok: [demo03] => (item={'path': '/demo03'})[0m
+[0;32mok: [demo02] => (item={'path': '/demo02'})[0m
+[0;32mok: [demo03] => (item={'path': '/demo03'})[0m
+[0;32mok: [demo02] => (item={'path': '/demo02'})[0m
+[0;32mok: [demo03] => (item={'path': '/etc/httpd/conf.d', 'mode': '0755'})[0m
+[0;32mok: [demo02] => (item={'path': '/etc/httpd/conf.d', 'mode': '0755'})[0m
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak si existe] *******
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla específica para grupos] ***
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Guardar nombre de app en /etc/hostname] **********************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Copiar archivo index.html desde la plantilla específica para grupos] *****
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Copiar configuración de VirtualHost para Apache desde la plantilla específica para grupos] ***
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+[0;32mok: [demo03] => (item=firewalld)[0m
+[0;32mok: [demo02] => (item=firewalld)[0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": "firewall-cmd --permanent --add-port=\"/tcp\"", "delta": "0:00:00.302856", "end": "2025-05-14 16:50:51.817460", "msg": "non-zero return code", "rc": 102, "start": "2025-05-14 16:50:51.514604", "stderr": "Error: INVALID_PORT", "stderr_lines": ["Error: INVALID_PORT"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo02]: FAILED! => {"changed": true, "cmd": "firewall-cmd --permanent --add-port=\"/tcp\"", "delta": "0:00:00.337931", "end": "2025-05-14 16:52:48.532194", "msg": "non-zero return code", "rc": 102, "start": "2025-05-14 16:52:48.194263", "stderr": "Error: INVALID_PORT", "stderr_lines": ["Error: INVALID_PORT"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": "firewall-cmd --permanent --add-port=\"/tcp\"", "delta": "0:00:00.267848", "end": "2025-05-14 16:50:52.913774", "msg": "non-zero return code", "rc": 102, "start": "2025-05-14 16:50:52.645926", "stderr": "Error: INVALID_PORT", "stderr_lines": ["Error: INVALID_PORT"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo02]: FAILED! => {"changed": true, "cmd": "firewall-cmd --permanent --add-port=\"/tcp\"", "delta": "0:00:00.340409", "end": "2025-05-14 16:52:49.630806", "msg": "non-zero return code", "rc": 102, "start": "2025-05-14 16:52:49.290397", "stderr": "Error: INVALID_PORT", "stderr_lines": ["Error: INVALID_PORT"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.009227", "end": "2025-05-14 16:50:54.616452", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 16:50:54.607225", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo02]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.008801", "end": "2025-05-14 16:52:51.251968", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 16:52:51.243167", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Reiniciar Apache explícitamente] *****************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Unable to restart service httpd: Job for httpd.service failed because the control process exited with error code.\nSee \"systemctl status httpd.service\" and \"journalctl -xeu httpd.service\" for details.\n"}[0m
+[0;31mfatal: [demo02]: FAILED! => {"changed": false, "msg": "Unable to restart service httpd: Job for httpd.service failed because the control process exited with error code.\nSee \"systemctl status httpd.service\" and \"journalctl -xeu httpd.service\" for details.\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo02[0m                     : [0;32mok=17  [0m [0;33mchanged=10  [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=3   [0m
+[0;31mdemo03[0m                     : [0;32mok=17  [0m [0;33mchanged=10  [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=3   [0m
