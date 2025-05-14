@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "3b741612-f50d-4481-8670-8196afa408a0", "counter": 9, "stdout": "\u001b[0;31m    - name: Abrir puertos HTTP y HTTPS permanentemente en el firewall\u001b[0m", "start_line": 8, "end_line": 9, "runner_ident": "462d169b-ae1d-453c-bb14-6ec0f206e9a3", "created": "2025-05-14T10:32:10.374705+00:00"}

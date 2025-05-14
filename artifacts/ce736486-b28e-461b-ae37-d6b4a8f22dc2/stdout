@@ -1,0 +1,70 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+[0;32mok: [demo02] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo02] => (item=firewalld)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+[0;31mfatal: [demo02]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.006091", "end": "2025-05-14 14:18:32.037330", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 14:18:32.031239", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.004007", "end": "2025-05-14 05:38:21.113544", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 05:38:21.109537", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;31mfatal: [demo02]: FAILED! => {"msg": "'target_group' is undefined. 'target_group' is undefined"}[0m
+[0;31mfatal: [demo03]: FAILED! => {"msg": "'target_group' is undefined. 'target_group' is undefined"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo02[0m                     : [0;32mok=10  [0m [0;33mchanged=4   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=1   [0m
+[0;31mdemo03[0m                     : [0;32mok=10  [0m [0;33mchanged=4   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=1   [0m

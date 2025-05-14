@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "3915537c-26ff-4792-b87c-9572e5d32428", "counter": 3, "stdout": "\u001b[0;31mThe error appears to be in '/tmp/tmpy9jf6988.yml': line 34, column 7, but may\u001b[0m", "start_line": 2, "end_line": 3, "runner_ident": "462d169b-ae1d-453c-bb14-6ec0f206e9a3", "created": "2025-05-14T10:32:10.355963+00:00"}

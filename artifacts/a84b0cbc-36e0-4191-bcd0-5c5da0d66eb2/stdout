@@ -1,0 +1,50 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;32mok: [demo03][0m
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;31mfatal: [demo03]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'http_port' is undefined. 'http_port' is undefined\n\nThe error appears to be in '/tmp/tmp8ljz7nev.yml': line 34, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Abrir puerto HTTP permanentemente en el firewall\n      ^ here\n"}[0m
+[0;36m...ignoring[0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;31mfatal: [demo03]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'https_port' is undefined. 'https_port' is undefined\n\nThe error appears to be in '/tmp/tmp8ljz7nev.yml': line 38, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Abrir puerto HTTPS permanentemente en el firewall\n      ^ here\n"}[0m
+[0;36m...ignoring[0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.017925", "end": "2025-05-14 10:41:36.108442", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 10:41:36.090517", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;31mfatal: [demo03]: FAILED! => {"msg": "'server_root' is undefined. 'server_root' is undefined"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=10  [0m [0;33mchanged=2   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=3   [0m
