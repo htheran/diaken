@@ -21,49 +21,92 @@
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <!-- Dashboard -->
+        <li class="nav-item">
+          <a href="{% url 'dashboard' %}" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+        <!-- Deploy Menu -->
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <i class="nav-icon fas fa-play-circle"></i>
             <p>
-              Dashboard
+              Deploy
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{% url 'dashboard' %}" class="nav-link">
+              <a href="{% url 'deploy_to_host' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Resumen</p>
+                <p>Deploy to Host</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="{% url 'playbook_executions' %}" class="nav-link">
-                <i class="fas fa-chart-bar nav-icon"></i>
-                <p>Playbook Executions</p>
+              <a href="{% url 'deploy_to_group' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Deploy to Group</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'schedule_to_host' %}" class="nav-link">
+                <i class="far fa-clock nav-icon"></i>
+                <p>Scheduled Deploy to Host</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'schedule_to_group' %}" class="nav-link">
+                <i class="far fa-clock nav-icon"></i>
+                <p>Scheduled Deploy to Group</p>
               </a>
             </li>
           </ul>
         </li>
-        <!-- Settings Menu -->
+        <!-- History Menu -->
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-cogs"></i>
+            <i class="nav-icon fas fa-history"></i>
             <p>
-              Settings
+              History
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{% url 'global_setting_list' %}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Global Variables</p>
+              <a href="{% url 'history_list' %}" class="nav-link">
+                <i class="fas fa-play nav-icon"></i>
+                <p>Manual Executions</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="{% url 'credential_list' %}" class="nav-link">
+              <a href="{% url 'scheduled_history' %}" class="nav-link">
+                <i class="far fa-clock nav-icon"></i>
+                <p>Scheduled Executions</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+        <!-- Playbooks Menu -->
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-book"></i>
+            <p>
+              Playbooks
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{% url 'playbook_list' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Deployment Credentials</p>
+                <p>List Playbooks</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'playbook_upload' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Upload Playbook</p>
               </a>
             </li>
           </ul>
@@ -98,86 +141,26 @@
             </li>
           </ul>
         </li>
-        <!-- Playbooks Menu -->
+        <!-- Settings Menu -->
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-book"></i>
+            <i class="nav-icon fas fa-cogs"></i>
             <p>
-              Playbooks
+              Settings
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{% url 'playbook_list' %}" class="nav-link">
+              <a href="{% url 'global_setting_list' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>List Playbooks</p>
+                <p>Global Variables</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="{% url 'playbook_upload' %}" class="nav-link">
+              <a href="{% url 'credential_list' %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Upload Playbook</p>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <!-- Deploy Menu -->
-        <li class="nav-item has-treeview">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-play-circle"></i>
-            <p>
-              Deploy
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="{% url 'deploy_to_host' %}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Deploy to Host</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="{% url 'deploy_to_group' %}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Deploy to Group</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="{% url 'schedule_to_host' %}" class="nav-link">
-                <i class="far fa-clock nav-icon"></i>
-                <p class="small-sidebar-text">Scheduled Deploy to Host</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="{% url 'schedule_to_group' %}" class="nav-link">
-                <i class="far fa-clock nav-icon"></i>
-                <p class="small-sidebar-text">Scheduled Deploy to Group</p>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <!-- History Menu -->
-        <li class="nav-item has-treeview">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-history"></i>
-            <p>
-              History
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="{% url 'history_list' %}" class="nav-link">
-                <i class="fas fa-play nav-icon"></i>
-                <p>Manual Executions</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="{% url 'scheduled_history' %}" class="nav-link">
-                <i class="far fa-clock nav-icon"></i>
-                <p>Scheduled Executions</p>
+                <p>Deployment Credentials</p>
               </a>
             </li>
           </ul>
@@ -193,49 +176,3 @@
     </nav>
   </div>
 </aside>
-
-<style>
-  .small-sidebar-text {
-    font-size: 0.85rem;
-    line-height: 1.2;
-    margin-top: -2px;
-  }
-  
-  /* Eliminar espacio debajo del sidebar */
-  .main-sidebar {
-    width: 260px;
-    min-height: 100vh;
-    height: auto;
-  }
-  
-  .main-sidebar .sidebar {
-    min-height: 100vh;
-    height: auto;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
-  
-  /* Corregir espacio en blanco debajo del sidebar */
-  body, html {
-    height: 100%;
-    margin: 0;
-  }
-  
-  .wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Mejora colores y contraste */
-  .nav-sidebar .nav-item > .nav-link {
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 500;
-  }
-  
-  /* Mejor contraste para submenús */
-  .nav-treeview > .nav-item > .nav-link {
-    padding-left: 20px;
-    font-weight: normal;
-  }
-</style>

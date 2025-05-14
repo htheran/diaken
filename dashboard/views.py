@@ -14,18 +14,13 @@ def playbook_executions_view(request):
     from collections import defaultdict
     import json as pyjson
     from django.db import connection
-    from datetime import datetime, timedelta
-    
-    # Get data for the last 30 days only
-    thirty_days_ago = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
-    
-    raw_sql = f'''
+
+    raw_sql = '''
         SELECT p.name as playbook_name, p.operating_system, h.status, DATE(h.date) as date, COUNT(*) as count
         FROM history_history h
         JOIN playbooks_playbook p ON h.playbook_id = p.id
-        WHERE DATE(h.date) >= '{thirty_days_ago}'
         GROUP BY p.name, p.operating_system, h.status, DATE(h.date)
-        ORDER BY date DESC;
+        ORDER BY date;
     '''
     with connection.cursor() as cursor:
         cursor.execute(raw_sql)
@@ -33,8 +28,6 @@ def playbook_executions_view(request):
 
     records = []
     for row in rows:
-        # Incluir todos los registros, incluso con recuento 0 para mantener continuidad
-        # Los valores cero ayudan a mantener la estructura y contexto temporal
         records.append({
             'playbook_name': row[0],
             'operating_system': row[1],
@@ -43,85 +36,34 @@ def playbook_executions_view(request):
             'count': row[4]
         })
 
-    # Si no hay datos, crear datos de muestra
-    if not records:
-        # Crear algunas fechas de ejemplo para mostrar
-        from datetime import datetime, timedelta
-        today = datetime.now().date()
-        sample_dates = [today - timedelta(days=2), today - timedelta(days=1), today]
-        sample_dates_str = [d.strftime('%Y-%m-%d') for d in sample_dates]
-        
-        # Crear un registro de muestra para que se vea al menos una barra
-        sample_record = {
-            'playbook_name': 'Sample-Playbook',
-            'operating_system': 'Demo',
-            'status': 'successful',
-            'date': today.strftime('%Y-%m-%d'),
-            'count': 1  # Al menos un valor positivo
-        }
-        records.append(sample_record)
-        
-        # Log para depuración
-        logger = logging.getLogger(__name__)
-        logger.info('No hay datos reales. Creando datos de muestra: %s', sample_record)
-
     # Agrupa por combinación única de playbook+SO+status y cuenta ejecuciones por fecha
     all_dates = sorted({r['date'] for r in records})
     labels = all_dates
-    
-    # Generar claves únicas solo a partir de registros con count > 0
     unique_keys = sorted({(r['playbook_name'], r['operating_system'], r['status']) for r in records})
-    
-    # Inicializar el agrupamiento
     grouped = {key: [0]*len(labels) for key in unique_keys}
-    
-    # Generar etiquetas más claras para la leyenda
     key_labels = []
-    status_icons = {'successful': '✅', 'failed': '❌', 'warning': '⚠️', 'pending': '⏳', 'running': '⚙️'}
     for key in unique_keys:
         playbook, os, status = key
-        status_icon = status_icons.get(status.lower(), '')
-        # Acortar nombres largos
-        if len(playbook) > 20:
-            playbook = playbook[:17] + '...'
-        key_labels.append(f"{status_icon} {playbook} [{os}]")
-    
+        key_labels.append(f"{playbook} [{os}] ({status})")
     key_label_map = {key: lbl for key, lbl in zip(unique_keys, key_labels)}
-    
-    # Llenar datos
     for r in records:
         key = (r['playbook_name'], r['operating_system'], r['status'])
         idx = labels.index(r['date'])
         grouped[key][idx] = r['count']
-    
-    # Paleta de colores moderna
+
     color_palette = [
-        'rgba(0,123,255,0.85)',    # Azul Bootstrap
-        'rgba(220,53,69,0.85)',    # Rojo Bootstrap
-        'rgba(40,167,69,0.85)',    # Verde Bootstrap
-        'rgba(255,193,7,0.85)',    # Amarillo Bootstrap
-        'rgba(111,66,193,0.85)',   # Morado Bootstrap
-        'rgba(23,162,184,0.85)',   # Cian Bootstrap
-        'rgba(255,99,132,0.85)',   # Rosa
-        'rgba(54,162,235,0.85)',    # Azul claro
-        'rgba(255,159,64,0.85)',   # Naranja
-        'rgba(75,192,192,0.85)',    # Turquesa
-        'rgba(153,102,255,0.85)',   # Púrpura
-        'rgba(201,203,207,0.85)'    # Gris
+        'rgba(75,192,192,0.85)', 'rgba(255,99,132,0.7)', 'rgba(54,162,235,0.7)',
+        'rgba(255,206,86,0.7)', 'rgba(153,102,255,0.7)', 'rgba(255,159,64,0.7)'
     ]
-    
-    # Crear datasets con datos NO-CERO
     datasets = []
     for i, key in enumerate(unique_keys):
-        # Verificar si hay al menos un valor no-cero
-        if any(grouped[key]):
-            datasets.append({
-                'label': key_label_map[key],
-                'data': grouped[key],
-                'backgroundColor': color_palette[i % len(color_palette)],
-                'borderColor': color_palette[i % len(color_palette)].replace('0.85', '1'),
-                'borderWidth': 2
-            })
+        datasets.append({
+            'label': key_label_map[key],
+            'data': grouped[key],
+            'backgroundColor': color_palette[i % len(color_palette)],
+            'borderColor': color_palette[i % len(color_palette)].replace('0.7', '1'),
+            'borderWidth': 2
+        })
 
     logger = logging.getLogger(__name__)
     logger.info('Playbook Executions Chart - labels: %s', labels)

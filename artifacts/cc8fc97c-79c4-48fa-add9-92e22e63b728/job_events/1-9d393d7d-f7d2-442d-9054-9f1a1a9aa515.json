@@ -1,1 +1,0 @@
-{"event": "verbose", "uuid": "9d393d7d-f7d2-442d-9054-9f1a1a9aa515", "counter": 1, "stdout": "\u001b[0;31mERROR! couldn't resolve module/action 'selinux'. This often indicates a misspelling, missing collection, or incorrect module path.\u001b[0m", "start_line": 0, "end_line": 1, "runner_ident": "cc8fc97c-79c4-48fa-add9-92e22e63b728", "created": "2025-05-13T22:41:38.990182+00:00"}

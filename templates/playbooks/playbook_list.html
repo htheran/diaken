@@ -1,5 +1,4 @@
 {% extends 'base/base.html' %}
-{% block page_title %}Playbooks{% endblock %}
 {% block content %}
   <div class="container mt-4">
     <div class="card">
@@ -7,6 +6,7 @@
         <h2>Playbooks</h2>
       </div>
       <div class="card-body">
+        <h2>Playbooks</h2>
         <div class="mb-3">
           <a href="{% url 'playbook_list_host' %}" class="btn btn-outline-info {% if request.path == '/playbooks/host/' %}active{% endif %}">Host Playbooks</a>
           <a href="{% url 'playbook_list_group' %}" class="btn btn-outline-info {% if request.path == '/playbooks/group/' %}active{% endif %}">Group Playbooks</a>

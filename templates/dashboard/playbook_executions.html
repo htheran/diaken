@@ -4,371 +4,145 @@
 
 {% block content %}
 <div class="container mt-4">
-  <div class="card card-primary card-outline shadow">
-    <div class="card-header bg-primary text-white">
+  <div class="card card-primary card-outline">
+    <div class="card-header">
       <h3 class="card-title"><i class="fas fa-chart-bar mr-2"></i> Ejecuciones de Playbooks</h3>
-      <div class="card-tools">
-        <button type="button" class="btn btn-sm btn-outline-light" id="refreshBtn">
-          <i class="fas fa-sync-alt"></i> Actualizar
-        </button>
-      </div>
     </div>
     <div class="card-body">
-      <div class="chart-container p-2" style="height:400px; background-color: white; border-radius: 8px">
-        <canvas id="barChart"></canvas>
+      <div class="chart">
+        <canvas id="executionsHistogram" style="width:100%;height:320px;"></canvas>
       </div>
     </div>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Paleta de colores altamente distintiva para cada segmento
-    const PALETTE = {
-      // Colores principales - colores muy distintivos entre sí (Brewer colorblind safe palette)
-      primary: [
-        '#e41a1c', // Rojo brillante
-        '#377eb8', // Azul medio
-        '#4daf4a', // Verde vivo
-        '#984ea3', // Púrpura
-        '#ff7f00', // Naranja vivo
-        '#ffff33', // Amarillo brillante
-        '#a65628', // Marrón
-        '#f781bf', // Rosa
-        '#999999', // Gris
-        '#66c2a5', // Turquesa
-        '#fc8d62', // Coral
-        '#8da0cb', // Azul lavanda
-        '#e78ac3', // Rosa fucsia
-        '#a6d854', // Verde lima
-        '#ffd92f', // Amarillo dorado
-        '#e5c494', // Beige
-        '#b3b3b3', // Gris medio
-        '#1b9e77', // Verde azulado
-        '#d95f02', // Naranja quemado
-        '#7570b3', // Azul púrpura
-        '#e7298a', // Rosa magenta
-        '#66a61e', // Verde oliva
-        '#e6ab02', // Amarillo mostaza
-        '#a6761d', // Marrón dorado
-        '#666666'  // Gris oscuro
-      ],
-      // Colores especiales para estados específicos
-      special: {
-        error: [
-          '#e31a1c', // Rojo puro
-          '#fb9a99', // Rosa claro
-          '#a50f15', // Rojo oscuro
-          '#fc4e2a', // Rojo-naranja
-          '#cb181d', // Rojo medio
-          '#ef3b2c', // Rojo brillante
-          '#67000d', // Rojo muy oscuro
-          '#fb6a4a'  // Coral
-        ],
-        success: [
-          '#41ab5d', // Verde medio
-          '#74c476', // Verde claro
-          '#238b45', // Verde bosque
-          '#006d2c', // Verde oscuro
-          '#00441b', // Verde muy oscuro
-          '#78c679', // Verde menta
-          '#addd8e', // Verde claro
-          '#31a354'  // Verde vivo
-        ],
-        warning: [
-          '#fd8d3c', // Naranja medio
-          '#fdae6b', // Naranja claro
-          '#f16913', // Naranja quemado
-          '#d94801', // Naranja oscuro
-          '#8c2d04', // Marrón-naranja
-          '#e6550d', // Naranja vivo
-          '#fdbe85', // Melocotón
-          '#a63603'  // Marrón-rojizo
-        ],
-        other: [
-          '#bcbddc', // Lavanda claro
-          '#9e9ac8', // Lavanda medio
-          '#807dba', // Púrpura medio
-          '#6a51a3', // Púrpura oscuro
-          '#4a1486', // Púrpura muy oscuro
-          '#756bb1', // Azul púrpura
-          '#9ecae1', // Azul claro
-          '#3182bd', // Azul medio
-          '#08519c', // Azul oscuro
-          '#a1d99b', // Verde pálido
-          '#d94801'  // Rojo anaranjado
-        ] 
-      }
-    };
-    
-    // Mapa para almacenar los colores usados por día
-    const usedColorsByDate = new Map();
+  let labels = {{ labels|safe }};
+  let datasets = {{ datasets|safe }};
+  let ctx = document.getElementById('executionsHistogram').getContext('2d');
 
-    // Datos de ejemplo garantizados
-    const defaultData = {
-      labels: ['2025-05-10', '2025-05-11', '2025-05-12'],
-      datasets: [{
-        label: 'Ejecuciones de ejemplo',
-        data: [5, 3, 7],
-        backgroundColor: '#4053d3', // Azul consistente para datos de ejemplo
-        borderWidth: 1
-      }]
-    };
-    
-    // Función para generar colores altamente distintivos que evita repetir colores en el mismo segmento
-    function generateUniqueColor(str, index, date) {
-      if (!str) return PALETTE.primary[0]; // Color por defecto
-      
-      // Normalizar el string
-      const normStr = str.trim().toLowerCase();
-      const dateStr = date || 'unknown-date';
-      
-      // Inicializar el mapa para esta fecha si no existe
-      if (!usedColorsByDate.has(dateStr)) {
-        usedColorsByDate.set(dateStr, {
-          colors: new Set(), // colores ya asignados para esta fecha
-          assignments: new Map() // mapeo de etiqueta -> color para esta fecha
-        });
-      }
-      
-      const dateData = usedColorsByDate.get(dateStr);
-      
-      // Si ya asignamos un color a esta etiqueta para esta fecha, reutilizarlo
-      if (dateData.assignments.has(normStr)) {
-        return dateData.assignments.get(normStr);
-      }
-      
-      // Clasificar por tipo de operación
-      const operation = normStr.includes('install') ? 'install' : 
-                        normStr.includes('update') ? 'update' : 
-                        normStr.includes('ping') ? 'ping' : 'other';
-      
-      // Clasificar por sistema
-      const system = normStr.includes('redhat') ? 'redhat' : 
-                     normStr.includes('nano') ? 'nano' : 
-                     normStr.includes('vim') ? 'vim' : 'other';
-      
-      // Clasificar por estado
-      let state = 'normal';
-      if (normStr.includes('fail') || normStr.includes('error')) state = 'fail';
-      else if (normStr.includes('success')) state = 'success';
-      else if (normStr.includes('warn')) state = 'warning';
-      
-      // Seleccionar la paleta apropiada basada en el estado
-      let colorPalette;
-      if (state === 'fail') colorPalette = PALETTE.special.error;
-      else if (state === 'success') colorPalette = PALETTE.special.success;
-      else if (state === 'warning') colorPalette = PALETTE.special.warning;
-      else colorPalette = PALETTE.primary;
-      
-      // Buscar un color que no esté siendo usado en esta fecha
-      let finalColor = null;
-      
-      // Primer intento: buscar un color basado en la combinación de operación, sistema y estado
-      let baseIndex = (
-        (operation === 'install' ? 0 : operation === 'update' ? 7 : operation === 'ping' ? 14 : 21) + 
-        (system === 'redhat' ? 0 : system === 'nano' ? 1 : system === 'vim' ? 2 : 3) +
-        index
-      ) % colorPalette.length;
-      
-      // Intentar con varios índices hasta encontrar un color no usado
-      for (let attempt = 0; attempt < colorPalette.length; attempt++) {
-        const candidateIndex = (baseIndex + attempt) % colorPalette.length;
-        const candidateColor = colorPalette[candidateIndex];
-        
-        // Si este color no se ha usado en esta fecha, usarlo
-        if (!dateData.colors.has(candidateColor)) {
-          finalColor = candidateColor;
-          break;
-        }
-      }
-      
-      // Si todos los colores de esta paleta están usados, elegir de otra paleta
-      if (!finalColor) {
-        // Buscar en todas las paletas
-        const allPalettes = [
-          PALETTE.primary,
-          PALETTE.special.error,
-          PALETTE.special.success,
-          PALETTE.special.warning,
-          PALETTE.special.other
+  function updateChartData(newLabels, newDatasets) {
+    executionsChart.data.labels = newLabels;
+    executionsChart.data.datasets = newDatasets.map(ds => ({
+      ...ds,
+      borderWidth: 2,
+      borderRadius: 8,
+      borderColor: ds.borderColor || '#222',
+      backgroundColor: ds.backgroundColor,
+      barPercentage: 0.6,
+      categoryPercentage: 0.6,
+    }));
+    let allValues = newDatasets.flatMap(ds => ds.data);
+    let maxValue = Math.max(...allValues, 1);
+    executionsChart.options.scales.y.suggestedMax = Math.ceil(maxValue * 1.2);
+    executionsChart.update();
+  }
+
+  // Auto-refresh cada 15 segundos
+  setInterval(function() {
+    fetch(window.location.pathname + '?ajax=1')
+      .then(resp => resp.json())
+      .then(data => {
+        updateChartData(data.labels, data.datasets);
+      });
+  }, 15000);
+
+  let allValues = datasets.flatMap(ds => ds.data);
+  let maxValue = Math.max(...allValues, 1); // evitar 0
+  let suggestedMax = Math.ceil(maxValue * 1.2);
+
+  let executionsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      // Paleta de 20 colores distintos (tipo d3.schemeCategory20)
+      datasets: datasets.map((ds, i) => {
+        const palette = [
+          '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+          '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173', '#5254a3', '#9c9ede', '#cedb9c', '#e7ba52', '#ad494a'
         ];
-        
-        for (const palette of allPalettes) {
-          for (const color of palette) {
-            if (!dateData.colors.has(color)) {
-              finalColor = color;
-              break;
-            }
-          }
-          if (finalColor) break;
-        }
-      }
-      
-      // Último recurso: si todos los colores están usados, generar uno aleatorio
-      if (!finalColor) {
-        // Generar un color RGB aleatorio que sea muy diferente a los existentes
-        const r = Math.floor(Math.random() * 200) + 55;
-        const g = Math.floor(Math.random() * 200) + 55;
-        const b = Math.floor(Math.random() * 200) + 55;
-        finalColor = `rgb(${r}, ${g}, ${b})`;
-      }
-      
-      // Registrar este color como usado para esta fecha
-      dateData.colors.add(finalColor);
-      dateData.assignments.set(normStr, finalColor);
-      
-      return finalColor;
-    }
-    
-    // Variables para almacenar datos del servidor
-    let serverData = null;
-    let rawLabels = [];
-    let rawDatasets = [];
-    
-    try {
-      // Intenta obtener datos del servidor (Django)
-      rawLabels = {{ labels|safe }};
-      rawDatasets = {{ datasets|safe }};
-      
-      // Verificar que hay datos válidos
-      if (rawDatasets && rawDatasets.length > 0) {
-        const processedDatasets = [];
-        
-        // Agrupar datasets por fecha para asignar colores distintivos dentro de cada día
-        const datasetsByDate = {};
-        
-        // Primero, organizar datasets por fecha
-        rawDatasets.forEach(ds => {
-          // Buscar la fecha en el nombre del dataset (si está disponible)
-          let date = '';
-          if (ds.date) {
-            date = ds.date;
-          } else if (ds.label && ds.label.includes('[') && ds.label.includes(']')) {
-            const dateMatch = ds.label.match(/\[(.*?)\]/); // Extraer fecha entre corchetes si existe
-            date = dateMatch ? dateMatch[1] : '';
-          }
-          
-          // Si no tenemos fecha, usar el índice de la etiqueta en rawLabels
-          if (!date && ds.data && ds.data.length > 0) {
-            // Encontrar el índice con valor distinto de cero
-            for (let i = 0; i < ds.data.length; i++) {
-              if (ds.data[i] > 0) {
-                // Usar la etiqueta correspondiente como fecha
-                date = rawLabels[i];
-                break;
-              }
-            }
-          }
-          
-          // Usar una fecha por defecto si no se encontró ninguna
-          date = date || 'unknown-date';
-          
-          // Inicializar el array para esta fecha si no existe
-          if (!datasetsByDate[date]) {
-            datasetsByDate[date] = [];
-          }
-          
-          // Añadir el dataset a su grupo de fecha
-          datasetsByDate[date].push(ds);
-        });
-        
-        // Ahora procesar cada dataset con conocimiento de su fecha
-        let globalIndex = 0;
-        Object.keys(datasetsByDate).forEach(date => {
-          const datasetsInDate = datasetsByDate[date];
-          
-          datasetsInDate.forEach((ds, dateIndex) => {
-            // Generar un color único para este dataset, considerando su fecha
-            const uniqueColor = generateUniqueColor(ds.label, dateIndex, date);
-            
-            processedDatasets.push({
-              label: ds.label || 'Dataset ' + (globalIndex + 1),
-              data: ds.data,
-              backgroundColor: uniqueColor,
-              borderColor: uniqueColor,
-              borderWidth: 1
-            });
-            
-            globalIndex++;
-          });
-        });
-        
-        // Crear objeto de datos final
-        serverData = {
-          labels: rawLabels,
-          datasets: processedDatasets
+        return {
+          ...ds,
+          borderWidth: 2,
+          borderRadius: 8,
+          borderColor: palette[i % palette.length],
+          backgroundColor: palette[i % palette.length],
+          barPercentage: 0.6,
+          categoryPercentage: 0.6,
         };
-        
-        console.log('Usando datos del servidor con colores por segmento');
-      }
-    } catch (e) {
-      console.error('Error procesando datos:', e);
-    }
-    
-    // Usar datos del servidor o datos de ejemplo
-    const chartData = serverData || defaultData;
-    
-    // Crear el gráfico
-    const ctx = document.getElementById('barChart').getContext('2d');
-    const chart = new Chart(ctx, {
-      type: 'bar',
-      data: chartData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              boxWidth: 15,
-              padding: 10
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.parsed.y + ' ejecuciones';
-              }
+      })
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          align: 'start',
+          labels: {
+            font: { size: 13, family: 'Segoe UI, Arial, sans-serif', weight: 'bold' },
+            color: '#222',
+            padding: 10,
+            boxWidth: 18,
+            boxHeight: 14,
+            usePointStyle: true,
+            textAlign: 'left',
+            generateLabels: function(chart) {
+              // Cada métrica en una línea
+              const datasets = chart.data.datasets || [];
+              return datasets.map((ds, i) => ({
+                text: ds.label,
+                fillStyle: ds.backgroundColor,
+                strokeStyle: ds.borderColor,
+                lineWidth: 2,
+                hidden: !chart.isDatasetVisible(i),
+                index: i
+              }));
             }
           }
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              precision: 0
-            }
-          },
-          x: {
-            ticks: {
-              maxRotation: 45,
-              minRotation: 45
-            }
-          }
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          color: '#222',
+          font: { weight: 'bold', size: 16, family: 'Segoe UI, Arial, sans-serif' },
+          formatter: Math.round,
+          padding: 4
+        },
+        title: {
+          display: false
+        },
+        tooltip: {
+          enabled: true,
+          backgroundColor: '#222',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#fff',
+          borderWidth: 1,
+          padding: 12,
+          titleFont: { size: 17, weight: 'bold' },
+          bodyFont: { size: 15 }
         }
-      }
-    });
-    
-    // Botón para actualizar
-    document.getElementById('refreshBtn').addEventListener('click', function() {
-      window.location.reload();
-    });
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 16, family: 'Segoe UI, Arial, sans-serif' }, color: '#222' }
+        },
+        y: {
+          beginAtZero: true,
+          max: 14,
+          grid: { color: '#eee' },
+          ticks: { font: { size: 16, family: 'Segoe UI, Arial, sans-serif' }, color: '#222' }
+        }
+      },
+      layout: {
+        padding: 30
+      },
+      backgroundColor: '#f9fafd'
+    },
+    plugins: [ChartDataLabels]
   });
 </script>
-
-<style>
-  .chart-container {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    border-radius: 8px;
-    background: #fff;
-  }
-  #refreshBtn {
-    transition: all 0.3s ease;
-  }
-  #refreshBtn:hover {
-    transform: scale(1.1);
-  }
-</style>
 {% endblock %}

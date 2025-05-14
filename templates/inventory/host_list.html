@@ -1,197 +1,79 @@
 {% extends 'base/base.html' %}
-{% block page_title %}Inventory - Hosts{% endblock %}
+{% include "inventory/inventory_download_button.html" %}
+<form method="get" class="form-inline mb-3">
+  <select name="environment" class="form-control mr-2">
+    <option value="">Todos los entornos</option>
+    {% for env in environments %}
+      <option value="{{ env.id }}" {% if env_id|default:'' == env.id|stringformat:'s' %}selected{% endif %}>{{ env.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="group" class="form-control mr-2">
+    <option value="">Todos los grupos</option>
+    {% for group in groups %}
+      <option value="{{ group.id }}" {% if group_id|default:'' == group.id|stringformat:'s' %}selected{% endif %}>{{ group.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="operating_system" class="form-control mr-2">
+    <option value="">Todos los sistemas</option>
+    {% for os in os_choices %}
+      <option value="{{ os.0 }}" {% if os_filter == os.0 %}selected{% endif %}>{{ os.1 }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-primary">Filtrar</button>
+</form>
+<div class="text-right my-3">
+  <a href="/inventory/descargar_inventario_ansible/?{% if env_id %}environment={{ env_id }}&{% endif %}{% if group_id %}group={{ group_id }}&{% endif %}{% if os_filter %}operating_system={{ os_filter }}{% endif %}" class="btn btn-success">
+    Descargar Inventario Ansible
+  </a>
+</div>
 {% block content %}
-<div class="container-fluid">
-  <div class="card mb-4">
-    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Filtros</h5>
-      {% if env_id or group_id or os_filter %}
-        <a href="{% url 'host_list' %}" class="btn btn-sm btn-outline-secondary"><i class="fas fa-times"></i> Limpiar filtros</a>
-      {% endif %}
-    </div>
-    <div class="card-body">
-      <form method="get" class="form-row align-items-end" id="filterForm">
-        <div class="col-md-3 mb-2">
-          <label for="environment" class="font-weight-bold text-dark">Entorno</label>
-          <select name="environment" id="environment" class="form-control filter-select">
-            <option value="">Todos los entornos</option>
-            {% for env in environments %}
-              <option value="{{ env.id }}" {% if env_id|default:'' == env.id|stringformat:'s' %}selected{% endif %}>{{ env.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-md-3 mb-2">
-          <label for="group" class="font-weight-bold text-dark">Grupo</label>
-          <select name="group" id="group" class="form-control filter-select">
-            <option value="">Todos los grupos</option>
-            {% for group in groups %}
-              <option value="{{ group.id }}" {% if group_id|default:'' == group.id|stringformat:'s' %}selected{% endif %}>{{ group.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-md-3 mb-2">
-          <label for="operating_system" class="font-weight-bold text-dark">Sistema Operativo</label>
-          <select name="operating_system" id="operating_system" class="form-control filter-select">
-            <option value="">Todos los sistemas</option>
-            {% for os in os_choices %}
-              <option value="{{ os.0 }}" {% if os_filter == os.0 %}selected{% endif %}>{{ os.1 }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-md-3 mb-2">
-          <button type="submit" class="btn btn-primary btn-block">Filtrar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="card mt-4">
-      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="m-0">Inventory - Hosts</h5>
-        <a href="{% url 'host_create' %}" class="btn btn-light btn-sm"><i class="fas fa-plus"></i> Add New Host</a>
+  <div class="container mt-4">
+    <div class="card">
+      <div class="card-header">
+        <h2>Inventory - Hosts</h2>
       </div>
       <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-hover table-striped">
-            <thead>
-              <tr>
-                <th>Host Name</th>
-                <th>Environment</th>
-                <th>Group</th>
-                <th>Operating System</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for host in hosts %}
-                <tr>
-                  <td><strong class="text-primary host-name">{{ host.name }}</strong></td>
-                  <td>{{ host.environment.name }}</td>
-                  <td>{{ host.group.name }}</td>
-                  <td>{{ host.get_operating_system_display }}</td>
-                  <td class="text-center">
-                    <div class="btn-group" role="group">
-                      <a href="{% url 'host_detail' host.pk %}" class="btn btn-info btn-sm" title="View"><i class="fas fa-eye"></i></a>
-                      <a href="{% url 'host_update' host.pk %}" class="btn btn-warning btn-sm" title="Edit"><i class="fas fa-edit"></i></a>
-                      <a href="{% url 'host_delete' host.pk %}" class="btn btn-danger btn-sm" title="Delete"><i class="fas fa-trash"></i></a>
-                    </div>
-                  </td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="5" class="text-center">No hosts found matching the selected filters.</td>
-                </tr>
+        <a href="{% url 'host_create' %}" class="btn btn-primary mb-3">Add New Host</a>
+        {% if env_id or group_id %}
+          {% for env in environments %}
+            {% if not env_id or env.id|stringformat:'s' == env_id|stringformat:'s' %}
+              <h3>{{ env.name }}</h3>
+              {% for group in groups %}
+                {% if not group_id or group.id|stringformat:'s' == group_id|stringformat:'s' %}
+                  <h4>{{ group.name }}</h4>
+                  <ul class="list-group mb-3">
+                    {% for host in hosts %}
+                      {% if host.environment == env and host.group == group %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <span>{{ host.name }}</span>
+                          <span>
+                            <a href="{% url 'host_detail' host.pk %}" class="btn btn-info btn-sm">View</a>
+                            <a href="{% url 'host_update' host.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{% url 'host_delete' host.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                          </span>
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                {% endif %}
               {% endfor %}
-            </tbody>
-          </table>
-        </div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <ul class="list-group">
+            {% for host in hosts %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ host.name }}</span>
+                <span>
+                  <a href="{% url 'host_detail' host.pk %}" class="btn btn-info btn-sm">View</a>
+                  <a href="{% url 'host_update' host.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                  <a href="{% url 'host_delete' host.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
       </div>
     </div>
-</div>
-
-<style>
-  /* Reseteo de estilos para los selectores */
-  select {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-  }
-  
-  /* Modern Select Styling */
-  .modern-select {
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    width: 100% !important;
-    padding: 10px 15px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    line-height: 1.3 !important;
-    color: #333333 !important;
-    background-color: #ffffff !important;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23000000' d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 8px center !important;
-    background-size: 20px !important;
-    border: 2px solid #333333 !important;
-    border-radius: 4px !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-    text-rendering: geometricPrecision !important;
-    -webkit-font-smoothing: subpixel-antialiased !important;
-  }
-  
-  .modern-select:focus {
-    border-color: #007bff;
-    outline: 0;
-    box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.3);
-  }
-  
-  .modern-select:hover {
-    border-color: #000000;
-    background-color: #f8f9fa;
-  }
-  
-  /* Estilo para los textos dentro de los selectores */
-  .modern-select option {
-    font-weight: 500;
-    padding: 10px;
-    background-color: white;
-    color: black;
-  }
-  
-  /* Host name styling */
-  .host-name {
-    font-size: 1.1em;
-    letter-spacing: 0.5px;
-    color: #0056b3;
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 4px;
-    background-color: rgba(0, 123, 255, 0.1);
-    transition: all 0.2s ease;
-  }
-  
-  .host-name:hover {
-    background-color: rgba(0, 123, 255, 0.2);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  /* Filter badges */
-  .filter-badge {
-    display: inline-block;
-    padding: 0.25em 0.6em;
-    font-size: 80%;
-    font-weight: 700;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 0.25rem;
-    background-color: #e9ecef;
-    margin-right: 0.5rem;
-  }
-  
-  .filter-active {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  /* Table styling */
-  .table-hover tbody tr:hover {
-    background-color: rgba(0, 123, 255, 0.05);
-  }
-</style>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Filtrado automático al cambiar los selects
-    const filterSelects = document.querySelectorAll('.filter-select');
-    filterSelects.forEach(select => {
-      select.addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-      });
-    });
-  });
-</script>
+  </div>
 {% endblock %}

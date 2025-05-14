@@ -1,32 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from inventory.models import Host, Group, Environment
-from app_settings.models import GlobalSetting
 from playbooks.models import Playbook
 from history.models import History
 import ansible_runner
 import logging
 import os
 import tempfile
-import json
 
 logger = logging.getLogger(__name__)
-
-# Función auxiliar para obtener todas las variables de GlobalSetting
-def get_all_settings_as_dict():
-    """Obtiene todas las variables de GlobalSetting y las devuelve como un diccionario"""
-    settings = GlobalSetting.objects.all()
-    settings_dict = {}
-    
-    for setting in settings:
-        # Intentar convertir a JSON si es posible (para manejar objetos complejos)
-        try:
-            settings_dict[setting.key] = json.loads(setting.value)
-        except (json.JSONDecodeError, TypeError):
-            # Si no es JSON válido, usar el valor como string
-            settings_dict[setting.key] = setting.value
-    
-    return settings_dict
 
 # Create your views here.
 
@@ -139,8 +121,8 @@ def deploy_to_host(request):
         with open(inventory_path, 'r') as f:
             pass  # No debug output; bloque requerido para evitar error de indentación
 
-        # Obtener todas las variables de configuración automáticamente
-        extravars = get_all_settings_as_dict()
+        # No necesitamos pasar target_host si ya está definido en el inventario
+        extravars = {}
 
         # Crear copia temporal del playbook con reemplazo de hosts: target_host
         import tempfile
@@ -155,8 +137,7 @@ def deploy_to_host(request):
         result = ansible_runner.run(
             private_data_dir='/opt/www',
             playbook=temp_pb_path,
-            inventory=inventory_path,
-            extravars=extravars
+            inventory=inventory_path
         )
 
         # Eliminar archivos temporales
@@ -213,8 +194,8 @@ def deploy_to_group(request):
         # Genera archivo de inventario temporal
         inventory_path = generate_temporary_inventory(group_id=group_id)
 
-        # Obtener todas las variables de configuración automáticamente
-        extravars = get_all_settings_as_dict()
+        # No necesitamos pasar target_host si ya está definido en el inventario
+        extravars = {}
 
         # Crear copia temporal del playbook con reemplazo de hosts: target_group
         import tempfile
@@ -229,8 +210,7 @@ def deploy_to_group(request):
         result = ansible_runner.run(
             private_data_dir='/opt/www',
             playbook=temp_pb_path,
-            inventory=inventory_path,
-            extravars=extravars
+            inventory=inventory_path
         )
 
         # Eliminar archivos temporales
@@ -264,6 +244,7 @@ def api_groups(request):
     environment_id = request.GET.get('environment_id')
     groups = Group.objects.filter(environment_id=environment_id).values('id', 'name')
     return JsonResponse({'groups': list(groups)})
+
 
 def api_hosts(request):
     group_id = request.GET.get('group_id')
