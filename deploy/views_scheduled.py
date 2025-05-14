@@ -10,29 +10,84 @@ import ansible_runner
 import os
 from deploy.views import generate_temporary_inventory
 
+def _ensure_critical_variables(extravars):
+    """Asegura que todas las variables críticas estén definidas"""
+    critical_vars = {
+        'server_root': '/opt/www/sites',
+        'log_root': '/var/log/httpd',
+        'http_port': '80',
+        'https_port': '443',
+        'domain': 'example.com'
+    }
+    
+    for key, default_value in critical_vars.items():
+        if key not in extravars or not extravars[key]:
+            print(f'ADVERTENCIA: Variable {key} no definida, usando valor predeterminado: {default_value}')
+            extravars[key] = default_value
+
 @login_required
 def schedule_to_host(request):
     if request.method == 'POST':
+        print(f"[DEBUG] POST data: {request.POST}")
         form = ScheduledDeploymentHostForm(request.POST)
+        print(f"[DEBUG] Form is valid: {form.is_valid()}")
         if form.is_valid():
-            sched = form.save(commit=False)
+            # Obtener los campos del formulario
+            environment = form.cleaned_data.get('environment')
+            group = form.cleaned_data.get('group')
+            host = form.cleaned_data.get('host')
+            playbook = form.cleaned_data.get('playbook')
+            scheduled_time = form.cleaned_data.get('scheduled_time')
+            
+            print(f"[DEBUG] Datos del formulario: environment={environment}, group={group}, host={host}, playbook={playbook}, scheduled_time={scheduled_time}")
+            
+            # Validar que el host pertenezca al grupo seleccionado
+            if host.group.id != group.id:
+                from django.contrib import messages
+                messages.error(request, f'El host {host.name} no pertenece al grupo {group.name}')
+                return redirect('schedule_to_host')
+            
+            # Crear el objeto de tarea programada
+            sched = ScheduledDeployment()
             sched.user = request.user
             sched.deploy_type = 'host'
+            sched.host = host
+            sched.playbook = playbook
+            sched.scheduled_time = scheduled_time
+            
+            print(f"[DEBUG] Objeto de tarea programada: host={sched.host}, playbook={sched.playbook}, scheduled_time={sched.scheduled_time}")
+            
             now = timezone.localtime(timezone.now())
             sched_time = timezone.localtime(sched.scheduled_time)
             delta_seconds = (sched_time - now).total_seconds()
             print(f'[DEBUG] schedule_to_host | scheduled_time: {sched_time} | now: {now} | delta_seconds: {delta_seconds} | ejecutar_inmediato: {delta_seconds <= 60}')
             from django.contrib import messages
+            
+            # Determinar si se debe ejecutar inmediatamente o programar para el futuro
             if delta_seconds <= 60:
+                # Ejecutar inmediatamente
                 sched.status = 'running'
                 sched.save()
                 try:
+                    # Obtener todas las variables de configuración global
+                    from deploy.views import get_all_settings_as_dict
+                    extravars = get_all_settings_as_dict()
+                    
+                    # Asegurar que las variables críticas estén definidas
+                    _ensure_critical_variables(extravars)
+                    
+                    # Añadir target_host como variable para las plantillas
+                    extravars['target_host'] = sched.host.name
+                    
+                    print(f"[DEBUG] Variables de configuración: {extravars}")
+                    
                     inventory_path = generate_temporary_inventory(host_id=sched.host.id)
                     pb_path = Command.prepare_playbook_static(sched.playbook.file.path, 'hosts: target_host', f'hosts: {sched.host.name}')
                     result = ansible_runner.run(
                         private_data_dir='/opt/www',
                         playbook=pb_path,
-                        inventory=inventory_path
+                        inventory=inventory_path,
+                        extravars=extravars
                     )
                     output = result.stdout.read()
                     sched.output = output
@@ -53,10 +108,17 @@ def schedule_to_host(request):
                     messages.error(request, f'Ocurrió un error al ejecutar la tarea inmediatamente: {e}')
                 sched.save()
             else:
+                # Programar para el futuro
                 sched.status = 'pending'
                 sched.save()
-                messages.info(request, 'La tarea fue agendada para ejecución futura.')
+                messages.success(request, 'La tarea ha sido programada correctamente para ejecución futura.')
+            
             return redirect('scheduled_history')
+        else:
+            # Si el formulario no es válido, mostrar errores
+            print(f"[DEBUG] Errores del formulario: {form.errors}")
+            from django.contrib import messages
+            messages.error(request, 'Por favor corrija los errores en el formulario.')
     else:
         form = ScheduledDeploymentHostForm()
     return render(request, 'deploy/schedule_to_host.html', {'form': form})

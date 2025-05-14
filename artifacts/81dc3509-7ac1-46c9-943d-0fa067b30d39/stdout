@@ -1,0 +1,89 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [demo02]
+
+TASK [Actualizar sistema operativo] ********************************************
+ok: [demo02]
+
+TASK [Debug result_update] *****************************************************
+ok: [demo02] => {
+    "result_update": {
+        "changed": false,
+        "failed": false,
+        "msg": "Nothing to do",
+        "rc": 0,
+        "results": []
+    }
+}
+
+TASK [Instalar Apache (httpd)] *************************************************
+changed: [demo02]
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+changed: [demo02] => (item=httpd)
+ok: [demo02] => (item=firewalld)
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+changed: [demo02]
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+changed: [demo02]
+
+TASK [Recargar firewalld] ******************************************************
+changed: [demo02]
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+fatal: [demo02]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.012440", "end": "2025-05-14 23:30:53.817188", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 23:30:53.804748", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+changed: [demo02]
+
+TASK [Crear directorios necesarios] ********************************************
+changed: [demo02] => (item={'path': '/opt/www/sites/demo02'})
+changed: [demo02] => (item={'path': '/var/log/httpd/demo02'})
+changed: [demo02] => (item={'path': '/etc/httpd/conf.d', 'mode': '0755'})
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak] *****************
+changed: [demo02]
+
+TASK [Copiar el archivo httpd.conf desde la plantilla específica para hosts] ***
+changed: [demo02]
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+changed: [demo02]
+
+TASK [Guardar nombre de app en /etc/hostname] **********************************
+changed: [demo02]
+
+TASK [Copiar archivo index.html desde la plantilla específica para hosts] ******
+changed: [demo02]
+
+TASK [Copiar configuración de VirtualHost para Apache desde la plantilla específica para hosts] ***
+changed: [demo02]
+
+TASK [Reiniciar Apache explícitamente] *****************************************
+changed: [demo02]
+
+TASK [Mostrar resumen al finalizar el playbook] ********************************
+ok: [demo02] => {
+    "msg": [
+        "Resumen de la implementación:",
+        "Nombre del servidor: demo02.upb.edu.co",
+        "Ruta del aplicativo: /opt/www/sites/demo02/index.html",
+        "Logs: /var/log/httpd/demo02",
+        "Permisos: apache:apache para /opt/www/sites/demo02",
+        "Puertos: HTTP 80, HTTPS 443",
+        "Dominio: upb.edu.co",
+        "Timestamp de despliegue: 2025-05-15T04:30:21Z",
+        "El playbook se ha completado correctamente."
+    ]
+}
+
+RUNNING HANDLER [Reiniciar Apache] *********************************************
+changed: [demo02]
+
+PLAY RECAP *********************************************************************
+demo02                     : ok=20   changed=16   unreachable=0    failed=0    skipped=0    rescued=0    ignored=1   

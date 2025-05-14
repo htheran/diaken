@@ -1,0 +1,8 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [demo03]
+ok: [demo02]
+
+TASK [Actualizar sistema operativo] ********************************************
