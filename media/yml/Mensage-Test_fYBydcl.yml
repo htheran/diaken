@@ -1,8 +1,0 @@
----
-- name: Prueba de variable pasada desde settings
-  hosts: target_host | default('localhost')
-  gather_facts: false
-  tasks:
-    - name: Mostrar el valor de la variable pasada desde settings
-      debug:
-        msg: "El valor de mensaje_prueba es: {{ mensaje_prueba | default('NO DEFINIDA') }}"

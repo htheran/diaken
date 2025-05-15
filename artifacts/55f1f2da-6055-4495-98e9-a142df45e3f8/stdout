@@ -1,0 +1,132 @@
+
+PLAY [Instalación y configuración de Apache HTTP Server para hosts] ************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar errores de sintaxis en la configuración] ***********************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": "httpd -t", "delta": "0:00:00.094075", "end": "2025-05-15 18:45:33.480230", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:45:33.386155", "stderr": "[Thu May 15 18:45:33.462093 2025] [so:warn] [pid 29031:tid 29031] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable", "stderr_lines": ["[Thu May 15 18:45:33.462093 2025] [so:warn] [pid 29031:tid 29031] AH01574: module ssl_module is already loaded, skipping", "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar errores de sintaxis si existen] **********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "[Thu May 15 18:45:33.462093 2025] [so:warn] [pid 29031:tid 29031] AH01574: module ssl_module is already loaded, skipping",[0m
+[0;32m        "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:",[0m
+[0;32m        "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+[0;33mchanged: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si firewalld está instalado] ***********************************
+[0;32mok: [demo03][0m
+
+TASK [Asegurar que el servicio firewalld esté iniciado y habilitado] ***********
+[0;32mok: [demo03][0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si SELinux está instalado] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.007248", "end": "2025-05-15 18:45:49.400076", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:45:49.392828", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;33mchanged: [demo03] => (item=/opt/www/sites/demo03)[0m
+[0;32mok: [demo03] => (item=/var/log/httpd/demo03)[0m
+[0;32mok: [demo03] => (item=/etc/httpd/conf.d)[0m
+
+TASK [Hacer backup del archivo httpd.conf si existe] ***************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla] *************************
+[0;32mok: [demo03][0m
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Guardar nombre en /etc/hostname] *****************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar archivo index.html desde la plantilla] ****************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar configuración de VirtualHost para Apache] *************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mostrar errores de configuración si existen] *****************************
+[0;36mskipping: [demo03][0m
+
+TASK [Habilitar e iniciar servicio Apache] *************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar estado del servicio Apache] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar estado del servicio] *********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "● httpd.service - The Apache HTTP Server",[0m
+[0;32m        "     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; preset: disabled)",[0m
+[0;32m        "     Active: active (running) since Thu 2025-05-15 18:46:03 -05; 693ms ago",[0m
+[0;32m        "       Docs: man:httpd.service(8)",[0m
+[0;32m        "   Main PID: 31921 (httpd)",[0m
+[0;32m        "     Status: \"Started, listening on: port 80\"",[0m
+[0;32m        "      Tasks: 177 (limit: 9397)",[0m
+[0;32m        "     Memory: 26.3M",[0m
+[0;32m        "        CPU: 107ms",[0m
+[0;32m        "     CGroup: /system.slice/httpd.service",[0m
+[0;32m        "             ├─31921 /usr/sbin/httpd -DFOREGROUND",[0m
+[0;32m        "             ├─31922 /usr/sbin/httpd -DFOREGROUND",[0m
+[0;32m        "             ├─31923 /usr/sbin/httpd -DFOREGROUND",[0m
+[0;32m        "             ├─31924 /usr/sbin/httpd -DFOREGROUND",[0m
+[0;32m        "             └─31925 /usr/sbin/httpd -DFOREGROUND",[0m
+[0;32m        "",[0m
+[0;32m        "May 15 18:46:03 BACKEND systemd[1]: Starting The Apache HTTP Server...",[0m
+[0;32m        "May 15 18:46:03 BACKEND httpd[31921]: AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 10.100.0.121. Set the 'ServerName' directive globally to suppress this message",[0m
+[0;32m        "May 15 18:46:03 BACKEND httpd[31921]: Server configured, listening on: port 80",[0m
+[0;32m        "May 15 18:46:03 BACKEND systemd[1]: Started The Apache HTTP Server."[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Mensaje de diagnóstico y recomendaciones] ********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Instalación de Apache HTTP Server completada:\n- Host: demo03\n- Estado del servicio: Inactivo\n- Directorio web: /opt/www/sites/demo03\n- Directorio de logs: /var/log/httpd/demo03\n- Puerto HTTP: 80\n- Puerto HTTPS: 443\n\nPara probar el servidor web:\n- URL HTTP: http://demo03:80\n\nPara configurar SSL:\n- Ejecute el playbook \"Configure SSL Host (Optimized v4)\"\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=29  [0m [0;33mchanged=13  [0m unreachable=0    failed=0    [0;36mskipped=1   [0m rescued=0    [1;35mignored=2   [0m

@@ -1,8 +1,0 @@
----
-- name: Verificar conectividad con un host remoto
-  hosts: target_host
-  gather_facts: no
-
-  tasks:
-    - name: Hacer ping al host remoto
-      ansible.builtin.ping:

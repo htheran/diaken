@@ -1,0 +1,155 @@
+[1;35m[WARNING]: Found variable using reserved name: environment[0m
+
+PLAY [Configuración de SSL/HTTPS para Apache en grupos] ************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "Validando variables para el grupo: BACKEND"[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el grupo: BACKEND"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Mostrar advertencia si Apache no está instalado] *************************
+[0;36mskipping: [demo02][0m
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar si el módulo SSL ya está habilitado] ***************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": "httpd -M | grep ssl", "delta": "0:00:00.100268", "end": "2025-05-15 18:35:20.008295", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:35:19.908027", "stderr": "[Thu May 15 18:35:19.986466 2025] [so:warn] [pid 22450:tid 22450] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable", "stderr_lines": ["[Thu May 15 18:35:19.986466 2025] [so:warn] [pid 22450:tid 22450] AH01574: module ssl_module is already loaded, skipping", "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo02]: FAILED! => {"changed": false, "cmd": "httpd -M | grep ssl", "delta": "0:00:00.097042", "end": "2025-05-16 03:15:30.659273", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 03:15:30.562231", "stderr": "[Fri May 16 03:15:30.640025 2025] [so:warn] [pid 23064:tid 23064] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo02' is not a directory, or is not readable", "stderr_lines": ["[Fri May 16 03:15:30.640025 2025] [so:warn] [pid 23064:tid 23064] AH01574: module ssl_module is already loaded, skipping", "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo02' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Verificar si mod_rewrite está habilitado] ********************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Instalar mod_ssl si no está instalado] ***********************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Habilitar mod_rewrite si no está cargado] ********************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Crear directorio para certificados] **************************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Crear directorio de logs si no existe] ***********************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Verificar si el archivo ssl.conf existe] *********************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Hacer backup del archivo ssl.conf si existe] *****************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar archivo ssl.conf problemático] **********************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Crear archivo ssl.conf mínimo] *******************************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar configuración SSL anterior si existe] ***************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar configuración de redirección anterior si existe] ****************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar certificado SSL al servidor] **************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Copiar clave privada SSL al servidor] ************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Verificar si los certificados se copiaron correctamente] *****************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "Certificados copiados correctamente: False"[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Certificados copiados correctamente: False"[0m
+[0;32m}[0m
+
+TASK [Configurar VirtualHost para HTTPS] ***************************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Configurar redirección HTTP a HTTPS] *************************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Verificar si existe el archivo index.html] *******************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Crear copia de seguridad del index.html si existe] ***********************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Leer contenido del archivo index.html] ***********************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Actualizar index.html con badge de SSL] **********************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;31mfatal: [demo02]: FAILED! => {"changed": false, "cmd": ["httpd", "-t"], "delta": "0:00:00.079644", "end": "2025-05-16 03:15:53.586971", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 03:15:53.507327", "stderr": "[Fri May 16 03:15:53.566174 2025] [so:warn] [pid 25856:tid 25856] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo02' is not a directory, or is not readable", "stderr_lines": ["[Fri May 16 03:15:53.566174 2025] [so:warn] [pid 25856:tid 25856] AH01574: module ssl_module is already loaded, skipping", "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo02' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["httpd", "-t"], "delta": "0:00:00.091552", "end": "2025-05-15 18:35:43.034758", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:35:42.943206", "stderr": "[Thu May 15 18:35:43.014680 2025] [so:warn] [pid 25247:tid 25247] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable", "stderr_lines": ["[Thu May 15 18:35:43.014680 2025] [so:warn] [pid 25247:tid 25247] AH01574: module ssl_module is already loaded, skipping", "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar error de configuración si existe] ********************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "Error en la configuración de Apache: [Fri May 16 03:15:53.566174 2025] [so:warn] [pid 25856:tid 25856] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo02' is not a directory, or is not readable"[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Error en la configuración de Apache: [Thu May 15 18:35:43.014680 2025] [so:warn] [pid 25247:tid 25247] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"[0m
+[0;32m}[0m
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+[0;36mskipping: [demo02][0m
+[0;36mskipping: [demo03][0m
+
+TASK [Abrir puerto HTTPS en el firewall] ***************************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Mensaje de confirmación] *************************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "Configuración SSL completada:\n- Grupo: BACKEND\n- Puerto HTTPS: 443\n- Certificado: /etc/ssl/httpd/BACKEND.certificado.crt\n- Estado de la configuración: Con errores\n- Index.html actualizado: Sí\n"[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Configuración SSL completada:\n- Grupo: BACKEND\n- Puerto HTTPS: 443\n- Certificado: /etc/ssl/httpd/BACKEND.certificado.crt\n- Estado de la configuración: Con errores\n- Index.html actualizado: Sí\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo02[0m                     : [0;32mok=30  [0m [0;33mchanged=12  [0m unreachable=0    failed=0    [0;36mskipped=2   [0m rescued=0    [1;35mignored=2   [0m
+[0;33mdemo03[0m                     : [0;32mok=30  [0m [0;33mchanged=12  [0m unreachable=0    failed=0    [0;36mskipped=2   [0m rescued=0    [1;35mignored=2   [0m

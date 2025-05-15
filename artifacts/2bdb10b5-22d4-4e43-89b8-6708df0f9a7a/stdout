@@ -1,0 +1,179 @@
+[1;35m[WARNING]: Found variable using reserved name: environment[0m
+
+PLAY [Instalación y configuración de Apache HTTP Server para grupos] ***********
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "Validando variables para el grupo: BACKEND"[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el grupo: BACKEND"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;31mfatal: [demo02]: FAILED! => {"changed": false, "cmd": ["which", "httpd"], "delta": "0:00:00.009192", "end": "2025-05-16 03:03:25.834118", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 03:03:25.824926", "stderr": "which: no httpd in (/sbin:/bin:/usr/sbin:/usr/bin)", "stderr_lines": ["which: no httpd in (/sbin:/bin:/usr/sbin:/usr/bin)"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["which", "httpd"], "delta": "0:00:00.008142", "end": "2025-05-15 18:23:15.199238", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:23:15.191096", "stderr": "which: no httpd in (/sbin:/bin:/usr/sbin:/usr/bin)", "stderr_lines": ["which: no httpd in (/sbin:/bin:/usr/sbin:/usr/bin)"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Verificar errores de sintaxis en la configuración] ***********************
+[0;36mskipping: [demo02][0m
+[0;36mskipping: [demo03][0m
+
+TASK [Mostrar errores de sintaxis si existen] **********************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "Apache no está instalado o no se pudo verificar la configuración"[0m
+[0;32m    ][0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "Apache no está instalado o no se pudo verificar la configuración"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si firewalld está instalado] ***********************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Asegurar que el servicio firewalld esté iniciado y habilitado] ***********
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Verificar si SELinux está instalado] *************************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.012090", "end": "2025-05-15 18:27:07.767745", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:27:07.755655", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo02]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.016477", "end": "2025-05-16 03:07:18.504039", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 03:07:18.487562", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;32mok: [demo03][0m
+[0;32mok: [demo02][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;33mchanged: [demo03] => (item=/opt/www/sites/BACKEND)[0m
+[0;33mchanged: [demo02] => (item=/opt/www/sites/BACKEND)[0m
+[0;33mchanged: [demo03] => (item=/var/log/httpd/BACKEND)[0m
+[0;33mchanged: [demo02] => (item=/var/log/httpd/BACKEND)[0m
+[0;32mok: [demo03] => (item=/etc/httpd/conf.d)[0m
+[0;32mok: [demo02] => (item=/etc/httpd/conf.d)[0m
+
+TASK [Hacer backup del archivo httpd.conf si existe] ***************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla] *************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Guardar nombre en /etc/hostname] *****************************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Copiar archivo index.html desde la plantilla] ****************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Copiar configuración de VirtualHost para Apache] *************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;31mfatal: [demo02]: FAILED! => {"changed": true, "cmd": ["httpd", "-t"], "delta": "0:00:00.091302", "end": "2025-05-16 03:07:30.728662", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 03:07:30.637360", "stderr": "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo02' is not a directory, or is not readable", "stderr_lines": ["AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo02' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["httpd", "-t"], "delta": "0:00:00.119906", "end": "2025-05-15 18:27:20.166753", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:27:20.046847", "stderr": "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable", "stderr_lines": ["AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar errores de configuración si existen] *****************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:",[0m
+[0;32m        "DocumentRoot '/opt/www/sites/demo02' is not a directory, or is not readable"[0m
+[0;32m    ][0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:",[0m
+[0;32m        "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Habilitar e iniciar servicio Apache] *************************************
+[0;36mskipping: [demo02][0m
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar estado del servicio Apache] ************************************
+[0;31mfatal: [demo02]: FAILED! => {"changed": false, "cmd": ["systemctl", "status", "httpd"], "delta": "0:00:00.021876", "end": "2025-05-16 03:07:31.569448", "msg": "non-zero return code", "rc": 3, "start": "2025-05-16 03:07:31.547572", "stderr": "", "stderr_lines": [], "stdout": "○ httpd.service - The Apache HTTP Server\n     Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; preset: disabled)\n     Active: inactive (dead)\n       Docs: man:httpd.service(8)", "stdout_lines": ["○ httpd.service - The Apache HTTP Server", "     Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; preset: disabled)", "     Active: inactive (dead)", "       Docs: man:httpd.service(8)"]}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["systemctl", "status", "httpd"], "delta": "0:00:00.026494", "end": "2025-05-15 18:27:21.030673", "msg": "non-zero return code", "rc": 3, "start": "2025-05-15 18:27:21.004179", "stderr": "", "stderr_lines": [], "stdout": "○ httpd.service - The Apache HTTP Server\n     Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; preset: disabled)\n     Active: inactive (dead)\n       Docs: man:httpd.service(8)", "stdout_lines": ["○ httpd.service - The Apache HTTP Server", "     Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; preset: disabled)", "     Active: inactive (dead)", "       Docs: man:httpd.service(8)"]}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar estado del servicio] *********************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "○ httpd.service - The Apache HTTP Server",[0m
+[0;32m        "     Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; preset: disabled)",[0m
+[0;32m        "     Active: inactive (dead)",[0m
+[0;32m        "       Docs: man:httpd.service(8)"[0m
+[0;32m    ][0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "○ httpd.service - The Apache HTTP Server",[0m
+[0;32m        "     Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; preset: disabled)",[0m
+[0;32m        "     Active: inactive (dead)",[0m
+[0;32m        "       Docs: man:httpd.service(8)"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Mensaje de diagnóstico y recomendaciones] ********************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "Instalación de Apache HTTP Server completada:\n- Grupo: BACKEND\n- Estado del servicio: Activo\n- Directorio web: /opt/www/sites/BACKEND\n- Directorio de logs: /var/log/httpd/BACKEND\n- Puerto HTTP: 80\n- Puerto HTTPS: 443\n\nPara probar el servidor web:\n- URL HTTP: http://BACKEND:80\n\nPara configurar SSL:\n- Ejecute el playbook \"Configure SSL Group (Optimized v4)\"\n"[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Instalación de Apache HTTP Server completada:\n- Grupo: BACKEND\n- Estado del servicio: Activo\n- Directorio web: /opt/www/sites/BACKEND\n- Directorio de logs: /var/log/httpd/BACKEND\n- Puerto HTTP: 80\n- Puerto HTTPS: 443\n\nPara probar el servidor web:\n- URL HTTP: http://BACKEND:80\n\nPara configurar SSL:\n- Ejecute el playbook \"Configure SSL Group (Optimized v4)\"\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo02[0m                     : [0;32mok=28  [0m [0;33mchanged=15  [0m unreachable=0    failed=0    [0;36mskipped=2   [0m rescued=0    [1;35mignored=4   [0m
+[0;33mdemo03[0m                     : [0;32mok=28  [0m [0;33mchanged=15  [0m unreachable=0    failed=0    [0;36mskipped=2   [0m rescued=0    [1;35mignored=4   [0m

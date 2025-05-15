@@ -1,0 +1,199 @@
+
+PLAY [Instalación y configuración de Pure-FTPd para hosts] *********************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar variables que se utilizarán] *************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Utilizando las siguientes variables:\n- server_root: /opt/www/sites\n- ftp_user: ftpuser\n- ftp_port: 21\n- pasv_min_port: 30000\n- pasv_max_port: 31000\n- apache_user: apache\n- apache_group: apache\n"[0m
+[0;32m}[0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar advertencia si Apache no está instalado] *************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar si Pure-FTPd está instalado] ***********************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["which", "pure-ftpd"], "delta": "0:00:00.008952", "end": "2025-05-15 17:38:11.433236", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 17:38:11.424284", "stderr": "which: no pure-ftpd in (/sbin:/bin:/usr/sbin:/usr/bin)", "stderr_lines": ["which: no pure-ftpd in (/sbin:/bin:/usr/sbin:/usr/bin)"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar Pure-FTPd] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que el servicio firewalld esté iniciado y habilitado] ***********
+[0;32mok: [demo03][0m
+
+TASK [Abrir puerto FTP permanentemente en el firewall] *************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puertos pasivos FTP en el firewall] ********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si SELinux está habilitado] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar SELinux para permitir FTP y Apache] ***************************
+[0;36mskipping: [demo03][0m
+
+TASK [Crear grupo FTP] *********************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si el usuario FTP existe] **************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "One or more supplied key could not be found in the database."}[0m
+[0;36m...ignoring[0m
+
+TASK [Crear usuario FTP si no existe] ******************************************
+[0;35m[DEPRECATION WARNING]: Encryption using the Python crypt module is deprecated. [0m
+[0;35mThe Python crypt module is deprecated and will be removed from Python 3.13. [0m
+[0;35mInstall the passlib library for continued encryption functionality. This [0m
+[0;35mfeature will be removed in version 2.17. Deprecation warnings can be disabled [0m
+[0;35mby setting deprecation_warnings=False in ansible.cfg.[0m
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que el usuario FTP pertenece al grupo Apache] *******************
+[0;32mok: [demo03][0m
+
+TASK [Asegurar que /sbin/nologin está en /etc/shells] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar directorio del usuario FTP] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorio para el usuario FTP si no existe] ***********************
+[0;36mskipping: [demo03][0m
+
+TASK [Detener servicio Pure-FTPd] **********************************************
+[0;32mok: [demo03][0m
+
+TASK [Eliminar directorios y archivos de Pure-FTPd] ****************************
+[0;32mok: [demo03] => (item=/etc/pure-ftpd/pureftpd.pdb)[0m
+[0;32mok: [demo03] => (item=/etc/pureftpd.pdb)[0m
+[0;32mok: [demo03] => (item=/etc/pure-ftpd/auth/PureDB)[0m
+
+TASK [Crear directorios de configuración] **************************************
+[0;32mok: [demo03] => (item=/etc/pure-ftpd)[0m
+[0;33mchanged: [demo03] => (item=/etc/pure-ftpd/auth)[0m
+[0;33mchanged: [demo03] => (item=/etc/pure-ftpd/conf)[0m
+[0;33mchanged: [demo03] => (item=/etc/pure-ftpd/passwd)[0m
+
+TASK [Configurar Pure-FTPd] ****************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear mensaje de bienvenida] *********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear archivo de contraseña] *********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear usuario virtual FTP usando método directo] *************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mostrar información de usuario virtual] **********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "Password: ",[0m
+[0;32m        "Enter it again: "[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Eliminar archivo de contraseña temporal] *********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear archivo PureDB en conf] ********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear enlaces simbólicos] ************************************************
+[0;33mchanged: [demo03] => (item={'src': '/etc/pure-ftpd/pureftpd.pdb', 'dest': '/etc/pureftpd.pdb'})[0m
+[0;33mchanged: [demo03] => (item={'src': '/etc/pure-ftpd/conf/PureDB', 'dest': '/etc/pure-ftpd/auth/PureDB'})[0m
+
+TASK [Establecer permisos correctos para directorios y archivos] ***************
+[0;33mchanged: [demo03][0m
+
+TASK [Habilitar e iniciar servicio Pure-FTPd] **********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Reiniciar Apache] ********************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar estado del servicio Pure-FTPd] *********************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar estado del servicio] *********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "● pure-ftpd.service - Pure-FTPd FTP server",[0m
+[0;32m        "     Loaded: loaded (/usr/lib/systemd/system/pure-ftpd.service; enabled; preset: disabled)",[0m
+[0;32m        "     Active: active (running) since Thu 2025-05-15 17:38:54 -05; 2s ago",[0m
+[0;32m        "    Process: 27766 ExecStart=/usr/sbin/pure-ftpd /etc/pure-ftpd/pure-ftpd.conf (code=exited, status=0/SUCCESS)",[0m
+[0;32m        "   Main PID: 27767 (pure-ftpd)",[0m
+[0;32m        "      Tasks: 1 (limit: 9397)",[0m
+[0;32m        "     Memory: 1.1M",[0m
+[0;32m        "        CPU: 12ms",[0m
+[0;32m        "     CGroup: /system.slice/pure-ftpd.service",[0m
+[0;32m        "             └─27767 /usr/sbin/pure-ftpd /etc/pure-ftpd/pure-ftpd.conf",[0m
+[0;32m        "",[0m
+[0;32m        "May 15 17:38:53 diaken.co systemd[1]: Starting Pure-FTPd FTP server...",[0m
+[0;32m        "May 15 17:38:54 diaken.co systemd[1]: pure-ftpd.service: Can't open PID file /run/pure-ftpd.pid (yet?) after start: Operation not permitted",[0m
+[0;32m        "May 15 17:38:54 diaken.co systemd[1]: Started Pure-FTPd FTP server."[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar si existe index.html] ******************************************
+[0;32mok: [demo03][0m
+
+TASK [Leer contenido del archivo index.html] ***********************************
+[0;36mskipping: [demo03][0m
+
+TASK [Decodificar contenido] ***************************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar si ya existe badge de FTP] *************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Añadir badge de FTP si no existe] ****************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Actualizar badge de FTP si ya existe] ************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar acceso FTP local] **********************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": "echo -e \"user ftpuser changeme\\nls\\nquit\" | nc localhost 21\n", "delta": "0:00:00.006989", "end": "2025-05-15 17:38:58.464821", "msg": "non-zero return code", "rc": 127, "start": "2025-05-15 17:38:58.457832", "stderr": "/bin/sh: line 1: nc: command not found", "stderr_lines": ["/bin/sh: line 1: nc: command not found"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resultado de prueba FTP] *****************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [][0m
+[0;32m}[0m
+
+TASK [Verificar acceso HTTP] ***************************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "content": "", "elapsed": 0, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [Errno -2] Name or service not known>", "redirected": false, "status": -1, "url": "http://demo03"}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resultado de prueba HTTP] ****************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Resultado de prueba HTTP:\n- Código de estado: -1\n"[0m
+[0;32m}[0m
+
+TASK [Mensaje de diagnóstico y recomendaciones] ********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Instalación de Pure-FTPd completada:\n- Host: demo03\n- Estado del servicio: Inactivo\n- Directorio FTP: /opt/www/sites/demo03\n- Usuario FTP: ftpuser\n- Puerto: 21\n- Rango de puertos pasivos: 30000-31000\n\nPara probar la conexión FTP:\n- Servidor: demo03\n- Puerto: 21\n- Usuario: ftpuser\n- Contraseña: [La configurada en settings]\n\nVentajas de Pure-FTPd:\n1. Configuración sencilla y robusta\n2. Excelente rendimiento y estabilidad\n3. Soporte para usuarios virtuales\n4. Buena integración con SELinux\n5. Menor huella de memoria que otras alternativas\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=41  [0m [0;33mchanged=19  [0m unreachable=0    failed=0    [0;36mskipped=8   [0m rescued=0    [1;35mignored=4   [0m

@@ -1,0 +1,111 @@
+
+PLAY [Configuración de SSL/HTTPS para Apache en hosts] *************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar advertencia si Apache no está instalado] *************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar si el módulo SSL ya está habilitado] ***************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": "httpd -M | grep ssl", "delta": "0:00:00.093224", "end": "2025-05-15 18:36:34.749015", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:36:34.655791", "stderr": "[Thu May 15 18:36:34.729560 2025] [so:warn] [pid 25730:tid 25730] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable", "stderr_lines": ["[Thu May 15 18:36:34.729560 2025] [so:warn] [pid 25730:tid 25730] AH01574: module ssl_module is already loaded, skipping", "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Verificar si mod_rewrite está habilitado] ********************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar mod_ssl si no está instalado] ***********************************
+[0;32mok: [demo03][0m
+
+TASK [Habilitar mod_rewrite si no está cargado] ********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear directorio para certificados] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorio de logs si no existe] ***********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si el archivo ssl.conf existe] *********************************
+[0;32mok: [demo03][0m
+
+TASK [Hacer backup del archivo ssl.conf si existe] *****************************
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar archivo ssl.conf problemático] **********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear archivo ssl.conf mínimo] *******************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar configuración SSL anterior si existe] ***************************
+[0;32mok: [demo03][0m
+
+TASK [Eliminar configuración de redirección anterior si existe] ****************
+[0;32mok: [demo03][0m
+
+TASK [Copiar certificado SSL al servidor] **************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar clave privada SSL al servidor] ************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si los certificados se copiaron correctamente] *****************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Certificados copiados correctamente: True"[0m
+[0;32m}[0m
+
+TASK [Configurar VirtualHost para HTTPS] ***************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Configurar redirección HTTP a HTTPS] *************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si existe el archivo index.html] *******************************
+[0;32mok: [demo03][0m
+
+TASK [Crear copia de seguridad del index.html si existe] ***********************
+[0;36mskipping: [demo03][0m
+
+TASK [Leer contenido del archivo index.html] ***********************************
+[0;36mskipping: [demo03][0m
+
+TASK [Actualizar index.html con badge de SSL] **********************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["httpd", "-t"], "delta": "0:00:00.079387", "end": "2025-05-15 18:36:54.485853", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 18:36:54.406466", "stderr": "[Thu May 15 18:36:54.465696 2025] [so:warn] [pid 28162:tid 28162] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable", "stderr_lines": ["[Thu May 15 18:36:54.465696 2025] [so:warn] [pid 28162:tid 28162] AH01574: module ssl_module is already loaded, skipping", "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar error de configuración si existe] ********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Error en la configuración de Apache: [Thu May 15 18:36:54.465696 2025] [so:warn] [pid 28162:tid 28162] AH01574: module ssl_module is already loaded, skipping\nAH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"[0m
+[0;32m}[0m
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+[0;36mskipping: [demo03][0m
+
+TASK [Abrir puerto HTTPS en el firewall] ***************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mensaje de confirmación] *************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Configuración SSL completada:\n- Host: demo03\n- Puerto HTTPS: 443\n- Certificado: /etc/ssl/httpd/demo03.certificado.crt\n- Estado de la configuración: Con errores\n- Index.html actualizado: No (no existe el archivo)\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=27  [0m [0;33mchanged=11  [0m unreachable=0    failed=0    [0;36mskipped=5   [0m rescued=0    [1;35mignored=2   [0m
