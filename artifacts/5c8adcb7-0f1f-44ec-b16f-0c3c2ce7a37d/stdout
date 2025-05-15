@@ -1,0 +1,113 @@
+
+PLAY [Instalación y configuración de Apache HTTP Server para hosts] ************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["which", "httpd"], "delta": "0:00:00.008787", "end": "2025-05-15 10:09:54.947607", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 10:09:54.938820", "stderr": "which: no httpd in (/sbin:/bin:/usr/sbin:/usr/bin)", "stderr_lines": ["which: no httpd in (/sbin:/bin:/usr/sbin:/usr/bin)"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Verificar errores de sintaxis en la configuración] ***********************
+[0;36mskipping: [demo03][0m
+
+TASK [Mostrar errores de sintaxis si existen] **********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "Apache no está instalado o no se pudo verificar la configuración"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+[0;33mchanged: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": true,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [[0m
+[0;32m            "Installed: kernel-uek-modules-5.15.0-308.179.6.3.el9uek.x86_64",[0m
+[0;32m            "Installed: kernel-uek-5.15.0-308.179.6.3.el9uek.x86_64",[0m
+[0;32m            "Installed: kernel-uek-core-5.15.0-308.179.6.3.el9uek.x86_64",[0m
+[0;32m            "Installed: xfsprogs-6.12.0-1.0.2.el9.x86_64",[0m
+[0;32m            "Removed: kernel-uek-modules-5.15.0-307.178.5.el9uek.x86_64",[0m
+[0;32m            "Removed: kernel-uek-5.15.0-307.178.5.el9uek.x86_64",[0m
+[0;32m            "Removed: xfsprogs-6.4.0-4.0.1.el9.x86_64",[0m
+[0;32m            "Removed: kernel-uek-core-5.15.0-307.178.5.el9uek.x86_64"[0m
+[0;32m        ][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que el servicio firewalld esté iniciado y habilitado] ***********
+[0;32mok: [demo03][0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.023089", "end": "2025-05-15 10:12:52.627296", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 10:12:52.604207", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;33mchanged: [demo03] => (item=/opt/www/sites/demo03)[0m
+[0;33mchanged: [demo03] => (item=/var/log/httpd/demo03)[0m
+[0;32mok: [demo03] => (item=/etc/httpd/conf.d)[0m
+
+TASK [Hacer backup del archivo httpd.conf si existe] ***************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla] *************************
+[0;33mchanged: [demo03][0m
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Guardar nombre en /etc/hostname] *****************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar archivo index.html desde la plantilla] ****************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar configuración de VirtualHost para Apache] *************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar errores de configuración si existen] *****************************
+[0;36mskipping: [demo03][0m
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mostrar advertencia si la configuración no es válida] ********************
+[0;36mskipping: [demo03][0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=24  [0m [0;33mchanged=15  [0m unreachable=0    failed=0    [0;36mskipped=3   [0m rescued=0    [1;35mignored=2   [0m

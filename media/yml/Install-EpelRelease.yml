@@ -1,0 +1,10 @@
+---
+- name: Instalar epel-release en un host
+  hosts: target_host
+  become: true
+  tasks:
+    - name: Instalar epel-release (DNF)
+      ansible.builtin.yum:
+        name: epel-release
+        state: present
+      when: ansible_os_family == "RedHat"

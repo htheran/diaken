@@ -1,0 +1,101 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">
+        {% if certificate %}
+          <i class="fas fa-edit"></i> Edit SSL Certificate
+        {% else %}
+          <i class="fas fa-plus"></i> New SSL Certificate
+        {% endif %}
+      </h3>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            <strong>Error:</strong> Please correct the indicated errors.
+          </div>
+        {% endif %}
+        
+        <div class="form-group mb-3">
+          <label for="{{ form.name.id_for_label }}">Name:</label>
+          {{ form.name }}
+          {% if form.name.errors %}
+            <div class="invalid-feedback d-block">{{ form.name.errors }}</div>
+          {% endif %}
+          <small class="form-text text-muted">{{ form.name.help_text }}</small>
+        </div>
+        
+        <div class="form-group mb-3">
+          <label for="{{ form.certificate_type.id_for_label }}">Certificate Type:</label>
+          {{ form.certificate_type }}
+          {% if form.certificate_type.errors %}
+            <div class="invalid-feedback d-block">{{ form.certificate_type.errors }}</div>
+          {% endif %}
+          <small class="form-text text-muted">{{ form.certificate_type.help_text }}</small>
+        </div>
+        
+        <div class="form-group mb-3">
+          <label for="{{ form.file.id_for_label }}">File:</label>
+          {{ form.file }}
+          {% if form.file.errors %}
+            <div class="invalid-feedback d-block">{{ form.file.errors }}</div>
+          {% endif %}
+          <small class="form-text text-muted">{{ form.file.help_text }}</small>
+          {% if certificate and certificate.file %}
+            <div class="mt-2">
+              <strong>Current file:</strong> {{ certificate.file.name|default:"No file" }}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div class="form-group mb-3">
+          <label for="{{ form.notes.id_for_label }}">Notes:</label>
+          {{ form.notes }}
+          {% if form.notes.errors %}
+            <div class="invalid-feedback d-block">{{ form.notes.errors }}</div>
+          {% endif %}
+          <small class="form-text text-muted">{{ form.notes.help_text }}</small>
+        </div>
+        
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save
+          </button>
+          <a href="{% url 'ssl_certificate_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si hay un parámetro de tipo en la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+    
+    if (typeParam) {
+      const typeSelect = document.getElementById('id_certificate_type');
+      if (typeSelect) {
+        // Establecer el valor del select según el parámetro
+        for (let i = 0; i < typeSelect.options.length; i++) {
+          if (typeSelect.options[i].value === typeParam) {
+            typeSelect.selectedIndex = i;
+            break;
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

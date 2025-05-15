@@ -1,0 +1,154 @@
+
+PLAY [Instalación y configuración de Apache HTTP Server para grupos] ***********
+
+TASK [Gathering Facts] *********************************************************
+ok: [demo02]
+ok: [demo03]
+
+TASK [Validar variables requeridas] ********************************************
+ok: [demo02] => {
+    "msg": "Validando variables para el grupo: BACKEND"
+}
+ok: [demo03] => {
+    "msg": "Validando variables para el grupo: BACKEND"
+}
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+ok: [demo02]
+ok: [demo03]
+
+TASK [Verificar si Apache está instalado] **************************************
+ok: [demo02]
+ok: [demo03]
+
+TASK [Verificar errores de sintaxis en la configuración] ***********************
+ok: [demo02]
+ok: [demo03]
+
+TASK [Mostrar errores de sintaxis si existen] **********************************
+skipping: [demo02]
+skipping: [demo03]
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+changed: [demo02]
+changed: [demo03]
+
+TASK [Actualizar sistema operativo] ********************************************
+ok: [demo02]
+ok: [demo03]
+
+TASK [Debug result_update] *****************************************************
+ok: [demo02] => {
+    "result_update": {
+        "changed": false,
+        "failed": false,
+        "msg": "Nothing to do",
+        "rc": 0,
+        "results": []
+    }
+}
+ok: [demo03] => {
+    "result_update": {
+        "changed": false,
+        "failed": false,
+        "msg": "Nothing to do",
+        "rc": 0,
+        "results": []
+    }
+}
+
+TASK [Instalar Apache (httpd)] *************************************************
+ok: [demo02]
+ok: [demo03]
+
+TASK [Asegurar que el servicio firewalld esté iniciado y habilitado] ***********
+ok: [demo02]
+ok: [demo03]
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+changed: [demo02]
+changed: [demo03]
+
+TASK [Recargar firewalld] ******************************************************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+fatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.009681", "end": "2025-05-15 09:28:25.507682", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 09:28:25.498001", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}
+...ignoring
+fatal: [demo02]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.008600", "end": "2025-05-15 09:30:22.552482", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 09:30:22.543882", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+ok: [demo03]
+ok: [demo02]
+
+TASK [Crear directorios necesarios para el grupo] ******************************
+ok: [demo03] => (item=/opt/www/sites/BACKEND)
+ok: [demo02] => (item=/opt/www/sites/BACKEND)
+ok: [demo03] => (item=/var/log/httpd/BACKEND)
+ok: [demo02] => (item=/var/log/httpd/BACKEND)
+
+TASK [Crear directorios necesarios para cada host] *****************************
+ok: [demo03] => (item=/opt/www/sites/demo03)
+ok: [demo02] => (item=/opt/www/sites/demo02)
+ok: [demo03] => (item=/var/log/httpd/demo03)
+ok: [demo02] => (item=/var/log/httpd/demo02)
+ok: [demo03] => (item=/etc/httpd/conf.d)
+ok: [demo02] => (item=/etc/httpd/conf.d)
+
+TASK [Hacer backup del archivo httpd.conf si existe] ***************************
+ok: [demo03]
+ok: [demo02]
+
+TASK [Copiar el archivo httpd.conf desde la plantilla] *************************
+ok: [demo03]
+ok: [demo02]
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Guardar nombre en /etc/hostname] *****************************************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Copiar archivo index.html desde la plantilla para el grupo] **************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Copiar archivo index.html desde la plantilla para el host] ***************
+changed: [demo03]
+changed: [demo02]
+
+TASK [Copiar configuración de VirtualHost para Apache (grupo)] *****************
+ok: [demo03]
+ok: [demo02]
+
+TASK [Copiar configuración de VirtualHost para Apache (host)] ******************
+ok: [demo03]
+changed: [demo02]
+
+TASK [Verificar configuración de Apache] ***************************************
+ok: [demo02]
+ok: [demo03]
+
+TASK [Mostrar errores de configuración si existen] *****************************
+skipping: [demo02]
+skipping: [demo03]
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+changed: [demo02]
+changed: [demo03]
+
+TASK [Mostrar advertencia si la configuración no es válida] ********************
+skipping: [demo02]
+skipping: [demo03]
+
+PLAY RECAP *********************************************************************
+demo02                     : ok=27   changed=11   unreachable=0    failed=0    skipped=3    rescued=0    ignored=1   
+demo03                     : ok=27   changed=10   unreachable=0    failed=0    skipped=3    rescued=0    ignored=1   

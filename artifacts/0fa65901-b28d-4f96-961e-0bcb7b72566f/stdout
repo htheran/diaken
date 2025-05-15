@@ -1,0 +1,44 @@
+
+PLAY [Configurar HTTPS con mod_ssl] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si el modulo ssl ya esta habilitado] ***************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar mod_ssl si no esta instalado] ***********************************
+[0;36mskipping: [demo03][0m
+
+TASK [Crear directorio para certificados] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si el enlace simbolico ssl.conf existe] ************************
+[0;32mok: [demo03][0m
+
+TASK [Crear enlace simbolico al modulo SSL (Red Hat)] **************************
+[0;36mskipping: [demo03][0m
+
+TASK [Copiar certificado SSL al servidor] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Copiar clave privada SSL al servidor] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Eliminar configuración SSL anterior si existe] ***************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear directorio de logs si no existe] ***********************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar VirtualHost para HTTPS] ***************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;32mok: [demo03][0m
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Unable to start service httpd: Job for httpd.service failed because the control process exited with error code.\nSee \"systemctl status httpd.service\" and \"journalctl -xeu httpd.service\" for details.\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=10  [0m [0;33mchanged=2   [0m unreachable=0    [0;31mfailed=1   [0m [0;36mskipped=2   [0m rescued=0    ignored=0   

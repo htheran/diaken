@@ -1,0 +1,40 @@
+
+PLAY [Reparación de Apache para Diaken] ****************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar errores de sintaxis en la configuración] ***********************
+[0;31mfatal: [demo02]: FAILED! => {"changed": false, "cmd": "httpd -t", "delta": "0:00:00.095479", "end": "2025-05-14 22:12:42.801447", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 22:12:42.705968", "stderr": "AH00112: Warning: DocumentRoot [/opt/www/sites/demo01] does not exist\nAH00526: Syntax error on line 29 of /etc/httpd/conf.d/BACKEND-ssl.conf:\nSSLCertificateFile: file '/etc/ssl/httpd/demo01.certificado.crt' does not exist or is empty", "stderr_lines": ["AH00112: Warning: DocumentRoot [/opt/www/sites/demo01] does not exist", "AH00526: Syntax error on line 29 of /etc/httpd/conf.d/BACKEND-ssl.conf:", "SSLCertificateFile: file '/etc/ssl/httpd/demo01.certificado.crt' does not exist or is empty"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar errores de sintaxis si existen] **********************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "AH00112: Warning: DocumentRoot [/opt/www/sites/demo01] does not exist",[0m
+[0;32m        "AH00526: Syntax error on line 29 of /etc/httpd/conf.d/BACKEND-ssl.conf:",[0m
+[0;32m        "SSLCertificateFile: file '/etc/ssl/httpd/demo01.certificado.crt' does not exist or is empty"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Detener Apache] **********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+[0;33mchanged: [demo02][0m
+
+TASK [Crear configuración básica de VirtualHost] *******************************
+[0;33mchanged: [demo02][0m
+
+TASK [Asegurar que los directorios necesarios existan] *************************
+[0;32mok: [demo02] => (item=/opt/www/sites/demo02)[0m
+[0;32mok: [demo02] => (item=/var/log/httpd/demo02)[0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;32mok: [demo02][0m
+
+TASK [Iniciar Apache si la configuración es válida] ****************************
+[0;33mchanged: [demo02][0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo02[0m                     : [0;32mok=9   [0m [0;33mchanged=3   [0m unreachable=0    failed=0    skipped=0    rescued=0    [1;35mignored=1   [0m

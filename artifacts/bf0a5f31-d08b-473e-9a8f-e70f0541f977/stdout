@@ -1,0 +1,42 @@
+
+PLAY [Configurar HTTPS con mod_ssl] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si el modulo ssl ya esta habilitado] ***************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": "httpd -M | grep ssl", "delta": "0:00:00.104183", "end": "2025-05-14 20:34:44.526660", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 20:34:44.422477", "stderr": "AH00526: Syntax error on line 25 of /etc/httpd/conf.d/demo03-ssl.conf:\n<LimitExcept not allowed in <VirtualHost> context", "stderr_lines": ["AH00526: Syntax error on line 25 of /etc/httpd/conf.d/demo03-ssl.conf:", "<LimitExcept not allowed in <VirtualHost> context"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Instalar mod_ssl si no esta instalado] ***********************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorio para certificados] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si el enlace simbolico ssl.conf existe] ************************
+[0;32mok: [demo03][0m
+
+TASK [Crear enlace simbolico al modulo SSL (Red Hat)] **************************
+[0;36mskipping: [demo03][0m
+
+TASK [Copiar certificado SSL al servidor] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Copiar clave privada SSL al servidor] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Copiar clave provider SSL al servidor] ***********************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar VirtualHost para HTTPS] ***************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;32mok: [demo03][0m
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Unable to start service httpd: Job for httpd.service failed because the control process exited with error code.\nSee \"systemctl status httpd.service\" and \"journalctl -xeu httpd.service\" for details.\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=10  [0m [0;33mchanged=1   [0m unreachable=0    [0;31mfailed=1   [0m [0;36mskipped=1   [0m rescued=0    [1;35mignored=1   [0m

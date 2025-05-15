@@ -1,0 +1,14 @@
+# Redirección HTTP a HTTPS para {{ target_group }}.{{ domain }}
+<VirtualHost *:80>
+    ServerName {{ target_group }}.{{ domain }}
+    ServerAdmin webmaster@{{ domain }}
+    
+    # Configuración de logs
+    CustomLog {{ log_root }}/{{ target_group }}/{{ target_group }}.{{ domain }}.access.log combined
+    ErrorLog {{ log_root }}/{{ target_group }}/{{ target_group }}.{{ domain }}.error.log
+    
+    # Redirección a HTTPS
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+</VirtualHost>

@@ -1,0 +1,110 @@
+
+PLAY [Instalación y configuración de VSFTPD para hosts] ************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar advertencia si Apache no está instalado] *************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar si VSFTPD está instalado] **************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["which", "vsftpd"], "delta": "0:00:00.009060", "end": "2025-05-15 12:15:01.813664", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 12:15:01.804604", "stderr": "which: no vsftpd in (/sbin:/bin:/usr/sbin:/usr/bin)", "stderr_lines": ["which: no vsftpd in (/sbin:/bin:/usr/sbin:/usr/bin)"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar VSFTPD] *********************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que el servicio firewalld esté iniciado y habilitado] ***********
+[0;32mok: [demo03][0m
+
+TASK [Abrir puerto FTP permanentemente en el firewall] *************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puertos pasivos FTP en el firewall] ********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Configurar SELinux para permitir FTP] ************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si el grupo apache existe] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear usuario FTP] *******************************************************
+[0;35m[DEPRECATION WARNING]: Encryption using the Python crypt module is deprecated. [0m
+[0;35mThe Python crypt module is deprecated and will be removed from Python 3.13. [0m
+[0;35mInstall the passlib library for continued encryption functionality. This [0m
+[0;35mfeature will be removed in version 2.17. Deprecation warnings can be disabled [0m
+[0;35mby setting deprecation_warnings=False in ansible.cfg.[0m
+[0;33mchanged: [demo03][0m
+
+TASK [Crear directorio para el usuario FTP si no existe] ***********************
+[0;33mchanged: [demo03][0m
+
+TASK [Establecer permisos recursivos en el directorio del sitio] ***************
+[0;33mchanged: [demo03][0m
+
+TASK [Hacer backup del archivo vsftpd.conf si existe] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Configurar VSFTPD] *******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear archivo de usuarios permitidos] ************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Generar certificado SSL para VSFTPD si no existe] ************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de VSFTPD] ***************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": "vsftpd -olisten=NO /etc/vsftpd/vsftpd.conf", "delta": "0:00:00.015980", "end": "2025-05-15 12:15:51.867939", "msg": "non-zero return code", "rc": 2, "start": "2025-05-15 12:15:51.851959", "stderr": "", "stderr_lines": [], "stdout": "500 OOPS: SSL: cannot load RSA certificate", "stdout_lines": ["500 OOPS: SSL: cannot load RSA certificate"]}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar errores de configuración si existen] *****************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [][0m
+[0;32m}[0m
+
+TASK [Reiniciar VSFTPD si la configuración es válida] **************************
+[0;36mskipping: [demo03][0m
+
+TASK [Mostrar advertencia si la configuración no es válida] ********************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "ADVERTENCIA: La configuración de VSFTPD tiene errores y no se pudo reiniciar el servicio."[0m
+[0;32m}[0m
+
+TASK [Verificar si existe el archivo index.html] *******************************
+[0;32mok: [demo03][0m
+
+TASK [Crear copia de seguridad del index.html si existe] ***********************
+[0;33mchanged: [demo03][0m
+
+TASK [Leer contenido del archivo index.html] ***********************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar index.html con badge de FTP] **********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mensaje de confirmación] *************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Instalación y configuración de VSFTPD completada:\n- Host: demo03\n- Puerto FTP: 21\n- Puertos pasivos: 30000 - 31000\n- Usuario FTP: htheran\n- Directorio raíz: /opt/www/sites/demo03\n- Estado de la configuración: Con errores\n- Index.html actualizado: Sí\n\nIMPORTANTE: Por razones de seguridad, se recomienda cambiar la contraseña del usuario FTP después de la instalación.\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=28  [0m [0;33mchanged=14  [0m unreachable=0    failed=0    [0;36mskipped=2   [0m rescued=0    [1;35mignored=2   [0m

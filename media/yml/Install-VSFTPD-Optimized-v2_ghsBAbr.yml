@@ -1,0 +1,344 @@
+---
+- name: Instalación y configuración de VSFTPD para hosts
+  hosts: target_host
+  become: yes
+  tasks:
+    # Fase 0: Validación de variables
+    - name: Validar variables requeridas
+      debug:
+        msg: "Validando variables para el host: {{ target_host }}"
+      tags:
+        - always
+
+    - name: Establecer variables por defecto si no están definidas
+      set_fact:
+        server_root: "{{ server_root | default('/opt/www/sites') }}"
+        ftp_user: "{{ ftp_user | default('ftpuser') }}"
+        ftp_password: "{{ ftp_password | default('changeme') }}"
+        ftp_port: "{{ ftp_port | default(21) }}"
+        pasv_min_port: "{{ pasv_min_port | default(30000) }}"
+        pasv_max_port: "{{ pasv_max_port | default(31000) }}"
+        apache_group: "{{ apache_group | default('apache') }}"
+      tags:
+        - always
+
+    # Fase 1: Verificación previa y diagnóstico
+    - name: Verificar si Apache está instalado
+      command: which httpd
+      register: httpd_installed
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - diagnose
+
+    - name: Mostrar advertencia si Apache no está instalado
+      debug:
+        msg: "ADVERTENCIA: Apache no está instalado. Se recomienda instalar Apache primero usando el playbook Install HTTPD Host (Optimized v2)."
+      when: httpd_installed.rc != 0
+      tags:
+        - diagnose
+
+    - name: Verificar si VSFTPD está instalado
+      command: which vsftpd
+      register: vsftpd_installed
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - diagnose
+
+    # Fase 2: Actualización e instalación
+    - name: Actualizar sistema operativo
+      dnf:
+        name: '*'
+        state: latest
+        update_cache: yes
+      register: result_update
+      ignore_errors: yes
+      tags:
+        - install
+
+    - name: Instalar VSFTPD
+      dnf:
+        name: vsftpd
+        state: present
+      register: vsftpd_install
+      tags:
+        - install
+
+    # Fase 3: Configuración de firewall (usando comandos directos)
+    - name: Verificar si firewalld está instalado
+      command: which firewall-cmd
+      register: firewalld_check
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - firewall
+
+    - name: Asegurar que el servicio firewalld esté iniciado y habilitado
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+      ignore_errors: yes
+      when: firewalld_check.rc == 0
+      tags:
+        - firewall
+
+    - name: Abrir puerto FTP permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ ftp_port }}/tcp
+      ignore_errors: yes
+      when: firewalld_check.rc == 0
+      tags:
+        - firewall
+
+    - name: Abrir puertos pasivos FTP en el firewall
+      command: firewall-cmd --permanent --add-port={{ pasv_min_port }}-{{ pasv_max_port }}/tcp
+      ignore_errors: yes
+      when: firewalld_check.rc == 0
+      tags:
+        - firewall
+
+    - name: Recargar firewalld
+      command: firewall-cmd --reload
+      ignore_errors: yes
+      when: firewalld_check.rc == 0
+      tags:
+        - firewall
+
+    # Fase 4: Configuración de SELinux
+    - name: Verificar si SELinux está instalado
+      command: which sestatus
+      register: selinux_check
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - selinux
+
+    - name: Configurar SELinux para permitir FTP
+      shell: |
+        setsebool -P ftpd_full_access on
+        setsebool -P httpd_can_network_connect on
+        setsebool -P allow_ftpd_full_access on
+      ignore_errors: yes
+      when: selinux_check.rc == 0
+      tags:
+        - selinux
+
+    # Fase 5: Crear usuario FTP y configurar permisos
+    - name: Verificar si el grupo apache existe
+      shell: getent group {{ apache_group }}
+      register: apache_group_exists
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - user
+
+    - name: Crear usuario FTP
+      user:
+        name: "{{ ftp_user }}"
+        password: "{{ ftp_password | password_hash('sha512') }}"
+        groups: "{{ apache_group }}"
+        append: yes
+        shell: /bin/bash
+        home: "{{ server_root }}/{{ target_host }}"
+        create_home: no
+      when: apache_group_exists.rc == 0
+      tags:
+        - user
+
+    - name: Crear directorio para el usuario FTP si no existe
+      file:
+        path: "{{ server_root }}/{{ target_host }}"
+        state: directory
+        owner: "{{ ftp_user }}"
+        group: "{{ apache_group }}"
+        mode: '0750'
+      tags:
+        - user
+
+    - name: Establecer permisos recursivos en el directorio del sitio
+      shell: |
+        find {{ server_root }}/{{ target_host }} -type d -exec chmod 750 {} \;
+        find {{ server_root }}/{{ target_host }} -type f -exec chmod 640 {} \;
+        chown -R {{ ftp_user }}:{{ apache_group }} {{ server_root }}/{{ target_host }}
+      ignore_errors: yes
+      tags:
+        - user
+
+    # Fase 6: Configurar VSFTPD
+    - name: Crear directorio para VSFTPD si no existe
+      file:
+        path: /etc/vsftpd
+        state: directory
+        mode: '0755'
+      tags:
+        - configure
+
+    - name: Hacer backup del archivo vsftpd.conf si existe
+      copy:
+        src: /etc/vsftpd/vsftpd.conf
+        dest: /etc/vsftpd/vsftpd.conf.bak.{{ ansible_date_time.date }}
+        remote_src: yes
+      ignore_errors: yes
+      tags:
+        - configure
+
+    - name: Configurar VSFTPD
+      copy:
+        content: |
+          # Configuración de VSFTPD generada por Install-VSFTPD-Optimized-v2.yml
+          # Configuración básica
+          listen=YES
+          listen_port={{ ftp_port }}
+          anonymous_enable=NO
+          local_enable=YES
+          write_enable=YES
+          local_umask=022
+          dirmessage_enable=YES
+          use_localtime=YES
+          xferlog_enable=YES
+          connect_from_port_20=YES
+          xferlog_std_format=YES
+          chroot_local_user=YES
+          allow_writeable_chroot=YES
+          hide_ids=YES
+          
+          # Configuración de puertos pasivos
+          pasv_enable=YES
+          pasv_min_port={{ pasv_min_port }}
+          pasv_max_port={{ pasv_max_port }}
+          
+          # Configuración de seguridad - SSL desactivado inicialmente
+          ssl_enable=NO
+          
+          # Configuración de usuarios
+          userlist_enable=YES
+          userlist_deny=NO
+          userlist_file=/etc/vsftpd/vsftpd.users
+          
+          # Configuración de logs
+          dual_log_enable=YES
+          log_ftp_protocol=YES
+          vsftpd_log_file=/var/log/vsftpd.log
+          
+          # Configuración de timeout
+          idle_session_timeout=600
+          data_connection_timeout=120
+          
+          # Configuración de banner
+          ftpd_banner=Bienvenido al servidor FTP de {{ target_host }}
+          
+          # Configuración de PAM
+          pam_service_name=vsftpd
+        dest: /etc/vsftpd/vsftpd.conf
+        mode: '0600'
+      tags:
+        - configure
+
+    - name: Crear archivo de usuarios permitidos
+      copy:
+        content: "{{ ftp_user }}"
+        dest: /etc/vsftpd/vsftpd.users
+        mode: '0600'
+      tags:
+        - configure
+
+    # Fase 7: Verificar y reiniciar VSFTPD
+    - name: Habilitar e iniciar servicio VSFTPD
+      service:
+        name: vsftpd
+        state: restarted
+        enabled: yes
+      register: vsftpd_service
+      ignore_errors: yes
+      tags:
+        - service
+
+    - name: Verificar estado del servicio VSFTPD
+      command: systemctl status vsftpd
+      register: vsftpd_status
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - service
+
+    - name: Mostrar estado del servicio
+      debug:
+        msg: "{{ vsftpd_status.stdout_lines }}"
+      tags:
+        - service
+
+    # Fase 8: Actualizar index.html
+    - name: Verificar si existe index.html
+      stat:
+        path: "{{ server_root }}/{{ target_host }}/index.html"
+      register: index_exists
+      tags:
+        - index
+
+    - name: Actualizar index.html con información de FTP
+      block:
+        - name: Leer contenido del archivo index.html
+          slurp:
+            src: "{{ server_root }}/{{ target_host }}/index.html"
+          register: index_content
+          when: index_exists.stat.exists
+          
+        - name: Decodificar contenido
+          set_fact:
+            decoded_content: "{{ index_content['content'] | b64decode }}"
+          when: index_exists.stat.exists
+          
+        - name: Verificar si ya existe badge de FTP
+          set_fact:
+            has_ftp_badge: "{{ decoded_content | regex_search('FTP Status') != None }}"
+          when: index_exists.stat.exists
+          
+        - name: Añadir badge de FTP si no existe
+          replace:
+            path: "{{ server_root }}/{{ target_host }}/index.html"
+            regexp: '(<div class="container mt-5">.*?<h1>)'
+            replace: '\1<div class="alert alert-success mb-4"><strong>FTP Status:</strong> Configured and Running ({{ ansible_date_time.date }})</div>'
+          when: index_exists.stat.exists and (has_ftp_badge is not defined or not has_ftp_badge)
+          
+        - name: Actualizar badge de FTP si ya existe
+          replace:
+            path: "{{ server_root }}/{{ target_host }}/index.html"
+            regexp: '<div class="alert alert-(success|warning|danger) mb-4"><strong>FTP Status:</strong>.*?</div>'
+            replace: '<div class="alert alert-success mb-4"><strong>FTP Status:</strong> Configured and Running ({{ ansible_date_time.date }})</div>'
+          when: index_exists.stat.exists and has_ftp_badge is defined and has_ftp_badge
+      when: index_exists.stat.exists and vsftpd_service.failed is not defined
+      ignore_errors: yes
+      tags:
+        - index
+
+    # Fase 9: Resumen y recomendaciones
+    - name: Mensaje de diagnóstico y recomendaciones
+      debug:
+        msg: |
+          Instalación de VSFTPD completada:
+          - Host: {{ target_host }}
+          - Estado del servicio: {{ 'Activo' if vsftpd_service.failed is not defined else 'Inactivo' }}
+          - Directorio FTP: {{ server_root }}/{{ target_host }}
+          - Usuario FTP: {{ ftp_user }}
+          - Puerto: {{ ftp_port }}
+          - Rango de puertos pasivos: {{ pasv_min_port }}-{{ pasv_max_port }}
+          
+          Para probar la conexión FTP:
+          - Servidor: {{ target_host }}
+          - Puerto: {{ ftp_port }}
+          - Usuario: {{ ftp_user }}
+          - Contraseña: {{ ftp_password }}
+          - Modo: FTP sin SSL (Explícito)
+          
+          Para habilitar SSL después:
+          1. Genere un certificado SSL:
+             openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem
+          2. Edite el archivo /etc/vsftpd/vsftpd.conf
+          3. Cambie ssl_enable=NO a ssl_enable=YES
+          4. Añada las líneas:
+             rsa_cert_file=/etc/vsftpd/vsftpd.pem
+             rsa_private_key_file=/etc/vsftpd/vsftpd.pem
+          5. Reinicie el servicio: systemctl restart vsftpd
+      tags:
+        - always

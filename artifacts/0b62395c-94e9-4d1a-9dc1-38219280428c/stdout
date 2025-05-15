@@ -1,0 +1,114 @@
+
+PLAY [Solución final para VSFTPD] **********************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si VSFTPD está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Detener servicio VSFTPD] *************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar versión de VSFTPD] *********************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar versión de VSFTPD] ***********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "vsftpd: version 3.0.5"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar configuración PAM de VSFTPD] ***********************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar configuración PAM] ***********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "#%PAM-1.0",[0m
+[0;32m        "session    optional     pam_keyinit.so    force revoke",[0m
+[0;32m        "auth       required\tpam_listfile.so item=user sense=deny file=/etc/vsftpd/ftpusers onerr=succeed",[0m
+[0;32m        "auth       required\tpam_shells.so",[0m
+[0;32m        "auth       include\tpassword-auth",[0m
+[0;32m        "account    include\tpassword-auth",[0m
+[0;32m        "session    required     pam_loginuid.so",[0m
+[0;32m        "session    include\tpassword-auth"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Eliminar archivo de configuración VSFTPD] ********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar certificados SSL anteriores] ************************************
+[0;32mok: [demo03] => (item=/etc/vsftpd/vsftpd.pem)[0m
+[0;32mok: [demo03] => (item=/etc/ssl/certs/vsftpd.pem)[0m
+[0;32mok: [demo03] => (item=/etc/ssl/private/vsftpd.key)[0m
+
+TASK [Crear configuración VSFTPD completamente nueva] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear archivo de usuarios permitidos] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar configuración de VSFTPD] ***************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": "vsftpd -olisten=NO /etc/vsftpd/vsftpd.conf", "delta": "0:00:03.016469", "end": "2025-05-15 13:08:29.957888", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 13:08:26.941419", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resultado de verificación] ***************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "[] []"[0m
+[0;32m}[0m
+
+TASK [Reiniciar VSFTPD] ********************************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Unable to start service vsftpd: Job for vsftpd.service failed because the control process exited with error code.\nSee \"systemctl status vsftpd.service\" and \"journalctl -xeu vsftpd.service\" for details.\n"}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resultado del reinicio] ******************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Reinicio fallido"[0m
+[0;32m}[0m
+
+TASK [Obtener estado actualizado del servicio VSFTPD] **************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar estado actualizado del servicio] *********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "× vsftpd.service - Vsftpd ftp daemon",[0m
+[0;32m        "     Loaded: loaded (/usr/lib/systemd/system/vsftpd.service; enabled; preset: disabled)",[0m
+[0;32m        "     Active: failed (Result: exit-code) since Thu 2025-05-15 13:08:34 -05; 824ms ago",[0m
+[0;32m        "    Process: 27795 ExecStart=/usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf (code=exited, status=1/FAILURE)",[0m
+[0;32m        "        CPU: 5ms",[0m
+[0;32m        "",[0m
+[0;32m        "May 15 13:08:31 demo03 systemd[1]: Starting Vsftpd ftp daemon...",[0m
+[0;32m        "May 15 13:08:34 demo03 systemd[1]: vsftpd.service: Control process exited, code=exited, status=1/FAILURE",[0m
+[0;32m        "May 15 13:08:34 demo03 systemd[1]: vsftpd.service: Failed with result 'exit-code'.",[0m
+[0;32m        "May 15 13:08:34 demo03 systemd[1]: Failed to start Vsftpd ftp daemon."[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar directorio del usuario FTP] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorio para el usuario FTP si no existe] ***********************
+[0;36mskipping: [demo03][0m
+
+TASK [Establecer permisos correctos en el directorio] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mensaje de diagnóstico y recomendaciones] ********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Solución final para VSFTPD completada:\n- Host: demo03\n- Estado del servicio: Inactivo\n- Directorio FTP: /opt/www/sites/demo03\n- Usuario FTP: ftpuser\n\nPara probar la conexión FTP:\n- Servidor: demo03\n- Puerto: 21\n- Usuario: ftpuser\n- Contraseña: changeme\n- Modo: FTP sin SSL (Explícito)\n\nSi desea habilitar SSL después:\n1. Edite el archivo /etc/vsftpd/vsftpd.conf\n2. Cambie ssl_enable=NO a ssl_enable=YES\n3. Ejecute: openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem\n4. Añada las líneas:\n   rsa_cert_file=/etc/vsftpd/vsftpd.pem\n   rsa_private_key_file=/etc/vsftpd/vsftpd.pem\n5. Reinicie el servicio: systemctl restart vsftpd\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=22  [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=1   [0m rescued=0    [1;35mignored=2   [0m

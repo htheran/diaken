@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "3392d78d-1dee-4b27-bc55-d1f756e847c7", "counter": 88, "stdout": "\u001b[1;35m[WARNING]: Cannot set fs attributes on a non-existent symlink target. follow\u001b[0m", "start_line": 94, "end_line": 95, "runner_ident": "ea089625-b611-457f-8403-80cd550c9191", "created": "2025-05-15T19:59:47.856594+00:00"}

@@ -1,0 +1,121 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h3 class="mb-0"><i class="fas fa-lock"></i> SSL Certificates</h3>
+      <a href="{% url 'ssl_certificate_create' %}" class="btn btn-light btn-lg"><i class="fas fa-plus"></i> New Certificate</a>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-info">
+        <p><strong>Note:</strong> For SSL certificates to work correctly, you need to upload all three types of files:</p>
+        <ul>
+          <li><strong>Certificate (certificado.crt)</strong>: The main SSL certificate</li>
+          <li><strong>Private Key (certificado.key)</strong>: The certificate's private key</li>
+          <li><strong>Provider Certificate (certificado-provider.crt)</strong>: The certificate authority's certificate</li>
+        </ul>
+        <p>These files will be stored at: <code>/opt/www/media/templates/ssl/</code></p>
+      </div>
+
+      <div class="row">
+        <!-- Certificados -->
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0"><i class="fas fa-certificate"></i> Certificates (CRT)</h5>
+            </div>
+            <div class="card-body">
+              {% if cert_groups.cert %}
+                <ul class="list-group">
+                  {% for cert in cert_groups.cert %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>{{ cert.name }}</strong>
+                        <br>
+                        <small class="text-muted">Subido: {{ cert.uploaded_at|date:"d/m/Y H:i" }}</small>
+                      </div>
+                      <div>
+                        <a href="{% url 'ssl_certificate_update' cert.id %}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'ssl_certificate_delete' cert.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <div class="alert alert-warning">
+                  No certificates uploaded. <a href="{% url 'ssl_certificate_create' %}?type=cert" class="alert-link">Upload certificate</a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Claves Privadas -->
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+              <h5 class="mb-0"><i class="fas fa-key"></i> Private Keys (KEY)</h5>
+            </div>
+            <div class="card-body">
+              {% if cert_groups.key %}
+                <ul class="list-group">
+                  {% for cert in cert_groups.key %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>{{ cert.name }}</strong>
+                        <br>
+                        <small class="text-muted">Subido: {{ cert.uploaded_at|date:"d/m/Y H:i" }}</small>
+                      </div>
+                      <div>
+                        <a href="{% url 'ssl_certificate_update' cert.id %}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'ssl_certificate_delete' cert.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <div class="alert alert-warning">
+                  No private keys uploaded. <a href="{% url 'ssl_certificate_create' %}?type=key" class="alert-link">Upload private key</a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Certificados Proveedor -->
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+              <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Provider Certificates</h5>
+            </div>
+            <div class="card-body">
+              {% if cert_groups.provider %}
+                <ul class="list-group">
+                  {% for cert in cert_groups.provider %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>{{ cert.name }}</strong>
+                        <br>
+                        <small class="text-muted">Subido: {{ cert.uploaded_at|date:"d/m/Y H:i" }}</small>
+                      </div>
+                      <div>
+                        <a href="{% url 'ssl_certificate_update' cert.id %}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'ssl_certificate_delete' cert.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <div class="alert alert-warning">
+                  No provider certificates uploaded. <a href="{% url 'ssl_certificate_create' %}?type=provider" class="alert-link">Upload provider certificate</a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

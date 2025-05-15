@@ -1,0 +1,92 @@
+---
+- name: Reparación de Apache para Diaken
+  hosts: target_host
+  become: yes
+  tasks:
+    # Fase 1: Diagnóstico
+    - name: Verificar errores de sintaxis en la configuración
+      shell: httpd -t
+      register: apache_syntax
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - diagnose
+
+    - name: Mostrar errores de sintaxis si existen
+      debug:
+        msg: "{{ apache_syntax.stderr_lines }}"
+      when: apache_syntax.rc != 0
+      tags:
+        - diagnose
+
+    # Fase 2: Detener Apache
+    - name: Detener Apache
+      service:
+        name: httpd
+        state: stopped
+      ignore_errors: yes
+      tags:
+        - fix
+
+    # Fase 3: Eliminar configuraciones problemáticas
+    - name: Eliminar configuraciones SSL problemáticas
+      shell: |
+        find /etc/httpd/conf.d/ -name "*-ssl.conf" -o -name "*-redirect.conf" -o -name "ssl.conf" | xargs rm -f
+        rm -f /etc/httpd/conf.d/BACKEND-ssl.conf
+        rm -f /etc/httpd/conf.d/ssl.conf
+        rm -f /etc/httpd/conf.d/{{ target_host }}-ssl.conf
+        rm -f /etc/httpd/conf.d/{{ target_host }}-redirect.conf
+      ignore_errors: yes
+      tags:
+        - fix
+
+    # Fase 4: Crear configuración básica de VirtualHost
+    - name: Crear configuración básica de VirtualHost
+      copy:
+        dest: /etc/httpd/conf.d/00-{{ target_host }}.conf
+        content: |
+          <VirtualHost *:80>
+              ServerName {{ target_host }}.upb.edu.co
+              DocumentRoot /opt/www/sites/{{ target_host }}
+              
+              <Directory /opt/www/sites/{{ target_host }}>
+                  Options Indexes FollowSymLinks
+                  AllowOverride All
+                  Require all granted
+              </Directory>
+              
+              ErrorLog /var/log/httpd/{{ target_host }}/error.log
+              CustomLog /var/log/httpd/{{ target_host }}/access.log combined
+          </VirtualHost>
+        mode: '0644'
+      tags:
+        - fix
+
+    # Fase 5: Asegurar que los directorios necesarios existan
+    - name: Asegurar que los directorios necesarios existan
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - /opt/www/sites/{{ target_host }}
+        - /var/log/httpd/{{ target_host }}
+      tags:
+        - fix
+
+    # Fase 6: Verificar configuración
+    - name: Verificar configuración de Apache
+      command: httpd -t
+      register: apache_config_test
+      changed_when: false
+      tags:
+        - fix
+
+    # Fase 7: Iniciar Apache si la configuración es válida
+    - name: Iniciar Apache si la configuración es válida
+      service:
+        name: httpd
+        state: started
+      when: apache_config_test.rc == 0
+      tags:
+        - fix

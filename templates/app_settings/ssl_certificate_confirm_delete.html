@@ -1,0 +1,30 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-danger text-white">
+      <h3 class="mb-0"><i class="fas fa-trash"></i> Delete SSL Certificate</h3>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-warning">
+        <h4 class="alert-heading">Warning!</h4>
+        <p>You are about to delete the SSL certificate: <strong>{{ certificate.name }}</strong> ({{ certificate.get_certificate_type_display }}).</p>
+        <p>This action cannot be undone and may affect deployments that use this certificate.</p>
+      </div>
+      
+      <form method="post">
+        {% csrf_token %}
+        <div class="mt-4">
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Confirm Deletion
+          </button>
+          <a href="{% url 'ssl_certificate_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "92b82558-9c2d-4da0-b12e-69c84fa337dd", "counter": 9, "stdout": "\u001b[0;31m    - name: Permitir servicio FTP en firewall\u001b[0m", "start_line": 8, "end_line": 9, "runner_ident": "d16e7b4a-3c40-4265-b747-ca7ae5d51b57", "created": "2025-05-15T17:59:22.516845+00:00"}

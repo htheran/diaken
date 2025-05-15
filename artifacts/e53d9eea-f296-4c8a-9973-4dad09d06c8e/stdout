@@ -1,0 +1,92 @@
+
+PLAY [Corregir configuración SSL de VSFTPD (Versión 2)] ************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si VSFTPD está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Obtener estado detallado del servicio VSFTPD] ****************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar estado detallado del servicio] ***********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "× vsftpd.service - Vsftpd ftp daemon",[0m
+[0;32m        "     Loaded: loaded (/usr/lib/systemd/system/vsftpd.service; enabled; preset: disabled)",[0m
+[0;32m        "     Active: failed (Result: exit-code) since Thu 2025-05-15 12:31:34 -05; 3min 43s ago",[0m
+[0;32m        "        CPU: 11ms",[0m
+[0;32m        "",[0m
+[0;32m        "May 15 12:31:31 demo03 systemd[1]: Starting Vsftpd ftp daemon...",[0m
+[0;32m        "May 15 12:31:34 demo03 systemd[1]: vsftpd.service: Control process exited, code=exited, status=1/FAILURE",[0m
+[0;32m        "May 15 12:31:34 demo03 systemd[1]: vsftpd.service: Failed with result 'exit-code'.",[0m
+[0;32m        "May 15 12:31:34 demo03 systemd[1]: Failed to start Vsftpd ftp daemon."[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar logs del sistema para errores de VSFTPD] ***********************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar logs de VSFTPD] **************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "May 15 12:31:31 demo03 systemd[1]: Starting Vsftpd ftp daemon...",[0m
+[0;32m        "May 15 12:31:34 demo03 systemd[1]: vsftpd.service: Control process exited, code=exited, status=1/FAILURE",[0m
+[0;32m        "May 15 12:31:34 demo03 systemd[1]: vsftpd.service: Failed with result 'exit-code'.",[0m
+[0;32m        "May 15 12:31:34 demo03 systemd[1]: Failed to start Vsftpd ftp daemon."[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Detener servicio VSFTPD] *************************************************
+[0;32mok: [demo03][0m
+
+TASK [Hacer backup del archivo vsftpd.conf] ************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear una configuración VSFTPD simplificada] *****************************
+[0;33mchanged: [demo03][0m
+
+TASK [Reiniciar VSFTPD con configuración básica (sin SSL)] *********************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Unable to start service vsftpd: Job for vsftpd.service failed because the control process exited with error code.\nSee \"systemctl status vsftpd.service\" and \"journalctl -xeu vsftpd.service\" for details.\n"}[0m
+[0;36m...ignoring[0m
+
+TASK [Verificar si el reinicio sin SSL fue exitoso] ****************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Reinicio fallido incluso sin SSL"[0m
+[0;32m}[0m
+
+TASK [Obtener estado actualizado del servicio VSFTPD] **************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar estado actualizado del servicio] *********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "× vsftpd.service - Vsftpd ftp daemon",[0m
+[0;32m        "     Loaded: loaded (/usr/lib/systemd/system/vsftpd.service; enabled; preset: disabled)",[0m
+[0;32m        "     Active: failed (Result: exit-code) since Thu 2025-05-15 12:35:26 -05; 857ms ago",[0m
+[0;32m        "    Process: 15071 ExecStart=/usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf (code=exited, status=1/FAILURE)",[0m
+[0;32m        "        CPU: 6ms",[0m
+[0;32m        "",[0m
+[0;32m        "May 15 12:35:23 demo03 systemd[1]: Starting Vsftpd ftp daemon...",[0m
+[0;32m        "May 15 12:35:26 demo03 systemd[1]: vsftpd.service: Control process exited, code=exited, status=1/FAILURE",[0m
+[0;32m        "May 15 12:35:26 demo03 systemd[1]: vsftpd.service: Failed with result 'exit-code'.",[0m
+[0;32m        "May 15 12:35:26 demo03 systemd[1]: Failed to start Vsftpd ftp daemon."[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Mensaje de diagnóstico y recomendaciones] ********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Diagnóstico de VSFTPD completado:\n- Host: demo03\n- Estado del servicio: Inactivo\n\nRecomendaciones:\n1. El servicio VSFTPD ha sido configurado temporalmente sin SSL para facilitar la solución de problemas.\n2. Pruebe conectarse al servidor FTP sin SSL para verificar que el servicio funciona correctamente.\n3. Una vez confirmado que funciona, puede habilitar SSL modificando el archivo /etc/vsftpd/vsftpd.conf.\n\nPara probar la conexión FTP:\n- Servidor: demo03\n- Puerto: 21\n- Usuario: ftpuser\n- Directorio: /opt/www/sites/demo03\n\nPara habilitar SSL manualmente:\n1. Edite el archivo /etc/vsftpd/vsftpd.conf\n2. Cambie ssl_enable=NO a ssl_enable=YES\n3. Agregue las siguientes líneas:\n   rsa_cert_file=/etc/vsftpd/vsftpd.pem\n   rsa_private_key_file=/etc/vsftpd/vsftpd.pem\n4. Reinicie el servicio: systemctl restart vsftpd\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=16  [0m [0;33mchanged=2   [0m unreachable=0    failed=0    skipped=0    rescued=0    [1;35mignored=1   [0m

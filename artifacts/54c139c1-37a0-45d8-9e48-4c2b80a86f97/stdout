@@ -1,0 +1,55 @@
+
+PLAY [Corregir configuración SSL de VSFTPD] ************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si VSFTPD está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar advertencia si VSFTPD no está instalado] *************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar estado del servicio VSFTPD] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Eliminar certificado SSL anterior si existe] *****************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear directorio para certificados si no existe] *************************
+[0;32mok: [demo03][0m
+
+TASK [Generar nuevo certificado SSL para VSFTPD] *******************************
+[0;33mchanged: [demo03][0m
+
+TASK [Hacer backup del archivo vsftpd.conf] ************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Actualizar configuración SSL en vsftpd.conf] *****************************
+[0;32mok: [demo03][0m
+
+TASK [Asegurar que la ruta del certificado esté correcta] **********************
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que la ruta de la clave esté correcta] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de VSFTPD] ***************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar errores de configuración si existen] *****************************
+[0;36mskipping: [demo03][0m
+
+TASK [Reiniciar VSFTPD si la configuración es válida] **************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Unable to start service vsftpd: Job for vsftpd.service failed because the control process exited with error code.\nSee \"systemctl status vsftpd.service\" and \"journalctl -xeu vsftpd.service\" for details.\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=13  [0m [0;33mchanged=5   [0m unreachable=0    [0;31mfailed=1   [0m [0;36mskipped=2   [0m rescued=0    ignored=0   

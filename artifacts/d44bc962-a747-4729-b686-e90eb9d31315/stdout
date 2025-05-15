@@ -1,0 +1,62 @@
+
+PLAY [Corregir permisos entre Pure-FTPd y Apache] ******************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar variables que se utilizarán] *************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Utilizando las siguientes variables:\n- server_root: /opt/www/sites\n- ftp_user: ftpuser\n- apache_group: apache\n"[0m
+[0;32m}[0m
+
+TASK [Verificar directorio del sitio] ******************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar error si el directorio no existe] ********************************
+[0;36mskipping: [demo03][0m
+
+TASK [Asegurar que el usuario FTP pertenece al grupo Apache] *******************
+[0;32mok: [demo03][0m
+
+TASK [Corregir permisos del directorio raíz del sitio] *************************
+[0;33mchanged: [demo03][0m
+
+TASK [Corregir permisos de archivos y subdirectorios] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si SELinux está habilitado] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar SELinux para permitir acceso a Apache y FTP] ******************
+[0;36mskipping: [demo03][0m
+
+TASK [Reiniciar Apache] ********************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Reiniciar Pure-FTPd] *****************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar acceso HTTP] ***************************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "content": "", "elapsed": 0, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1147)>", "redirected": false, "status": -1, "url": "http://demo03"}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resultado de prueba HTTP] ****************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Resultado de prueba HTTP:\n- Código de estado: -1\n- Contenido: \n"[0m
+[0;32m}[0m
+
+TASK [Mensaje de diagnóstico y recomendaciones] ********************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Corrección de permisos completada:\n- Directorio: /opt/www/sites/demo03\n- Usuario FTP: ftpuser\n- Grupo Apache: apache\n\nAcciones realizadas:\n1. Corregido permisos de directorios (755)\n2. Corregido permisos de archivos (644)\n3. Asignado propietario ftpuser y grupo apache\n4. Configurado SELinux para permitir acceso\n5. Reiniciado servicios Apache y Pure-FTPd\n\nSi continúa experimentando problemas de acceso:\n- Verifique los logs de Apache: tail -f /var/log/httpd/error_log\n- Verifique si existe un archivo .htaccess con reglas restrictivas\n- Verifique la configuración de VirtualHost en Apache\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=14  [0m [0;33mchanged=4   [0m unreachable=0    failed=0    [0;36mskipped=2   [0m rescued=0    [1;35mignored=1   [0m

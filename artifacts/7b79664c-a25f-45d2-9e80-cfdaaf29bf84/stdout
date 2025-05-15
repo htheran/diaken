@@ -1,0 +1,95 @@
+
+PLAY [Configuración de SSL/HTTPS para Apache en hosts] *************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar advertencia si Apache no está instalado] *************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar si el módulo SSL ya está habilitado] ***************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si mod_rewrite está habilitado] ********************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar mod_ssl si no está instalado] ***********************************
+[0;36mskipping: [demo03][0m
+
+TASK [Habilitar mod_rewrite si no está cargado] ********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear directorio para certificados] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorio de logs si no existe] ***********************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si el archivo ssl.conf existe] *********************************
+[0;32mok: [demo03][0m
+
+TASK [Hacer backup del archivo ssl.conf si existe] *****************************
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar archivo ssl.conf problemático] **********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear archivo ssl.conf mínimo] *******************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar configuración SSL anterior si existe] ***************************
+[0;33mchanged: [demo03][0m
+
+TASK [Eliminar configuración de redirección anterior si existe] ****************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar certificado SSL al servidor] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Copiar clave privada SSL al servidor] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si los certificados se copiaron correctamente] *****************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Certificados copiados correctamente: False"[0m
+[0;32m}[0m
+
+TASK [Configurar VirtualHost para HTTPS] ***************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Configurar redirección HTTP a HTTPS] *************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar error de configuración si existe] ********************************
+[0;36mskipping: [demo03][0m
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puerto HTTPS en el firewall] ***************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mensaje de confirmación] *************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Configuración SSL completada:\n- Host: demo03\n- Puerto HTTPS: 443\n- Certificado: /etc/ssl/httpd/demo03.certificado.crt\n- Estado de la configuración: Válida\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=25  [0m [0;33mchanged=11  [0m unreachable=0    failed=0    [0;36mskipped=3   [0m rescued=0    ignored=0   

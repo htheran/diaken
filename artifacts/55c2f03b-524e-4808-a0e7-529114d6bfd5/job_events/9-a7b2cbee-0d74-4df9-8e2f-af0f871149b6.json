@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "a7b2cbee-0d74-4df9-8e2f-af0f871149b6", "counter": 9, "stdout": "\u001b[0;31m    - name: Abrir puerto 443 en el firewall\u001b[0m", "start_line": 8, "end_line": 9, "runner_ident": "55c2f03b-524e-4808-a0e7-529114d6bfd5", "created": "2025-05-15T01:13:54.439015+00:00"}

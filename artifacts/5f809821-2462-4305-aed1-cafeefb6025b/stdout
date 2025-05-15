@@ -1,0 +1,145 @@
+[1;35m[WARNING]: Found variable using reserved name: environment[0m
+
+PLAY [Instalación y configuración de Apache HTTP Server para grupos] ***********
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Verificar errores de sintaxis en la configuración] ***********************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": "httpd -t", "delta": "0:00:00.011348", "end": "2025-05-14 23:00:19.519854", "msg": "non-zero return code", "rc": 127, "start": "2025-05-14 23:00:19.508506", "stderr": "/bin/sh: line 1: httpd: command not found", "stderr_lines": ["/bin/sh: line 1: httpd: command not found"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;32mok: [demo02][0m
+
+TASK [Mostrar errores de sintaxis si existen] **********************************
+[0;36mskipping: [demo02][0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "/bin/sh: line 1: httpd: command not found"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Eliminar configuraciones SSL problemáticas] ******************************
+[0;33mchanged: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": true,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [[0m
+[0;32m            "Installed: kernel-uek-modules-5.15.0-308.179.6.3.el9uek.x86_64",[0m
+[0;32m            "Installed: kernel-uek-5.15.0-308.179.6.3.el9uek.x86_64",[0m
+[0;32m            "Installed: kernel-uek-core-5.15.0-308.179.6.3.el9uek.x86_64",[0m
+[0;32m            "Removed: kernel-uek-modules-5.15.0-307.178.5.el9uek.x86_64",[0m
+[0;32m            "Removed: kernel-uek-5.15.0-307.178.5.el9uek.x86_64",[0m
+[0;32m            "Removed: kernel-uek-core-5.15.0-307.178.5.el9uek.x86_64"[0m
+[0;32m        ][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;32mok: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que el servicio firewalld esté iniciado y habilitado] ***********
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+[0;31mfatal: [demo02]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.009488", "end": "2025-05-14 23:05:14.590957", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 23:05:14.581469", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.021399", "end": "2025-05-14 23:03:17.824885", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 23:03:17.803486", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;32mok: [demo02][0m
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;32mok: [demo02] => (item=/opt/www/sites/BACKEND)[0m
+[0;33mchanged: [demo03] => (item=/opt/www/sites/BACKEND)[0m
+[0;32mok: [demo02] => (item=/var/log/httpd/BACKEND)[0m
+[0;33mchanged: [demo03] => (item=/var/log/httpd/BACKEND)[0m
+[0;32mok: [demo02] => (item=/etc/httpd/conf.d)[0m
+[0;32mok: [demo03] => (item=/etc/httpd/conf.d)[0m
+
+TASK [Hacer backup del archivo httpd.conf si existe] ***************************
+[0;32mok: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla] *************************
+[0;32mok: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Guardar nombre en /etc/hostname] *****************************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar archivo index.html desde la plantilla] ****************************
+[0;33mchanged: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar configuración de VirtualHost para Apache] *************************
+[0;32mok: [demo02][0m
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;32mok: [demo02][0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["httpd", "-t"], "delta": "0:00:00.120003", "end": "2025-05-14 23:03:30.139931", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 23:03:30.019928", "stderr": "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:\nDocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable", "stderr_lines": ["AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:", "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar errores de configuración si existen] *****************************
+[0;36mskipping: [demo02][0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": [[0m
+[0;32m        "AH00526: Syntax error on line 25 of /etc/httpd/conf/httpd.conf:",[0m
+[0;32m        "DocumentRoot '/opt/www/sites/demo03' is not a directory, or is not readable"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+[0;36mskipping: [demo03][0m
+[0;33mchanged: [demo02][0m
+
+TASK [Mostrar advertencia si la configuración no es válida] ********************
+[0;36mskipping: [demo02][0m
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "ADVERTENCIA: La configuración de Apache tiene errores y no se pudo reiniciar el servicio."[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo02[0m                     : [0;32mok=21  [0m [0;33mchanged=9   [0m unreachable=0    failed=0    [0;36mskipped=3   [0m rescued=0    [1;35mignored=1   [0m
+[0;33mdemo03[0m                     : [0;32mok=23  [0m [0;33mchanged=14  [0m unreachable=0    failed=0    [0;36mskipped=1   [0m rescued=0    [1;35mignored=3   [0m

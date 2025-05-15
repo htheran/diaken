@@ -1,0 +1,105 @@
+
+PLAY [Instalación y configuración de Pure-FTPd para hosts] *********************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Validar variables requeridas] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Validando variables para el host: demo03"[0m
+[0;32m}[0m
+
+TASK [Establecer variables por defecto si no están definidas] ******************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar variables que se utilizarán] *************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Utilizando las siguientes variables:\n- server_root: /opt/www/sites\n- ftp_user: ftpuser\n- ftp_port: 21\n- pasv_min_port: 30000\n- pasv_max_port: 31000\n- apache_group: apache\n"[0m
+[0;32m}[0m
+
+TASK [Verificar si Apache está instalado] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar advertencia si Apache no está instalado] *************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar si Pure-FTPd está instalado] ***********************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["which", "pure-ftpd"], "delta": "0:00:00.007764", "end": "2025-05-15 14:57:18.424569", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 14:57:18.416805", "stderr": "which: no pure-ftpd in (/sbin:/bin:/usr/sbin:/usr/bin)", "stderr_lines": ["which: no pure-ftpd in (/sbin:/bin:/usr/sbin:/usr/bin)"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar Pure-FTPd] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que el servicio firewalld esté iniciado y habilitado] ***********
+[0;32mok: [demo03][0m
+
+TASK [Abrir puerto FTP permanentemente en el firewall] *************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puertos pasivos FTP en el firewall] ********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Configurar SELinux para permitir FTP] ************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": "setsebool -P ftpd_full_access on\nchcon -R -t public_content_rw_t /opt/www/sites/demo03\n", "delta": "0:00:03.066689", "end": "2025-05-15 14:57:39.925829", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 14:57:36.859140", "stderr": "chcon: can't apply partial context to unlabeled file 'index.html'\nchcon: can't apply partial context to unlabeled file 'index.html.bak.2025-05-15'\nchcon: can't apply partial context to unlabeled file '/opt/www/sites/demo03'", "stderr_lines": ["chcon: can't apply partial context to unlabeled file 'index.html'", "chcon: can't apply partial context to unlabeled file 'index.html.bak.2025-05-15'", "chcon: can't apply partial context to unlabeled file '/opt/www/sites/demo03'"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Crear grupo FTP] *********************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si el usuario FTP existe] **************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear usuario FTP si no existe] ******************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Asegurar que /sbin/nologin está en /etc/shells] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar directorio del usuario FTP] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorio para el usuario FTP si no existe] ***********************
+[0;36mskipping: [demo03][0m
+
+TASK [Crear directorio de configuración si no existe] **************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar Pure-FTPd] ****************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear mensaje de bienvenida] *********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear usuario virtual FTP] ***********************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": "pure-pw useradd \"ftpuser\" -u \"ftpuser\" -g ftpgroup -d \"/opt/www/sites/demo03\" -m <<< \"changeme\"\npure-pw mkdb\n", "delta": "0:00:00.009883", "end": "2025-05-15 14:57:48.142315", "msg": "non-zero return code", "rc": 2, "start": "2025-05-15 14:57:48.132432", "stderr": "Error with entering password - aborting\nUnable to open the passwd file: No such file or directory\nUnable to open the passwd file: No such file or directory", "stderr_lines": ["Error with entering password - aborting", "Unable to open the passwd file: No such file or directory", "Unable to open the passwd file: No such file or directory"], "stdout": "Password: \nEnter it again: ", "stdout_lines": ["Password: ", "Enter it again: "]}[0m
+[0;36m...ignoring[0m
+
+TASK [Crear directorio de autenticación si no existe] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear directorio de configuración si no existe] **************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear archivo PureDB en conf] ********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear enlaces simbólicos] ************************************************
+[0;33mchanged: [demo03] => (item={'src': '/etc/pure-ftpd/pureftpd.pdb', 'dest': '/etc/pureftpd.pdb'})[0m
+[0;33mchanged: [demo03] => (item={'src': '/etc/pure-ftpd/conf/PureDB', 'dest': '/etc/pure-ftpd/auth/PureDB'})[0m
+[1;35m[WARNING]: Cannot set fs attributes on a non-existent symlink target. follow[0m
+[1;35mshould be set to False to avoid this.[0m
+
+TASK [Establecer permisos recursivos en el directorio del sitio] ***************
+[0;33mchanged: [demo03][0m
+
+TASK [Habilitar e iniciar servicio Pure-FTPd] **********************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Unable to start service pure-ftpd: Job for pure-ftpd.service failed because a timeout was exceeded.\nSee \"systemctl status pure-ftpd.service\" and \"journalctl -xeu pure-ftpd.service\" for details.\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=26  [0m [0;33mchanged=15  [0m unreachable=0    [0;31mfailed=1   [0m [0;36mskipped=3   [0m rescued=0    [1;35mignored=3   [0m

@@ -1,0 +1,78 @@
+---
+- name: Corregir configuración SSL de Apache
+  hosts: target_host
+  become: yes
+  tasks:
+    - name: Verificar si Apache está instalado
+      command: which httpd
+      register: httpd_installed
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Hacer backup del archivo ssl.conf
+      copy:
+        src: /etc/httpd/conf.d/ssl.conf
+        dest: /etc/httpd/conf.d/ssl.conf.bak.{{ ansible_date_time.date }}_{{ ansible_date_time.time | regex_replace(':', '') }}
+        remote_src: yes
+      when: httpd_installed.rc == 0
+      ignore_errors: yes
+
+    - name: Eliminar archivo ssl.conf problemático
+      file:
+        path: /etc/httpd/conf.d/ssl.conf
+        state: absent
+      when: httpd_installed.rc == 0
+
+    - name: Crear archivo ssl.conf mínimo
+      copy:
+        content: |
+          # Archivo ssl.conf mínimo generado por Fix-SSL-Config.yml
+          LoadModule ssl_module modules/mod_ssl.so
+          Listen 443 https
+          SSLPassPhraseDialog exec:/usr/libexec/httpd-ssl-pass-dialog
+          SSLSessionCache         shmcb:/run/httpd/sslcache(512000)
+          SSLSessionCacheTimeout  300
+          SSLCryptoDevice builtin
+        dest: /etc/httpd/conf.d/ssl.conf
+        mode: '0644'
+      when: httpd_installed.rc == 0
+
+    - name: Verificar si existen configuraciones SSL para el host
+      stat:
+        path: /etc/httpd/conf.d/{{ target_host }}-ssl.conf
+      register: ssl_conf_stat
+      when: httpd_installed.rc == 0
+
+    - name: Verificar si existen configuraciones de redirección para el host
+      stat:
+        path: /etc/httpd/conf.d/{{ target_host }}-redirect.conf
+      register: redirect_conf_stat
+      when: httpd_installed.rc == 0
+
+    - name: Verificar configuración de Apache
+      command: httpd -t
+      register: apache_config_test
+      changed_when: false
+      ignore_errors: yes
+      when: httpd_installed.rc == 0
+
+    - name: Mostrar error de configuración si existe
+      debug:
+        msg: "Error en la configuración de Apache: {{ apache_config_test.stderr }}"
+      when: httpd_installed.rc == 0 and apache_config_test.rc != 0
+
+    - name: Reiniciar Apache si la configuración es válida
+      service:
+        name: httpd
+        state: restarted
+      when: httpd_installed.rc == 0 and apache_config_test.rc == 0
+
+    - name: Mensaje de estado
+      debug:
+        msg: |
+          Estado de la configuración SSL:
+          - Archivo ssl.conf: Reemplazado con versión mínima
+          - Configuración SSL para {{ target_host }}: {{ 'Existe' if ssl_conf_stat.stat.exists else 'No existe' }}
+          - Configuración de redirección para {{ target_host }}: {{ 'Existe' if redirect_conf_stat.stat.exists else 'No existe' }}
+          - Verificación de configuración: {{ 'Válida' if apache_config_test.rc == 0 else 'Con errores' }}
+      when: httpd_installed.rc == 0

@@ -1,0 +1,72 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo02][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;32mok: [demo02][0m
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+[0;31mfailed: [demo02] (item=httpd) => {"ansible_loop_var": "item", "changed": false, "item": "httpd", "msg": "Unable to start service httpd: Job for httpd.service failed because the control process exited with error code.\nSee \"systemctl status httpd.service\" and \"journalctl -xeu httpd.service\" for details.\n"}[0m
+[0;32mok: [demo02] => (item=firewalld)[0m
+[0;36m...ignoring[0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo02][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo02][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Deshabilitar SELinux (temporalmente)] ************************************
+[0;31mfatal: [demo02]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.009711", "end": "2025-05-14 21:59:42.161283", "msg": "non-zero return code", "rc": 1, "start": "2025-05-14 21:59:42.151572", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;32mok: [demo02] => (item={'path': '/opt/www/sites/demo02'})[0m
+[0;32mok: [demo02] => (item={'path': '/var/log/httpd/demo02'})[0m
+[0;32mok: [demo02] => (item={'path': '/etc/httpd/conf.d', 'mode': '0755'})[0m
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak] *****************
+[0;32mok: [demo02][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla específica para hosts] ***
+[0;32mok: [demo02][0m
+
+TASK [Limpiar archivo /etc/hostname] *******************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Guardar nombre de app en /etc/hostname] **********************************
+[0;33mchanged: [demo02][0m
+
+TASK [Copiar archivo index.html desde la plantilla específica para hosts] ******
+[0;33mchanged: [demo02][0m
+
+TASK [Copiar configuración de VirtualHost para Apache desde la plantilla específica para hosts] ***
+[0;32mok: [demo02][0m
+
+TASK [Reiniciar Apache explícitamente] *****************************************
+[0;31mfatal: [demo02]: FAILED! => {"changed": false, "msg": "Unable to start service httpd: Job for httpd.service failed because the control process exited with error code.\nSee \"systemctl status httpd.service\" and \"journalctl -xeu httpd.service\" for details.\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo02[0m                     : [0;32mok=17  [0m [0;33mchanged=8   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=2   [0m

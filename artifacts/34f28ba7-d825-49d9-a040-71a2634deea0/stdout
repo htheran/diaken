@@ -1,0 +1,18 @@
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpn2vhr3_h.yml, line 31,[0m
+[1;35mcolumn 7, found a duplicate dict key (when). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpn2vhr3_h.yml, line 31,[0m
+[1;35mcolumn 7, found a duplicate dict key (tags). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpn2vhr3_h.yml, line 104,[0m
+[1;35mcolumn 7, found a duplicate dict key (template). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpn2vhr3_h.yml, line 104,[0m
+[1;35mcolumn 7, found a duplicate dict key (tags). Using last defined value only.[0m
+[0;31mERROR! no module/action detected in task.[0m
+[0;31m[0m
+[0;31mThe error appears to be in '/tmp/tmpn2vhr3_h.yml': line 21, column 7, but may[0m
+[0;31mbe elsewhere in the file depending on the exact syntax problem.[0m
+[0;31m[0m
+[0;31mThe offending line appears to be:[0m
+[0;31m[0m
+[0;31m[0m
+[0;31m    - name: Instalar mod_ssl si no esta instalado[0m
+[0;31m      ^ here[0m

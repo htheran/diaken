@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "075b8c3b-a227-4dfa-b6b5-0bec124a8fec", "counter": 17, "stdout": "\u001b[0;31m    - name: Instalar mod_ssl si no esta instalado\u001b[0m", "start_line": 16, "end_line": 17, "runner_ident": "34f28ba7-d825-49d9-a040-71a2634deea0", "created": "2025-05-15T02:00:28.964112+00:00"}

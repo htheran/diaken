@@ -1,0 +1,10 @@
+---
+- name: Prueba de variable pasada desde settings
+  hosts: target_host
+  gather_facts: false
+  vars:
+    mensaje_prueba: "{{ mensaje_prueba }}"
+  tasks:
+    - name: Mostrar el valor de la variable pasada desde settings
+      debug:
+        msg: "El valor de mensaje_prueba es: {{ mensaje_prueba }}"

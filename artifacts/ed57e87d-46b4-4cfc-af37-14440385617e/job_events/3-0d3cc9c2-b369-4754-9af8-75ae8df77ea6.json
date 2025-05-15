@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "0d3cc9c2-b369-4754-9af8-75ae8df77ea6", "counter": 3, "stdout": "\u001b[0;31mThe error appears to be in '/tmp/tmphrdpomsk.yml': line 86, column 7, but may\u001b[0m", "start_line": 2, "end_line": 3, "runner_ident": "ed57e87d-46b4-4cfc-af37-14440385617e", "created": "2025-05-15T02:19:31.138117+00:00"}

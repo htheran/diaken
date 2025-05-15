@@ -1,8 +1,8 @@
 from django.shortcuts import render
 
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import GlobalSetting, DeploymentCredential
-from .forms import GlobalSettingForm, DeploymentCredentialForm
+from .models import GlobalSetting, DeploymentCredential, SSLCertificate
+from .forms import GlobalSettingForm, DeploymentCredentialForm, SSLCertificateForm
 
 # GLOBAL SETTINGS VIEWS
 
@@ -57,3 +57,46 @@ def credential_update(request, pk):
     else:
         form = DeploymentCredentialForm(instance=credential)
     return render(request, 'app_settings/credential_form.html', {'form': form, 'credential': credential})
+
+# SSL CERTIFICATE VIEWS
+
+def ssl_certificate_list(request):
+    certificates = SSLCertificate.objects.all().order_by('certificate_type', 'name')
+    # Agrupar certificados por tipo
+    cert_groups = {
+        'cert': certificates.filter(certificate_type='cert'),
+        'key': certificates.filter(certificate_type='key'),
+        'provider': certificates.filter(certificate_type='provider')
+    }
+    return render(request, 'app_settings/ssl_certificate_list.html', {'cert_groups': cert_groups})
+
+def ssl_certificate_create(request):
+    if request.method == 'POST':
+        form = SSLCertificateForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('ssl_certificate_list')
+    else:
+        form = SSLCertificateForm()
+    return render(request, 'app_settings/ssl_certificate_form.html', {'form': form})
+
+def ssl_certificate_update(request, pk):
+    certificate = get_object_or_404(SSLCertificate, pk=pk)
+    if request.method == 'POST':
+        form = SSLCertificateForm(request.POST, request.FILES, instance=certificate)
+        if form.is_valid():
+            # Si no se proporciona un nuevo archivo, mantener el existente
+            if not form.cleaned_data.get('file'):
+                form.instance.file = certificate.file
+            form.save()
+            return redirect('ssl_certificate_list')
+    else:
+        form = SSLCertificateForm(instance=certificate)
+    return render(request, 'app_settings/ssl_certificate_form.html', {'form': form, 'certificate': certificate})
+
+def ssl_certificate_delete(request, pk):
+    certificate = get_object_or_404(SSLCertificate, pk=pk)
+    if request.method == 'POST':
+        certificate.delete()
+        return redirect('ssl_certificate_list')
+    return render(request, 'app_settings/ssl_certificate_confirm_delete.html', {'certificate': certificate})

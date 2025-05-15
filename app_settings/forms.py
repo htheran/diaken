@@ -1,5 +1,5 @@
 from django import forms
-from .models import GlobalSetting, DeploymentCredential
+from .models import GlobalSetting, DeploymentCredential, SSLCertificate
 
 class GlobalSettingForm(forms.ModelForm):
     class Meta:
@@ -11,13 +11,13 @@ class DeploymentCredentialForm(forms.ModelForm):
         label="Windows Password",
         widget=forms.PasswordInput(render_value=False),
         required=False,
-        help_text="Solo para hosts Windows. Se almacena cifrada."
+        help_text="Only for Windows hosts. Stored encrypted."
     )
     ssh_private_key = forms.CharField(
-        label="Llave privada SSH",
+        label="SSH Private Key",
         widget=forms.Textarea(attrs={"rows": 6}),
         required=False,
-        help_text="Pega aquí la llave privada en formato PEM. Se almacena cifrada."
+        help_text="Paste the private key in PEM format here. It will be stored encrypted."
     )
 
     class Meta:
@@ -26,23 +26,45 @@ class DeploymentCredentialForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Si ya hay contraseña, no mostrar el valor
+        # If there's already a password, don't show the value
         if self.instance and self.instance.pk and self.instance.windows_password_encrypted:
-            self.fields['windows_password'].help_text += " (Ya existe una contraseña. Deja vacío para no cambiarla.)"
-        if self.instance and self.instance.pk and self.instance.ssh_private_key_encrypted:
-            self.fields['ssh_private_key'].help_text += " (Ya existe una llave privada. Deja vacío para no cambiarla.)"
+            self.fields['windows_password'].help_text += " (A password already exists. Leave blank to keep it unchanged.)"
+
+class SSLCertificateForm(forms.ModelForm):
+    class Meta:
+        model = SSLCertificate
+        fields = ['name', 'certificate_type', 'file', 'notes']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'certificate_type': forms.Select(attrs={'class': 'form-control'}),
+            'file': forms.FileInput(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+        help_texts = {
+            'name': 'Descriptive name to identify this certificate',
+            'certificate_type': 'Type of certificate you are uploading',
+            'file': 'Certificate file (.crt, .key, .pem)',
+            'notes': 'Additional notes about this certificate (optional)',
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # If we're editing an existing certificate
+        if self.instance and self.instance.pk:
+            self.fields['file'].required = False
+            self.fields['file'].help_text = "Leave blank to keep the current file. Upload a new file to replace it."
 
     def clean_ssh_private_key(self):
         key = self.cleaned_data.get('ssh_private_key')
         if not key and not self.instance.pk:
-            raise forms.ValidationError("Debes ingresar una llave privada SSH.")
+            raise forms.ValidationError("You must enter a SSH private key.")
         if key:
             if not key.strip().startswith('-----BEGIN'):
-                raise forms.ValidationError("La llave debe comenzar con '-----BEGIN ...'.")
-            if not key.strip().endswith('PRIVATE KEY-----'):
-                raise forms.ValidationError("La llave debe terminar con 'PRIVATE KEY-----'.")
+                raise forms.ValidationError("The key must start with '-----BEGIN ...'.")
+            if not '-----END' in key:
+                raise forms.ValidationError("The key must contain '-----END ...'.")
             if len(key.strip()) < 1000:
-                raise forms.ValidationError("La llave parece demasiado corta para ser válida.")
+                raise forms.ValidationError("The key seems too short to be valid.")
         return key
 
     def save(self, commit=True):

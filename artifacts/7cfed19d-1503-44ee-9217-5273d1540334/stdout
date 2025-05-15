@@ -1,0 +1,82 @@
+
+PLAY [Configurar HTTPS con mod_ssl] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar si el modulo ssl ya esta habilitado] ***************************
+[0;32mok: [demo02][0m
+
+TASK [Instalar mod_ssl si no esta instalado] ***********************************
+[0;36mskipping: [demo02][0m
+
+TASK [Verificar si mod_rewrite está habilitado] ********************************
+[0;32mok: [demo02][0m
+
+TASK [Habilitar mod_rewrite si no está cargado] ********************************
+[0;36mskipping: [demo02][0m
+
+TASK [Crear directorio para certificados] **************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Verificar si el enlace simbolico ssl.conf existe] ************************
+[0;32mok: [demo02][0m
+
+TASK [Crear enlace simbolico al modulo SSL (Red Hat)] **************************
+[0;36mskipping: [demo02][0m
+
+TASK [Copiar certificado SSL al servidor] **************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Copiar clave privada SSL al servidor] ************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Eliminar configuración SSL anterior si existe] ***************************
+[0;32mok: [demo02][0m
+
+TASK [Eliminar configuración de redirección anterior si existe] ****************
+[0;32mok: [demo02][0m
+
+TASK [Crear directorio de logs si no existe] ***********************************
+[0;32mok: [demo02][0m
+
+TASK [Configurar VirtualHost para HTTPS] ***************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Configurar redirección HTTP a HTTPS] *************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Verificar configuración de Apache] ***************************************
+[0;32mok: [demo02][0m
+
+TASK [Reiniciar Apache si la configuración es válida] **************************
+[0;33mchanged: [demo02][0m
+
+TASK [Mostrar error de configuración si existe] ********************************
+[0;36mskipping: [demo02][0m
+
+TASK [Verificar si firewalld está instalado] ***********************************
+[0;32mok: [demo02][0m
+
+TASK [Abrir puerto 443 en el firewall (firewalld)] *****************************
+[0;33mchanged: [demo02][0m
+
+TASK [Recargar firewall (firewalld)] *******************************************
+[0;33mchanged: [demo02][0m
+
+TASK [Verificar si iptables está instalado] ************************************
+[0;36mskipping: [demo02][0m
+
+TASK [Abrir puerto 443 en el firewall (iptables)] ******************************
+[0;36mskipping: [demo02][0m
+
+TASK [Guardar reglas de iptables] **********************************************
+[0;36mskipping: [demo02][0m
+
+TASK [Mensaje de confirmacion] *************************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "HTTPS Enabled: 443"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo02[0m                     : [0;32mok=18  [0m [0;33mchanged=8   [0m unreachable=0    failed=0    [0;36mskipped=7   [0m rescued=0    ignored=0   

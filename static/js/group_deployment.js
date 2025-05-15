@@ -46,12 +46,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             groupSelect.appendChild(option);
                         });
                     } else {
-                        console.log('No se encontraron grupos para este ambiente');
+                        // No hay grupos disponibles para este ambiente
                     }
                     groupSelect.disabled = false;
                 })
                 .catch(error => {
-                    console.error('Error al obtener los grupos:', error);
+                    // Error al obtener los grupos
                     groupSelect.disabled = false;
                 });
         }

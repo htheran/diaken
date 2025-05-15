@@ -1,0 +1,254 @@
+---
+- name: Solución final para VSFTPD
+  hosts: target_host
+  become: yes
+  tasks:
+    # Fase 0: Validación de variables
+    - name: Validar variables requeridas
+      debug:
+        msg: "Validando variables para el host: {{ target_host }}"
+      tags:
+        - always
+
+    - name: Establecer variables por defecto si no están definidas
+      set_fact:
+        server_root: "{{ server_root | default('/opt/www/sites') }}"
+        ftp_user: "{{ ftp_user | default('ftpuser') }}"
+        ftp_password: "{{ ftp_password | default('changeme') }}"
+        ssl_cert_dir: "{{ ssl_cert_dir | default('/etc/vsftpd') }}"
+      tags:
+        - always
+
+    # Fase 1: Diagnóstico avanzado
+    - name: Verificar si VSFTPD está instalado
+      command: which vsftpd
+      register: vsftpd_installed
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - diagnose
+
+    - name: Detener servicio VSFTPD
+      service:
+        name: vsftpd
+        state: stopped
+      ignore_errors: yes
+      tags:
+        - service
+
+    - name: Verificar versión de VSFTPD
+      shell: vsftpd -v || true
+      register: vsftpd_version
+      changed_when: false
+      ignore_errors: yes
+      tags:
+        - diagnose
+
+    - name: Mostrar versión de VSFTPD
+      debug:
+        msg: "{{ vsftpd_version.stdout_lines }}"
+      tags:
+        - diagnose
+
+    - name: Verificar configuración PAM de VSFTPD
+      shell: cat /etc/pam.d/vsftpd || true
+      register: vsftpd_pam
+      changed_when: false
+      ignore_errors: yes
+      tags:
+        - diagnose
+
+    - name: Mostrar configuración PAM
+      debug:
+        msg: "{{ vsftpd_pam.stdout_lines }}"
+      tags:
+        - diagnose
+
+    # Fase 2: Limpieza completa
+    - name: Eliminar archivo de configuración VSFTPD
+      file:
+        path: /etc/vsftpd/vsftpd.conf
+        state: absent
+      tags:
+        - cleanup
+
+    - name: Eliminar certificados SSL anteriores
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/vsftpd/vsftpd.pem
+        - /etc/ssl/certs/vsftpd.pem
+        - /etc/ssl/private/vsftpd.key
+      tags:
+        - cleanup
+
+    # Fase 3: Crear nueva configuración
+    - name: Crear configuración VSFTPD completamente nueva
+      copy:
+        content: |
+          # Configuración básica de VSFTPD generada por Fix-VSFTPD-Final.yml
+          # Configuración general
+          listen=YES
+          listen_port={{ ftp_port | default(21) }}
+          connect_from_port_20=YES
+          
+          # Configuración de usuarios
+          anonymous_enable=NO
+          local_enable=YES
+          write_enable=YES
+          local_umask=022
+          
+          # Configuración de directorios
+          chroot_local_user=YES
+          allow_writeable_chroot=YES
+          user_sub_token=$USER
+          local_root={{ server_root }}/$USER
+          
+          # Configuración de logs
+          xferlog_enable=YES
+          xferlog_std_format=YES
+          xferlog_file=/var/log/xferlog
+          log_ftp_protocol=YES
+          vsftpd_log_file=/var/log/vsftpd.log
+          
+          # Configuración de mensajes
+          dirmessage_enable=YES
+          ftpd_banner=Bienvenido al servidor FTP de {{ target_host }}
+          
+          # Configuración de tiempos
+          idle_session_timeout=600
+          data_connection_timeout=120
+          
+          # Configuración de seguridad
+          hide_ids=YES
+          
+          # Configuración de SSL - Desactivado por defecto
+          ssl_enable=NO
+          
+          # Configuración de modo pasivo
+          pasv_enable=YES
+          pasv_min_port={{ pasv_min_port | default(30000) }}
+          pasv_max_port={{ pasv_max_port | default(31000) }}
+          
+          # Configuración de usuarios permitidos
+          userlist_enable=YES
+          userlist_file=/etc/vsftpd/vsftpd.users
+          userlist_deny=NO
+          
+          # Configuración de PAM
+          pam_service_name=vsftpd
+        dest: /etc/vsftpd/vsftpd.conf
+        mode: '0600'
+      tags:
+        - configure
+
+    - name: Crear archivo de usuarios permitidos
+      copy:
+        content: "{{ ftp_user }}"
+        dest: /etc/vsftpd/vsftpd.users
+        mode: '0600'
+      tags:
+        - configure
+
+    # Fase 4: Verificar y reiniciar servicio
+    - name: Verificar configuración de VSFTPD
+      shell: vsftpd -olisten=NO /etc/vsftpd/vsftpd.conf
+      register: vsftpd_config_test
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - service
+
+    - name: Mostrar resultado de verificación
+      debug:
+        msg: "{{ vsftpd_config_test.stdout_lines if vsftpd_config_test.stdout_lines is defined else [] }} {{ vsftpd_config_test.stderr_lines if vsftpd_config_test.stderr_lines is defined else [] }}"
+      tags:
+        - service
+
+    - name: Reiniciar VSFTPD
+      service:
+        name: vsftpd
+        state: restarted
+        enabled: yes
+      register: restart_result
+      ignore_errors: yes
+      tags:
+        - service
+
+    - name: Mostrar resultado del reinicio
+      debug:
+        msg: "{{ 'Reinicio exitoso' if restart_result.failed == false else 'Reinicio fallido' }}"
+      tags:
+        - service
+
+    # Fase 5: Verificar estado del servicio
+    - name: Obtener estado actualizado del servicio VSFTPD
+      shell: systemctl status vsftpd || true
+      register: vsftpd_status_updated
+      changed_when: false
+      ignore_errors: yes
+      tags:
+        - diagnose
+
+    - name: Mostrar estado actualizado del servicio
+      debug:
+        msg: "{{ vsftpd_status_updated.stdout_lines }}"
+      tags:
+        - diagnose
+
+    # Fase 6: Verificar permisos de directorio
+    - name: Verificar directorio del usuario FTP
+      stat:
+        path: "{{ server_root }}/{{ target_host }}"
+      register: ftp_dir_stat
+      tags:
+        - permissions
+
+    - name: Crear directorio para el usuario FTP si no existe
+      file:
+        path: "{{ server_root }}/{{ target_host }}"
+        state: directory
+        owner: "{{ ftp_user }}"
+        group: "{{ apache_group | default('apache') }}"
+        mode: '0755'
+      when: not ftp_dir_stat.stat.exists
+      tags:
+        - permissions
+
+    - name: Establecer permisos correctos en el directorio
+      shell: |
+        chown -R {{ ftp_user }}:{{ apache_group | default('apache') }} {{ server_root }}/{{ target_host }}
+        chmod -R 755 {{ server_root }}/{{ target_host }}
+        find {{ server_root }}/{{ target_host }} -type f -exec chmod 644 {} \;
+      ignore_errors: yes
+      tags:
+        - permissions
+
+    # Fase 7: Resumen y recomendaciones
+    - name: Mensaje de diagnóstico y recomendaciones
+      debug:
+        msg: |
+          Solución final para VSFTPD completada:
+          - Host: {{ target_host }}
+          - Estado del servicio: {{ 'Activo' if restart_result.failed == false else 'Inactivo' }}
+          - Directorio FTP: {{ server_root }}/{{ target_host }}
+          - Usuario FTP: {{ ftp_user }}
+          
+          Para probar la conexión FTP:
+          - Servidor: {{ target_host }}
+          - Puerto: {{ ftp_port | default(21) }}
+          - Usuario: {{ ftp_user }}
+          - Contraseña: {{ ftp_password }}
+          - Modo: FTP sin SSL (Explícito)
+          
+          Si desea habilitar SSL después:
+          1. Edite el archivo /etc/vsftpd/vsftpd.conf
+          2. Cambie ssl_enable=NO a ssl_enable=YES
+          3. Ejecute: openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem
+          4. Añada las líneas:
+             rsa_cert_file=/etc/vsftpd/vsftpd.pem
+             rsa_private_key_file=/etc/vsftpd/vsftpd.pem
+          5. Reinicie el servicio: systemctl restart vsftpd
+      tags:
+        - always

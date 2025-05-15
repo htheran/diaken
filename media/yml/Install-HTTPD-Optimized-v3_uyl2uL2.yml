@@ -1,0 +1,263 @@
+---
+- name: Instalación y configuración de Apache HTTP Server para hosts
+  hosts: target_host
+  become: yes
+  tasks:
+    # Fase 0: Validación de variables
+    - name: Validar variables requeridas
+      debug:
+        msg: "Validando variables para el host: {{ target_host }}"
+      tags:
+        - always
+
+    - name: Establecer variables por defecto si no están definidas
+      set_fact:
+        server_root: "{{ server_root | default('/opt/www/sites') }}"
+        log_root: "{{ log_root | default('/var/log/httpd') }}"
+        http_port: "{{ http_port | default(80) }}"
+        https_port: "{{ https_port | default(443) }}"
+        domain: "{{ domain | default('upb.edu.co') }}"
+      tags:
+        - always
+
+    # Fase 1: Diagnóstico y limpieza inicial
+    - name: Verificar si Apache está instalado
+      command: which httpd
+      register: httpd_installed
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - diagnose
+
+    - name: Verificar errores de sintaxis en la configuración
+      shell: httpd -t
+      register: apache_syntax
+      ignore_errors: yes
+      changed_when: false
+      when: httpd_installed.rc == 0
+      tags:
+        - diagnose
+
+    - name: Mostrar errores de sintaxis si existen
+      debug:
+        msg: "{{ apache_syntax.stderr_lines | default(['Apache no está instalado o no se pudo verificar la configuración']) }}"
+      when: httpd_installed.rc != 0 or (apache_syntax is defined and apache_syntax.rc != 0)
+      tags:
+        - diagnose
+
+    - name: Eliminar configuraciones SSL problemáticas
+      shell: |
+        find /etc/httpd/conf.d/ -name "*-ssl.conf" -o -name "*-redirect.conf" -o -name "ssl.conf" | xargs rm -f 2>/dev/null || true
+        rm -f /etc/httpd/conf.d/BACKEND-ssl.conf
+        rm -f /etc/httpd/conf.d/ssl.conf
+        rm -f /etc/httpd/conf.d/{{ target_host }}-ssl.conf
+        rm -f /etc/httpd/conf.d/{{ target_host }}-redirect.conf
+      ignore_errors: yes
+      tags:
+        - cleanup
+
+    # Fase 2: Actualización e instalación
+    - name: Actualizar sistema operativo
+      dnf:
+        name: '*'
+        state: latest
+        update_cache: yes
+      register: result_update
+      ignore_errors: yes
+      tags:
+        - install
+
+    - name: Instalar Apache (httpd)
+      dnf:
+        name: httpd
+        state: present
+      tags:
+        - install
+
+    # Fase 3: Configuración de firewall (usando comandos directos)
+    - name: Verificar si firewalld está instalado
+      command: which firewall-cmd
+      register: firewalld_check
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - firewall
+
+    - name: Asegurar que el servicio firewalld esté iniciado y habilitado
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+      ignore_errors: yes
+      when: firewalld_check.rc == 0
+      tags:
+        - firewall
+
+    - name: Abrir puerto HTTP permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ http_port }}/tcp
+      ignore_errors: yes
+      when: firewalld_check.rc == 0
+      tags:
+        - firewall
+
+    - name: Abrir puerto HTTPS permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ https_port }}/tcp
+      ignore_errors: yes
+      when: firewalld_check.rc == 0
+      tags:
+        - firewall
+
+    - name: Recargar firewalld
+      command: firewall-cmd --reload
+      ignore_errors: yes
+      when: firewalld_check.rc == 0
+      tags:
+        - firewall
+
+    # Fase 4: Configuración de SELinux
+    - name: Verificar si SELinux está instalado
+      command: which sestatus
+      register: selinux_check
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - selinux
+
+    - name: Deshabilitar SELinux (temporalmente)
+      command: setenforce 0
+      ignore_errors: yes
+      when: selinux_check.rc == 0
+      tags:
+        - selinux
+
+    - name: Deshabilitar SELinux permanentemente
+      replace:
+        path: /etc/selinux/config
+        regexp: '^SELINUX=enforcing'
+        replace: 'SELINUX=disabled'
+      ignore_errors: yes
+      when: selinux_check.rc == 0
+      tags:
+        - selinux
+
+    # Fase 5: Crear directorios necesarios
+    - name: Crear directorios necesarios
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - "{{ server_root }}/{{ target_host }}"
+        - "{{ log_root }}/{{ target_host }}"
+        - "/etc/httpd/conf.d"
+      tags:
+        - configure
+
+    # Fase 6: Configurar Apache
+    - name: Hacer backup del archivo httpd.conf si existe
+      copy:
+        src: /etc/httpd/conf/httpd.conf
+        dest: /etc/httpd/conf/httpd.conf.bak
+        remote_src: yes
+      ignore_errors: yes
+      tags:
+        - configure
+
+    - name: Copiar el archivo httpd.conf desde la plantilla
+      template:
+        src: "/opt/www/media/templates/host/httpd.conf.j2"
+        dest: /etc/httpd/conf/httpd.conf
+        mode: '0644'
+      tags:
+        - configure
+
+    - name: Limpiar archivo /etc/hostname
+      copy:
+        content: ""
+        dest: /etc/hostname
+        force: yes
+      tags:
+        - configure
+
+    - name: Guardar nombre en /etc/hostname
+      copy:
+        content: "{{ target_host }}"
+        dest: /etc/hostname
+        force: yes
+      tags:
+        - configure
+
+    - name: Copiar archivo index.html desde la plantilla
+      template:
+        src: "/opt/www/media/templates/host/index.html.j2"
+        dest: "{{ server_root }}/{{ target_host }}/index.html"
+        mode: '0644'
+      tags:
+        - configure
+
+    - name: Copiar configuración de VirtualHost para Apache
+      template:
+        src: "/opt/www/media/templates/host/virtualhost.conf.j2"
+        dest: "/etc/httpd/conf.d/{{ target_host }}.conf"
+        mode: '0644'
+      tags:
+        - configure
+
+    # Fase 7: Verificar y reiniciar Apache
+    - name: Verificar configuración de Apache
+      command: httpd -t
+      register: apache_config_test
+      ignore_errors: yes
+      tags:
+        - service
+
+    - name: Mostrar errores de configuración si existen
+      debug:
+        msg: "{{ apache_config_test.stderr_lines }}"
+      when: apache_config_test.rc != 0
+      tags:
+        - service
+
+    - name: Habilitar e iniciar servicio Apache
+      service:
+        name: httpd
+        state: restarted
+        enabled: yes
+      when: apache_config_test.rc == 0
+      register: apache_service
+      tags:
+        - service
+
+    - name: Verificar estado del servicio Apache
+      command: systemctl status httpd
+      register: apache_status
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - service
+
+    - name: Mostrar estado del servicio
+      debug:
+        msg: "{{ apache_status.stdout_lines }}"
+      tags:
+        - service
+
+    # Fase 8: Resumen y recomendaciones
+    - name: Mensaje de diagnóstico y recomendaciones
+      debug:
+        msg: |
+          Instalación de Apache HTTP Server completada:
+          - Host: {{ target_host }}
+          - Estado del servicio: {{ 'Activo' if apache_service.failed is not defined else 'Inactivo' }}
+          - Directorio web: {{ server_root }}/{{ target_host }}
+          - Directorio de logs: {{ log_root }}/{{ target_host }}
+          - Puerto HTTP: {{ http_port }}
+          - Puerto HTTPS: {{ https_port }}
+          
+          Para probar el servidor web:
+          - URL HTTP: http://{{ target_host }}:{{ http_port }}
+          
+          Para configurar SSL:
+          - Ejecute el playbook "Configure SSL Host (Optimized v4)"
+      tags:
+        - always
