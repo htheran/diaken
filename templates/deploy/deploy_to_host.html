@@ -30,7 +30,7 @@
         <select class="form-control" id="playbook" name="playbook">
           <option value="">Select Playbook</option>
         </select>
-      </div>
+      </div><br>
       <button type="submit" class="btn btn-primary">Deploy</button>
     </form>
     <div id="progress-bar" style="display:none; text-align:center; margin-top:20px;">
@@ -120,22 +120,64 @@
         });
     });
 
+    
     // Actualiza playbooks cuando se selecciona un host
     document.getElementById('host').addEventListener('change', function() {
       var hostId = this.value;
       var playbookSelect = document.getElementById('playbook');
       playbookSelect.innerHTML = '<option value="">Select Playbook</option>';
+      
       if (hostId) {
         fetch(`/deploy/api/playbooks/?host_id=${hostId}`)
           .then(response => response.json())
           .then(data => {
             if (data.playbooks && data.playbooks.length > 0) {
+              // Agrupar playbooks por categoría
+              const categorizedPlaybooks = {};
               data.playbooks.forEach(pb => {
-                var opt = document.createElement('option');
-                opt.value = pb.id;
-                opt.textContent = pb.name;
-                playbookSelect.appendChild(opt);
+                if (!categorizedPlaybooks[pb.category]) {
+                  categorizedPlaybooks[pb.category] = [];
+                }
+                categorizedPlaybooks[pb.category].push(pb);
               });
+              
+              // Orden de categorías
+              const categoryOrder = ['install', 'configure', 'fix', 'reset', 'diagnose', 'clean', 'other'];
+              
+              // Crear optgroups por categoría
+              categoryOrder.forEach(category => {
+                if (categorizedPlaybooks[category] && categorizedPlaybooks[category].length > 0) {
+                  const categoryNames = {
+                    'install': 'Instalación',
+                    'configure': 'Configuración',
+                    'fix': 'Reparación',
+                    'reset': 'Reinicio',
+                    'diagnose': 'Diagnóstico',
+                    'clean': 'Limpieza',
+                    'other': 'Otros'
+                  };
+                  
+                  const optgroup = document.createElement('optgroup');
+                  optgroup.label = categoryNames[category] || category;
+                  
+                  categorizedPlaybooks[category].forEach(pb => {
+                    const opt = document.createElement('option');
+                    opt.value = pb.id;
+                    opt.textContent = pb.name;
+                    opt.setAttribute('data-category', pb.category);
+                    optgroup.appendChild(opt);
+                  });
+                  
+                  playbookSelect.appendChild(optgroup);
+                }
+              });
+              
+              // Inicializar el selector con iconos
+              if (window.setupPlaybookSelectors) {
+                setTimeout(() => {
+                  window.setupPlaybookSelectors();
+                }, 100);
+              }
             }
           });
       }

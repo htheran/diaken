@@ -131,20 +131,62 @@
         groupSelect.addEventListener('change', function() {
           const groupId = this.value;
           const playbookSelect = document.getElementById('playbook');
-          playbookSelect.innerHTML = '<option value="">-------------</option>';
+          playbookSelect.innerHTML = '<option value="">Select Playbook</option>';
+          
           if (!groupId) {
             return;
           }
+          
           fetch(`/deploy/api/playbooks/?group_id=${groupId}`)
             .then(response => response.json())
             .then(data => {
               if (data.playbooks && data.playbooks.length > 0) {
+                // Agrupar playbooks por categoría
+                const categorizedPlaybooks = {};
                 data.playbooks.forEach(pb => {
-                  const opt = document.createElement('option');
-                  opt.value = pb.id;
-                  opt.textContent = pb.name;
-                  playbookSelect.appendChild(opt);
+                  if (!categorizedPlaybooks[pb.category]) {
+                    categorizedPlaybooks[pb.category] = [];
+                  }
+                  categorizedPlaybooks[pb.category].push(pb);
                 });
+                
+                // Orden de categorías
+                const categoryOrder = ['install', 'configure', 'fix', 'reset', 'diagnose', 'clean', 'other'];
+                
+                // Crear optgroups por categoría
+                categoryOrder.forEach(category => {
+                  if (categorizedPlaybooks[category] && categorizedPlaybooks[category].length > 0) {
+                    const categoryNames = {
+                      'install': 'Instalación',
+                      'configure': 'Configuración',
+                      'fix': 'Reparación',
+                      'reset': 'Reinicio',
+                      'diagnose': 'Diagnóstico',
+                      'clean': 'Limpieza',
+                      'other': 'Otros'
+                    };
+                    
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = categoryNames[category] || category;
+                    
+                    categorizedPlaybooks[category].forEach(pb => {
+                      const opt = document.createElement('option');
+                      opt.value = pb.id;
+                      opt.textContent = pb.name;
+                      opt.setAttribute('data-category', pb.category);
+                      optgroup.appendChild(opt);
+                    });
+                    
+                    playbookSelect.appendChild(optgroup);
+                  }
+                });
+                
+                // Inicializar el selector con iconos
+                if (window.setupPlaybookSelectors) {
+                  setTimeout(() => {
+                    window.setupPlaybookSelectors();
+                  }, 100);
+                }
               }
             });
         });

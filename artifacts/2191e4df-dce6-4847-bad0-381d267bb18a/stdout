@@ -1,0 +1,11 @@
+
+PLAY [Gestión de actualizaciones de seguridad] *********************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Obtener lista de actualizaciones de seguridad] ***************************
+[0;31mfatal: [demo03]: FAILED! => {"msg": "The conditional check 'apply_updates != \"yes\"' failed. The error was: error while evaluating conditional (apply_updates != \"yes\"): 'apply_updates' is undefined. 'apply_updates' is undefined\n\nThe error appears to be in '/tmp/tmpgv02rpww.yml': line 10, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n    # Tarea 1: Listar actualizaciones de seguridad disponibles\n    - name: Obtener lista de actualizaciones de seguridad\n      ^ here\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=1   [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

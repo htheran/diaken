@@ -1,0 +1,57 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9 (Host)] ******************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd) y firewalld] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Deshabilitar SELinux temporalmente (en la sesión actual)] ****************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.005202", "end": "2025-05-15 20:10:39.089542", "msg": "non-zero return code", "rc": 1, "start": "2025-05-15 20:10:39.084340", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente (en /etc/selinux/config)] ***********
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios para el sitio y logs] ***********************
+[0;32mok: [demo03] => (item={'path': '/opt/www/sites/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/var/log/httpd/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/etc/httpd/conf.d'})[0m
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak si existe] *******
+[0;32mok: [demo03][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla específica de host] ******
+[0;31mAn exception occurred during task execution. To see the full traceback, use -vvv. The error was: If you are using a module and expect the file to exist on the remote, see the remote_src option[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Could not find or access 'host/httpd.conf.j2'\nSearched in:\n\t/tmp/templates/host/httpd.conf.j2\n\t/tmp/host/httpd.conf.j2\n\t/tmp/templates/host/httpd.conf.j2\n\t/tmp/host/httpd.conf.j2 on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=12  [0m [0;33mchanged=4   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=1   [0m

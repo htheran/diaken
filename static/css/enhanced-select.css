@@ -1,0 +1,161 @@
+/**
+ * Enhanced Select - Estilos para selectores con iconos
+ * Versión 1.0 - Mayo 2025
+ */
+
+/* Contenedor principal */
+.enhanced-select-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* Ocultar el select original */
+.enhanced-select-container select {
+  display: none;
+}
+
+/* Elemento visual del selector */
+.enhanced-select-visual {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.enhanced-select-visual:hover {
+  border-color: #80bdff;
+}
+
+.enhanced-select-visual.active {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Flecha del selector */
+.enhanced-select-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #495057;
+  margin-left: 10px;
+  transition: transform 0.2s ease;
+}
+
+.enhanced-select-visual.active .enhanced-select-arrow {
+  transform: rotate(180deg);
+}
+
+/* Contenedor de opciones */
+.enhanced-select-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-top: none;
+  border-radius: 0 0 0.25rem 0.25rem;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.enhanced-select-options.show {
+  display: block;
+}
+
+/* Grupo de opciones */
+.enhanced-select-optgroup {
+  padding: 0;
+}
+
+.enhanced-select-optgroup-label {
+  padding: 0.5rem 0.75rem;
+  font-weight: bold;
+  color: #343a40;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Opciones individuales */
+.enhanced-select-option {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+}
+
+.enhanced-select-option:hover {
+  background-color: #f8f9fa;
+}
+
+/* Opción con icono */
+.enhanced-select-option.with-icon {
+  padding-left: 0.75rem;
+}
+
+.enhanced-select-option i {
+  margin-right: 0.5rem;
+  width: 16px;
+  text-align: center;
+}
+
+/* Opción seleccionada */
+.enhanced-select-selected {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.enhanced-select-selected i {
+  margin-right: 0.5rem;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .enhanced-select-options {
+    max-height: 200px;
+  }
+}
+
+/* Estilos para categorías específicas */
+.enhanced-select-option[data-category="install"] i {
+  color: #28a745;
+}
+
+.enhanced-select-option[data-category="configure"] i {
+  color: #007bff;
+}
+
+.enhanced-select-option[data-category="fix"] i {
+  color: #fd7e14;
+}
+
+.enhanced-select-option[data-category="reset"] i {
+  color: #6f42c1;
+}
+
+.enhanced-select-option[data-category="diagnose"] i {
+  color: #17a2b8;
+}
+
+.enhanced-select-option[data-category="clean"] i {
+  color: #dc3545;
+}

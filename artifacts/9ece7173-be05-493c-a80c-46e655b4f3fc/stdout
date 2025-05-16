@@ -1,0 +1,54 @@
+[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17[0m
+
+PLAY [Configuración de servidor web en Oracle Linux 9] *************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd) y firewalld] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Deshabilitar SELinux] ****************************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;32mok: [demo03] => (item={'path': '/opt/www/sites/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/var/log/httpd/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/etc/httpd/conf.d', 'mode': '0755'})[0m
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak] *****************
+[0;32mok: [demo03][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla] *************************
+[0;31mAn exception occurred during task execution. To see the full traceback, use -vvv. The error was: ansible.errors.AnsibleUndefinedVariable: 'target_group' is undefined. 'target_group' is undefined[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "AnsibleUndefinedVariable: 'target_group' is undefined. 'target_group' is undefined"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=11  [0m [0;33mchanged=3   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

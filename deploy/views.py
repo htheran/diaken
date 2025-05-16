@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.contrib import messages
 from inventory.models import Host, Group, Environment
 from playbooks.models import Playbook
 from history.models import History
@@ -128,8 +129,23 @@ def deploy_to_host(request):
     if request.method == 'POST':
         playbook_id = request.POST.get('playbook')
         host_id = request.POST.get('host')
-        playbook = Playbook.objects.get(id=playbook_id)
-        host = Host.objects.get(id=host_id)
+        
+        # Validar que los IDs no estén vacíos
+        if not playbook_id:
+            messages.error(request, 'Por favor, seleccione un playbook válido.')
+            return redirect('deploy_to_host')
+            
+        if not host_id:
+            messages.error(request, 'Por favor, seleccione un host válido.')
+            return redirect('deploy_to_host')
+            
+        # Obtener los objetos
+        try:
+            playbook = Playbook.objects.get(id=playbook_id)
+            host = Host.objects.get(id=host_id)
+        except (Playbook.DoesNotExist, Host.DoesNotExist, ValueError) as e:
+            messages.error(request, f'Error al obtener playbook o host: {str(e)}')
+            return redirect('deploy_to_host')
 
         # print('DEBUG deploy_to_host: host_id recibido:', host_id)
         # print('DEBUG deploy_to_host: host seleccionado:', host.name)
@@ -211,9 +227,24 @@ def deploy_to_group(request):
         playbook_id = request.POST.get('playbook')
         group_id = request.POST.get('group')
         environment_id = request.POST.get('environment')
-        playbook = Playbook.objects.get(id=playbook_id)
-        group = Group.objects.get(id=group_id)
-        environment = Environment.objects.get(id=environment_id) if environment_id else None
+        
+        # Validar que los IDs no estén vacíos
+        if not playbook_id:
+            messages.error(request, 'Por favor, seleccione un playbook válido.')
+            return redirect('deploy_to_group')
+            
+        if not group_id:
+            messages.error(request, 'Por favor, seleccione un grupo válido.')
+            return redirect('deploy_to_group')
+            
+        # Obtener los objetos
+        try:
+            playbook = Playbook.objects.get(id=playbook_id)
+            group = Group.objects.get(id=group_id)
+            environment = Environment.objects.get(id=environment_id) if environment_id else None
+        except (Playbook.DoesNotExist, Group.DoesNotExist, Environment.DoesNotExist, ValueError) as e:
+            messages.error(request, f'Error al obtener playbook, grupo o entorno: {str(e)}')
+            return redirect('deploy_to_group')
 
         # Genera archivo de inventario temporal
         inventory_path = generate_temporary_inventory(group_id=group_id)

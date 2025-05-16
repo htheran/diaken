@@ -1,0 +1,31 @@
+
+PLAY [Gestión de actualizaciones de seguridad en Red Hat] **********************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar caché de paquetes] ********************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Listar actualizaciones de seguridad (modo seguro)] ***********************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar actualizaciones pendientes] **************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "🔒 Actualizaciones de seguridad disponibles:\n- xfsprogs (6.12.0)\n"[0m
+[0;32m}[0m
+
+TASK [Aplicar actualizaciones de seguridad (modo ejecución)] *******************
+[0;36mskipping: [demo03][0m
+
+TASK [Mostrar resumen de actualizaciones] **************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Verificar necesidad de reinicio] *****************************************
+[0;32mok: [demo03][0m
+
+TASK [Notificar reinicio requerido] ********************************************
+[0;36mskipping: [demo03][0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo03[0m                     : [0;32mok=4   [0m changed=0    unreachable=0    failed=0    [0;36mskipped=4   [0m rescued=0    ignored=0   

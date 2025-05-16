@@ -1,0 +1,52 @@
+/**
+ * Simple Select - Estilos para el selector de playbooks
+ * Versión 1.0 - Mayo 2025
+ */
+
+/* Estilos para el contenedor del select */
+.select-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Estilos para el select */
+.playbook-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  appearance: none;
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 12px;
+}
+
+/* Estilos para las opciones */
+.playbook-select option {
+  padding: 8px;
+}
+
+/* Estilos para los optgroup */
+.playbook-select optgroup {
+  font-weight: bold;
+  color: #343a40;
+}
+
+/* Estilos para los iconos de categorías */
+.icon-container {
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+/* Colores para los diferentes tipos de playbooks */
+.icon-install { color: #28a745; }
+.icon-configure { color: #007bff; }
+.icon-fix { color: #fd7e14; }
+.icon-reset { color: #6f42c1; }
+.icon-diagnose { color: #17a2b8; }
+.icon-clean { color: #dc3545; }
+.icon-other { color: #6c757d; }
