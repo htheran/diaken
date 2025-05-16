@@ -1,0 +1,51 @@
+[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17[0m
+
+PLAY [Configurar HTTPS con mod_ssl] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si el modulo ssl ya esta habilitado] ***************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": ["httpd", "-t", "-D", "DUMP_MODULES", "|", "grep", "ssl"], "delta": "0:00:00.061826", "end": "2025-05-16 14:55:26.408342", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 14:55:26.346516", "stderr": "Usage: httpd [-D name] [-d directory] [-f file]\n             [-C \"directive\"] [-c \"directive\"]\n             [-k start|restart|graceful|graceful-stop|stop]\n             [-v] [-V] [-h] [-l] [-L] [-t] [-T] [-S] [-X]\nOptions:\n  -D name            : define a name for use in <IfDefine name> directives\n  -d directory       : specify an alternate initial ServerRoot\n  -f file            : specify an alternate ServerConfigFile\n  -C \"directive\"     : process directive before reading config files\n  -c \"directive\"     : process directive after reading config files\n  -e level           : show startup errors of level (see LogLevel)\n  -E file            : log startup errors to file\n  -v                 : show version number\n  -V                 : show compile settings\n  -h                 : list available command line options (this page)\n  -l                 : list compiled in modules\n  -L                 : list available configuration directives\n  -t -D DUMP_VHOSTS  : show parsed vhost settings\n  -t -D DUMP_RUN_CFG : show parsed run settings\n  -S                 : a synonym for -t -D DUMP_VHOSTS -D DUMP_RUN_CFG\n  -t -D DUMP_MODULES : show all loaded modules \n  -M                 : a synonym for -t -D DUMP_MODULES\n  -t -D DUMP_INCLUDES: show all included configuration files\n  -t                 : run syntax check for config files\n  -T                 : start without DocumentRoot(s) check\n  -X                 : debug mode (only one worker, do not detach)", "stderr_lines": ["Usage: httpd [-D name] [-d directory] [-f file]", "             [-C \"directive\"] [-c \"directive\"]", "             [-k start|restart|graceful|graceful-stop|stop]", "             [-v] [-V] [-h] [-l] [-L] [-t] [-T] [-S] [-X]", "Options:", "  -D name            : define a name for use in <IfDefine name> directives", "  -d directory       : specify an alternate initial ServerRoot", "  -f file            : specify an alternate ServerConfigFile", "  -C \"directive\"     : process directive before reading config files", "  -c \"directive\"     : process directive after reading config files", "  -e level           : show startup errors of level (see LogLevel)", "  -E file            : log startup errors to file", "  -v                 : show version number", "  -V                 : show compile settings", "  -h                 : list available command line options (this page)", "  -l                 : list compiled in modules", "  -L                 : list available configuration directives", "  -t -D DUMP_VHOSTS  : show parsed vhost settings", "  -t -D DUMP_RUN_CFG : show parsed run settings", "  -S                 : a synonym for -t -D DUMP_VHOSTS -D DUMP_RUN_CFG", "  -t -D DUMP_MODULES : show all loaded modules ", "  -M                 : a synonym for -t -D DUMP_MODULES", "  -t -D DUMP_INCLUDES: show all included configuration files", "  -t                 : run syntax check for config files", "  -T                 : start without DocumentRoot(s) check", "  -X                 : debug mode (only one worker, do not detach)"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Instalar mod_ssl si no esta instalado] ***********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Crear directorio para certificados] **************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar si el enlace simbolico ssl.conf existe] ************************
+[0;32mok: [demo03][0m
+
+TASK [Crear enlace simbolico al modulo SSL (Red Hat)] **************************
+[0;36mskipping: [demo03][0m
+
+TASK [Copiar certificado SSL al servidor] **************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar clave privada SSL al servidor] ************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Copiar clave provider SSL al servidor] ***********************************
+[0;33mchanged: [demo03][0m
+
+TASK [Configurar VirtualHost para HTTPS] ***************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puerto 443 en el firewall] *****************************************
+[0;32mok: [demo03][0m
+
+TASK [Reiniciar Firewalld] *****************************************************
+[0;33mchanged: [demo03][0m
+
+RUNNING HANDLER [Reiniciar Apache] *********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mensaje de confirmacion] *************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "HTTPS Enabled: 443"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=13  [0m [0;33mchanged=8   [0m unreachable=0    failed=0    [0;36mskipped=1   [0m rescued=0    [1;35mignored=1   [0m

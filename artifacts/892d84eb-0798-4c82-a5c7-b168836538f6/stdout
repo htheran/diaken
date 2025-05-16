@@ -1,0 +1,73 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9 (Host)] ******************
+
+TASK [Gathering Facts] *********************************************************
+ok: [demo03]
+
+TASK [Actualizar sistema operativo] ********************************************
+ok: [demo03]
+
+TASK [Debug result_update] *****************************************************
+ok: [demo03] => {
+    "result_update": {
+        "changed": false,
+        "failed": false,
+        "msg": "Nothing to do",
+        "rc": 0,
+        "results": []
+    }
+}
+
+TASK [Instalar Apache (httpd) y firewalld] *************************************
+changed: [demo03]
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+changed: [demo03] => (item=httpd)
+ok: [demo03] => (item=firewalld)
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+changed: [demo03]
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+changed: [demo03]
+
+TASK [Recargar firewalld] ******************************************************
+changed: [demo03]
+
+TASK [Deshabilitar SELinux temporalmente (en la sesión actual)] ****************
+fatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.018885", "end": "2025-05-16 09:52:38.884735", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 09:52:38.865850", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [Deshabilitar SELinux permanentemente (en /etc/selinux/config)] ***********
+ok: [demo03]
+
+TASK [Crear directorios necesarios para el sitio y logs] ***********************
+changed: [demo03] => (item={'path': '/opt/www/sites/demo03'})
+changed: [demo03] => (item={'path': '/var/log/httpd/demo03'})
+ok: [demo03] => (item={'path': '/etc/httpd/conf.d'})
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak si existe] *******
+changed: [demo03]
+
+TASK [Copiar el archivo httpd.conf desde la plantilla específica de host] ******
+changed: [demo03]
+
+TASK [Copiar el archivo de VirtualHost desde la plantilla específica de host] ***
+changed: [demo03]
+
+TASK [Copiar index.html desde la plantilla específica de host] *****************
+changed: [demo03]
+
+TASK [Verificar sintaxis de Apache antes de reiniciar] *************************
+changed: [demo03]
+
+TASK [Reiniciar Apache] ********************************************************
+changed: [demo03]
+
+TASK [Mostrar mensaje final de éxito] ******************************************
+ok: [demo03] => {
+    "msg": "¡El servidor Apache se ha instalado y configurado correctamente en demo03!"
+}
+
+PLAY RECAP *********************************************************************
+demo03                     : ok=18   changed=13   unreachable=0    failed=0    skipped=0    rescued=0    ignored=1   
