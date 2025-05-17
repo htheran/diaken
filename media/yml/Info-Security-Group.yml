@@ -1,0 +1,236 @@
+---
+- name: Auditoría de Seguridad y Actualizaciones del Sistema
+  hosts: target_group
+  become: true
+  vars:
+    exclude_packages: "kernel*"
+
+  tasks:
+    # 1. INFORMACIÓN BÁSICA DEL SISTEMA
+    - name: Obtener información del sistema
+      ansible.builtin.setup:
+        gather_subset: '!all'
+        filter: ansible_distribution*
+      register: system_info
+
+    - name: Obtener información de tiempo de actividad
+      ansible.builtin.command: uptime
+      register: uptime_info
+      changed_when: false
+
+    - name: Mostrar información del sistema
+      ansible.builtin.debug:
+        msg: |
+          🖥️  INFORMACIÓN DEL SISTEMA
+          ==========================
+          - Distribución: {{ system_info.ansible_facts.ansible_distribution }} {{ system_info.ansible_facts.ansible_distribution_version }}
+          - Nombre del host: {{ ansible_hostname }}
+          - Kernel: {{ ansible_kernel }}
+          - Arquitectura: {{ ansible_architecture }}
+          - Tiempo de actividad: {{ uptime_info.stdout }}
+
+    # 2. INFORMACIÓN DE DISCO Y MEMORIA
+    - name: Obtener uso de disco
+      ansible.builtin.command: df -h
+      register: disk_usage
+      changed_when: false
+
+    - name: Obtener uso de memoria
+      ansible.builtin.command: free -h
+      register: memory_usage
+      changed_when: false
+
+    - name: Mostrar información de recursos
+      ansible.builtin.debug:
+        msg: |
+          💾 USO DE RECURSOS
+          ================
+          📂 Uso de disco:
+          {{ disk_usage.stdout | regex_replace('(?m)^', '  ') }}
+
+          🧠 Uso de memoria:
+          {{ memory_usage.stdout | regex_replace('(?m)^', '  ') }}
+
+    # 3. INFORMACIÓN DE ACTUALIZACIONES
+    - name: Actualizar caché de paquetes (solo lectura)
+      ansible.builtin.command: dnf makecache
+      changed_when: false
+
+    - name: Obtener información de actualizaciones disponibles
+      ansible.builtin.command: dnf check-update
+      register: updates_available
+      failed_when: updates_available.rc == 100
+      changed_when: false
+      ignore_errors: true
+
+    - name: Obtener actualizaciones de seguridad
+      ansible.builtin.shell: |
+        dnf updateinfo list updates security --security
+      register: security_updates
+      changed_when: false
+      ignore_errors: true
+
+    - name: Analizar actualizaciones por severidad
+      ansible.builtin.shell: |
+        for level in Critical Important Moderate Low; do
+          echo "=== $level ==="
+          dnf updateinfo list updates --severity=$level 2>/dev/null || echo "  No hay actualizaciones de nivel $level"
+          echo ""
+        done
+      register: security_updates_by_severity
+      changed_when: false
+
+    - name: Obtener paquetes con vulnerabilidades conocidas
+      ansible.builtin.shell: |
+        dnf updateinfo list cves 2>/dev/null || echo "No se encontraron paquetes con vulnerabilidades conocidas"
+      register: vulnerable_packages
+      changed_when: false
+      ignore_errors: true
+
+    - name: Mostrar resumen de actualizaciones
+      ansible.builtin.debug:
+        msg: |
+          🔄 ACTUALIZACIONES DISPONIBLES
+          ===========================
+          {{ updates_available.stdout | default('  No hay actualizaciones disponibles') | regex_replace('(?m)^', '  ') }}
+
+          🔒 ACTUALIZACIONES DE SEGURIDAD
+          =============================
+          {{ security_updates_by_severity.stdout | default('  No se encontraron actualizaciones de seguridad') | regex_replace('(?m)^', '  ') }}
+
+          ⚠️  PAQUETES VULNERABLES
+          ======================
+          {{ vulnerable_packages.stdout | regex_replace('(?m)^', '  ') }}
+
+    # 4. ANÁLISIS DE SEGURIDAD
+    - name: Buscar archivos con permisos inseguros
+      ansible.builtin.shell: |
+        echo "Archivos con permisos 777:"
+        find / -type f -perm 0777 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" 2>/dev/null | head -n 10
+        echo -e "\nArchivos con permisos 666:"
+        find / -type f -perm 0666 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" 2>/dev/null | head -n 10
+      register: insecure_files
+      changed_when: false
+      ignore_errors: true
+
+    - name: Verificar usuarios con acceso root
+      ansible.builtin.shell: |
+        echo "Usuarios con acceso a sudo:"
+        grep -Po '^sudo.+:\K.*$' /etc/group || echo "  No se encontraron usuarios con acceso sudo"
+        echo -e "\nUsuarios con acceso a /etc/sudoers:"
+        grep -v '^#\|^$' /etc/sudoers 2>/dev/null || echo "  No se encontraron entradas personalizadas en /etc/sudoers"
+      register: sudo_users
+      changed_when: false
+
+    - name: Mostrar información de seguridad
+      ansible.builtin.debug:
+        msg: |
+          🔐 ANÁLISIS DE SEGURIDAD
+          =======================
+          
+          📁 ARCHIVOS CON PERMISOS INSEGUROS:
+          {{ insecure_files.stdout | regex_replace('(?m)^', '  ') }}
+
+          👥 USUARIOS CON PRIVILEGIOS:
+          {{ sudo_users.stdout | regex_replace('(?m)^', '  ') }}
+
+    # 5. VERIFICACIÓN DE SERVICIOS
+    - name: Verificar servicios en ejecución
+      ansible.builtin.command: systemctl list-units --type=service --state=running --no-pager
+      register: running_services
+      changed_when: false
+
+    - name: Verificar servicios con fallos
+      ansible.builtin.command: systemctl list-units --type=service --state=failed --no-pager
+      register: failed_services
+      changed_when: false
+
+    - name: Verificar puertos abiertos
+      ansible.builtin.shell: |
+        ss -tuln
+      register: open_ports
+      changed_when: false
+
+    - name: Mostrar estado de servicios
+      ansible.builtin.debug:
+        msg: |
+          🚦 ESTADO DE SERVICIOS
+          ====================
+          
+          🔵 SERVICIOS EN EJECUCIÓN ({{ running_services.stdout_lines | length - 6 if running_services.stdout_lines is defined else 0 }}):
+          {{ running_services.stdout | regex_replace('(?m)^', '  ') }}
+
+          🔴 SERVICIOS CON FALLOS:
+          {{ failed_services.stdout | regex_replace('(?m)^', '  ') }}
+
+          🔌 PUERTOS ABIERTOS:
+          {{ open_ports.stdout | regex_replace('(?m)^', '  ') }}
+
+    # 6. INFORMACIÓN DE REINICIO
+    - name: Verificar si se requiere reinicio
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required_file
+
+    - name: Verificar si hay servicios que requieren reinicio
+      ansible.builtin.shell: |
+        if [ -f /usr/bin/needs-restarting ]; then
+          needs-restarting -r
+        else
+          echo "El comando needs-restarting no está disponible"
+        fi
+      register: reboot_required_services
+      changed_when: false
+      ignore_errors: true
+
+    # 7. GENERAR INFORME FINAL
+    - name: Generar informe ejecutivo
+      ansible.builtin.debug:
+        msg: |
+          📊 INFORME EJECUTIVO DE SEGURIDAD
+          ================================
+          📅 Fecha: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
+          🖥️  Host: {{ ansible_hostname }} ({{ ansible_fqdn }})
+          🏷️  Sistema: {{ system_info.ansible_facts.ansible_distribution }} {{ system_info.ansible_facts.ansible_distribution_version }}
+          🚀 Kernel: {{ ansible_kernel }}
+          ⏱️  Uptime: {{ uptime_info.stdout }}
+
+          🔍 RESUMEN DE ESTADO
+          -------------------
+          🔄 Actualizaciones disponibles: {{ 'Sí' if updates_available.rc == 100 else 'No' }}
+          🔒 Actualizaciones de seguridad: {{ 'Sí' if security_updates.stdout_lines | length > 1 else 'No' }}
+          ⚠️  Paquetes vulnerables: {{ 'Sí' if 'No se encontraron' not in vulnerable_packages.stdout else 'No' }}
+          🔥 Servicios con fallos: {{ 'Sí' if failed_services.stdout_lines | length > 1 else 'No' }}
+          🔄 Reinicio requerido: {{ 'Sí' if (reboot_required_file.stat.exists or (reboot_required_services is defined and reboot_required_services.rc == 1)) else 'No' }}
+
+          📋 RECOMENDACIONES
+          -----------------
+          {% if updates_available.rc == 100 %}
+          1. 📌 Actualizaciones pendientes: Se recomienda revisar e instalar las actualizaciones disponibles.
+          {% endif %}
+          {% if security_updates.stdout_lines | length > 1 %}
+          2. 🔒 Hay actualizaciones de seguridad disponibles. Se recomienda priorizar su instalación.
+          {% endif %}
+          {% if 'No se encontraron' not in vulnerable_packages.stdout %}
+          3. ⚠️  Se detectaron paquetes con vulnerabilidades conocidas. Se recomienda actualizarlos.
+          {% endif %}
+          {% if failed_services.stdout_lines | length > 1 %}
+          4. ❗ Hay servicios con fallos. Se recomienda revisar el estado de los servicios.
+          {% endif %}
+          {% if reboot_required_file.stat.exists or (reboot_required_services is defined and reboot_required_services.rc == 1) %}
+          5. 🔄 Se recomienda programar un reinicio del sistema para aplicar actualizaciones pendientes.
+          {% endif %}
+          {% if updates_available.rc != 100 and 
+                security_updates.stdout_lines | length <= 1 and 
+                'No se encontraron' in vulnerable_packages.stdout and 
+                failed_services.stdout_lines | length <= 1 and 
+                not reboot_required_file.stat.exists and 
+                (reboot_required_services is not defined or reboot_required_services.rc != 1) %}
+          ✅ El sistema parece estar actualizado y seguro.
+          {% endif %}
+
+          📅 Próximos pasos:
+          1. Revisar las actualizaciones pendientes
+          2. Aplicar parches de seguridad
+          3. Revisar servicios con fallos
+          4. Programar mantenimiento si es necesario

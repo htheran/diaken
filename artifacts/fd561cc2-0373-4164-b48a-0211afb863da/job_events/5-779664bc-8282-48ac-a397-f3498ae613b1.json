@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "779664bc-8282-48ac-a397-f3498ae613b1", "counter": 5, "stdout": "\u001b[0;31m  . unacceptable character #x001b: control characters are not allowed\u001b[0m", "start_line": 4, "end_line": 5, "runner_ident": "fd561cc2-0373-4164-b48a-0211afb863da", "created": "2025-05-17T11:32:35.951768+00:00"}

@@ -195,10 +195,13 @@
         </li>
         <!-- Cerrar Sesión -->
         <li class="nav-item">
-          <a href="{% url 'logout' %}" class="nav-link">
-            <i class="nav-icon fas fa-sign-out-alt"></i>
-            <p>Cerrar Sesión</p>
-          </a>
+          <form action="{% url 'logout' %}" method="post" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="nav-link" style="background:none;border:none;padding:0;width:100%;text-align:left;">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p style="display:inline;">Logout</p>
+            </button>
+          </form>
         </li>
       </ul>
     </nav>

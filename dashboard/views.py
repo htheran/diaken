@@ -1,4 +1,77 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import get_user_model, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
+from django.urls import reverse
+
+User = get_user_model()
+
+@login_required
+def profile(request):
+    return render(request, 'dashboard/profile.html')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def user_management(request):
+    users = User.objects.all()
+    return render(request, 'dashboard/user_management.html', {'users': users})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def user_create(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        is_superuser = request.POST.get('is_superuser') == '1'
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.is_superuser = is_superuser
+        user.is_staff = is_superuser
+        user.save()
+        return redirect('user_management')
+    return render(request, 'dashboard/user_form.html', {'form': {}, 'user_obj': None})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def user_edit(request, user_id):
+    user_obj = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        user_obj.email = request.POST.get('email')
+        password = request.POST.get('password')
+        is_superuser = request.POST.get('is_superuser') == '1'
+        user_obj.is_superuser = is_superuser
+        user_obj.is_staff = is_superuser
+        if password:
+            user_obj.set_password(password)
+        user_obj.save()
+        return redirect('user_management')
+    form = {'username': user_obj.username, 'email': user_obj.email, 'is_superuser': user_obj.is_superuser}
+    return render(request, 'dashboard/user_form.html', {'form': form, 'user_obj': user_obj})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def user_delete(request, user_id):
+    user_obj = get_object_or_404(User, id=user_id)
+    if user_obj.is_superuser:
+        messages.error(request, 'Cannot delete admin user.')
+    else:
+        user_obj.delete()
+    return redirect('user_management')
+
+@login_required
+def password_change(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('profile')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'registration/password_change_form.html', {'form': form})
+
 from inventory.models import Environment, Group, Host
 from django.db.models import Count
 

@@ -1,0 +1,43 @@
+[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17[0m
+
+PLAY [Optimización de sistema y limpieza de kernels] ***************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar kernel actual] *************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar espacio en /boot] **********************************************
+[0;32mok: [demo03][0m
+
+TASK [Listar kernels instalados] ***********************************************
+[0;32mok: [demo03][0m
+
+TASK [Eliminar kernels antiguos (más de 2)] ************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Limitar kernels guardados permanentemente] *******************************
+[0;33mchanged: [demo03][0m
+
+TASK [Actualizar todos los paquetes] *******************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar tuned y utilidades] *********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Configurar parámetros de kernel] *****************************************
+[0;33mchanged: [demo03] => (item={'name': 'vm.swappiness', 'value': '10'})[0m
+[0;33mchanged: [demo03] => (item={'name': 'vm.dirty_ratio', 'value': '20'})[0m
+[0;33mchanged: [demo03] => (item={'name': 'vm.dirty_background_ratio', 'value': '10'})[0m
+[0;33mchanged: [demo03] => (item={'name': 'net.core.somaxconn', 'value': '1024'})[0m
+
+TASK [Aplicar perfil de rendimiento tuned] *************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Establecer scheduler a none] *********************************************
+[0;31mAn exception occurred during task execution. To see the full traceback, use -vvv. The error was: OSError: [Errno 18] Invalid cross-device link: b'/home/user_diaken/.ansible/tmp/ansible-tmp-1747480292.7108-166826-43104338931163/tmppbu48pze' -> b'/sys/devices/pci0000:00/0000:00:15.0/0000:03:00.0/host0/target0:0:0/0:0:0:0/block/sda/queue/scheduler'[0m
+[0;31mfailed: [demo03] (item=sda) => {"ansible_loop_var": "item", "changed": false, "item": "sda", "msg": "The destination directory (/sys/devices/pci0000:00/0000:00:15.0/0000:03:00.0/host0/target0:0:0/0:0:0:0/block/sda/queue) is not writable by the current user. Error was: [Errno 13] Permission denied: b'/sys/devices/pci0000:00/0000:00:15.0/0000:03:00.0/host0/target0:0:0/0:0:0:0/block/sda/queue/.ansible_tmpjsqcrgjdscheduler'"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=10  [0m [0;33mchanged=5   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

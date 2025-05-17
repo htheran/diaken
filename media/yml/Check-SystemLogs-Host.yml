@@ -1,0 +1,127 @@
+---
+- name: Revisar logs del sistema y autenticación
+  hosts: target_host
+  become: yes
+  
+  tasks:
+    - name: Verificar si los archivos de log existen
+      stat:
+        path: "{{ item }}"
+      loop:
+        - /var/log/secure
+        - /var/log/messages
+      register: log_files
+      ignore_errors: yes
+      tags: [logs, check]
+
+    - name: Mostrar últimas 50 líneas de /var/log/secure (si existe)
+      command: tail -n 50 /var/log/secure
+      register: secure_logs
+      when: log_files.results[0].stat.exists | default(false)
+      changed_when: false
+      tags: [logs, secure]
+
+    - name: Mostrar últimas 50 líneas de /var/log/messages (si existe)
+      command: tail -n 50 /var/log/messages
+      register: messages_logs
+      when: log_files.results[1].stat.exists | default(false)
+      changed_when: false
+      tags: [logs, messages]
+
+    - name: Buscar intentos fallidos de autenticación en secure
+      shell: "grep -i 'failed' /var/log/secure | tail -n 50"
+      register: failed_auth
+      when: log_files.results[0].stat.exists | default(false)
+      args:
+        executable: /bin/bash
+      ignore_errors: yes
+      changed_when: false
+      tags: [logs, auth]
+
+    - name: Buscar errores críticos en messages
+      shell: "grep -i -E 'error|fail|critical' /var/log/messages | tail -n 50"
+      register: system_errors
+      when: log_files.results[1].stat.exists | default(false)
+      args:
+        executable: /bin/bash
+      ignore_errors: yes
+      changed_when: false
+      tags: [logs, errors]
+
+  post_tasks:
+    - name: Procesar logs de autenticación
+      set_fact:
+        auth_summary: |
+          {%- set failed_attempts = [] -%}
+          {%- for line in failed_auth.stdout_lines | default([]) -%}
+            {%- if 'Failed password' in line or 'authentication failure' in line -%}
+              {%- set parts = line.split(' ')[:5] -%}
+              {%- set _ = failed_attempts.append({'time': ' '.join(parts[0:3]), 'user': parts[4] if parts|length > 4 else 'unknown'}) -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {{ failed_attempts | unique | list | to_json }}
+
+    - name: Procesar errores del sistema
+      set_fact:
+        errors_summary: |
+          {%- set unique_errors = [] -%}
+          {%- for line in system_errors.stdout_lines | default([]) -%}
+            {%- if 'ansible-ansible.legacy.command' not in line -%}
+              {%- set error_msg = line.split(']: ')[1] | default(line) | trim -%}
+              {%- if error_msg and error_msg not in unique_errors -%}
+                {%- set _ = unique_errors.append(error_msg) -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {{ unique_errors[:10] | to_json }}
+
+    - name: Mostrar resumen ejecutivo
+      debug:
+        msg: |
+          
+          ==================== RESUMEN DEL SISTEMA ====================
+          HOST: {{ ansible_hostname }}
+          SISTEMA: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          UPTIME: {{ ansible_uptime_seconds | int / 3600 | round(1) }} horas
+          
+          🔐 AUTENTICACIÓN
+          {% if (auth_summary | from_json | length) > 0 %}
+          ❌ INTENTOS FALLIDOS ({{ (auth_summary | from_json) | length }}):
+          {% for attempt in auth_summary | from_json %}
+          • {{ attempt.time }} - Usuario: {{ attempt.user }}
+          {% endfor %}
+          {% else %}
+          ✅ No se detectaron intentos de autenticación fallidos
+          {% endif %}
+          
+          ⚠️  ERRORES RECIENTES
+          {% set errors = errors_summary | from_json %}
+          {% if errors | length > 0 %}
+          {% for error in errors %}
+          • {{ error | regex_replace('\s+', ' ') | trim }}
+          {% endfor %}
+          {% else %}
+          ✅ No se encontraron errores críticos
+          {% endif %}
+          
+          📊 RECURSOS DEL SISTEMA
+          • Memoria: {{ (100 - ansible_memory_mb.real.free / ansible_memory_mb.real.total * 100) | round(1) }}% usado
+          {% set has_disk_info = false %}
+          {% for mount in ansible_mounts %}
+          {% if mount.size_available is defined and mount.size is defined and mount.size > 0 %}
+          {% set has_disk_info = true %}
+          {% endif %}
+          {% endfor %}
+          {% if has_disk_info %}
+          • Almacenamiento:
+          {% for mount in ansible_mounts %}
+          {% if mount.size_available is defined and mount.size is defined and mount.size > 0 %}
+            - {{ mount.mount }}: {{ (100 - mount.size_available / mount.size * 100) | round(1) }}% usado
+              ({{ (mount.size_available / 1073741824) | round(1) }}GB libres de {{ (mount.size / 1073741824) | round(1) }}GB)
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          
+          🔍 Para ver detalles completos, ejecuta con -v
+          ===============================================
+      tags: [logs, summary]

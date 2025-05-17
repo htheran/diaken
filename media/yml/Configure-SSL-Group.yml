@@ -1,0 +1,109 @@
+---
+- name: Configurar HTTPS con mod_ssl (Grupo)
+  hosts: target_group
+  become: yes
+  vars:
+    subdomain: "{{ inventory_hostname }}"
+    # Usar variables pasadas desde Django en lugar de valores fijos
+    domain: "{{ domain }}"
+    server_root: "{{ server_root }}"
+    log_root: "{{ log_root }}"
+    http_port: "{{ http_port }}"
+    https_port: "{{ https_port }}"
+
+  tasks:
+    - name: Verificar si el modulo ssl ya esta habilitado
+      command: httpd -t -D DUMP_MODULES | grep ssl
+      register: ssl_module_status
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - ssl
+
+    - name: Instalar mod_ssl si no esta instalado
+      package:
+        name: mod_ssl
+        state: present
+      when: "'ssl_module' not in ssl_module_status.stdout"
+      tags:
+        - ssl
+
+    - name: Crear directorio para certificados
+      file:
+        path: /etc/ssl/httpd
+        state: directory
+      tags:
+        - ssl
+
+    - name: Verificar si el enlace simbolico ssl.conf existe
+      stat:
+        path: /etc/httpd/conf.d/ssl.conf
+      register: ssl_link_stat
+      tags:
+         - ssl
+
+    - name: Crear enlace simbolico al modulo SSL (Red Hat)
+      file:
+        src: /etc/httpd/conf.modules.d/00-ssl.conf
+        dest: /etc/httpd/conf.d/ssl.conf
+        state: link
+      notify:
+         - Reiniciar Apache
+      when: ssl_link_stat.stat.exists == false
+      tags:
+        - ssl
+
+    - name: Copiar certificado SSL al servidor
+      copy:
+        src: /opt/www/media/templates/ssl/certificado.crt
+        dest: /etc/ssl/httpd/{{ inventory_hostname }}.certificado.crt
+      tags:
+        - ssl
+
+    - name: Copiar clave privada SSL al servidor
+      copy:
+        src: /opt/www/media/templates/ssl/certificado.key
+        dest: /etc/ssl/httpd/{{ inventory_hostname }}.certificado.key
+      tags:
+        - ssl
+
+    - name: Copiar clave provider SSL al servidor
+      copy:
+        src: /opt/www/media/templates/ssl/certificado-provider.crt
+        dest: /etc/ssl/httpd/{{ inventory_hostname }}-provider.crt
+      tags:
+        - ssl
+
+    - name: Configurar VirtualHost para HTTPS
+      template:
+        src: /opt/www/media/templates/group/virtualhost-ssl.conf.j2
+        dest: /etc/httpd/conf.d/{{ inventory_hostname }}-ssl.conf
+      notify:
+        - Reiniciar Apache
+      tags:
+        - ssl
+
+    - name: Abrir puerto HTTPS permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ https_port }}/tcp
+      ignore_errors: true
+      tags:
+        - ssl
+
+    - name: Recargar firewalld
+      command: firewall-cmd --reload
+      ignore_errors: true
+      tags:
+        - ssl
+
+  handlers:
+    - name: Reiniciar Apache
+      service:
+        name: httpd
+        state: restarted
+      tags:
+        - ssl
+
+  post_tasks:
+    - name: Mensaje de confirmacion
+      debug:
+        msg: "HTTPS habilitado en {{ inventory_hostname }} (grupo {{ target_group }}) en el puerto {{ https_port }}"

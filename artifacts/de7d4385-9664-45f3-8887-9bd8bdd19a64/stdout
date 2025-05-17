@@ -1,0 +1,35 @@
+
+PLAY [Revisar logs del sistema y autenticación] ********************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si los archivos de log existen] ********************************
+[0;32mok: [demo03] => (item=/var/log/secure)[0m
+[0;32mok: [demo03] => (item=/var/log/messages)[0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/secure (si existe)] ****************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/messages (si existe)] **************
+[0;32mok: [demo03][0m
+
+TASK [Buscar intentos fallidos de autenticación en secure] *********************
+[0;32mok: [demo03][0m
+
+TASK [Buscar errores críticos en messages] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Procesar logs de autenticación] ******************************************
+[0;32mok: [demo03][0m
+
+TASK [Procesar errores del sistema] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar resumen ejecutivo] ***********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "=== RESUMEN EJECUTIVO ===\nSistema: OracleLinux 9.5\nÚltimo arranque: 2025-05-17 06:36:46\n\n[AUTENTICACIÓN]\nINTENTOS FALLIDOS (1):\nMay 12 05:54:07 diaken\n\n\n[ERRORES DEL SISTEMA]\nfailure 1\\nCannot change IRQ 0 affinity: Input/output error\\nansible-ansible.legacy.command Invoked with _raw_params=grep -i \"failed\" /var/log/secure | tail -n 50 _uses_shell=False stdin_add_newline=True strip_empty_ends=True argv=None chdir=None executable=None creates=None removes=None stdin=None\\nansible-ansible.legacy.command Invoked with _raw_params=grep -i -E \"error|fail|critical\" /var/log/messages | tail -n 50 _uses_shell=False stdin_add_newline=True strip_empty_ends=True argv=None chdir=None executable=None creates=None removes=None stdin=None\\nansible-ansible.legacy.command Invoked with executable=/bin/bash _raw_params=grep -i 'failed' /var/log/secure | tail -n 50 _uses_shell=True stdin_add_newline=True strip_empty_ends=True argv=None chdir=None creates=None removes=None stdin=None\\nansible-ansible.legacy.command Invoked with executable=/bin/bash _raw_params=grep -i -E 'error|fail|critical' /var/log/messages | tail -n 50 _uses_shell=True stdin_add_newline=True strip_empty_ends=True argv=None chdir=None creates=None removes=None stdin=None\n\n\n[ESTADO DEL SISTEMA]\n• Uptime: 0.3338888888888889 horas\n• Memoria usada: 32.6% de 1GB\n• Espacio en disco:\n\n[DETALLES COMPLETOS]\nEjecuta con -v para ver los logs completos\n\n=== FIN DEL REPORTE ===\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo03[0m                     : [0;32mok=9   [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

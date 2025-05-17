@@ -1,0 +1,33 @@
+
+PLAY [Revisar logs del sistema y autenticación] ********************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar si los archivos de log existen] ********************************
+[0;32mok: [demo02] => (item=/var/log/secure)[0m
+[0;32mok: [demo02] => (item=/var/log/messages)[0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/secure (si existe)] ****************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/messages (si existe)] **************
+[0;32mok: [demo02][0m
+
+TASK [Buscar intentos fallidos de autenticación en secure] *********************
+[0;32mok: [demo02][0m
+
+TASK [Buscar errores críticos en messages] *************************************
+[0;32mok: [demo02][0m
+
+TASK [Procesar logs de autenticación] ******************************************
+[0;32mok: [demo02][0m
+
+TASK [Procesar errores del sistema] ********************************************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar resumen ejecutivo] ***********************************************
+[0;31mfatal: [demo02]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'dict object' has no attribute 'size'. 'dict object' has no attribute 'size'\n\nThe error appears to be in '/tmp/tmpni7c4g_c.yml': line 75, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Mostrar resumen ejecutivo\n      ^ here\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo02[0m                     : [0;32mok=8   [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

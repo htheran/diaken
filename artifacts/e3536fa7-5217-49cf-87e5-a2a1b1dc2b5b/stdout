@@ -1,0 +1,86 @@
+
+PLAY [Auditoría de Seguridad y Actualizaciones del Sistema] ********************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Obtener información del sistema] *****************************************
+[0;32mok: [demo02][0m
+
+TASK [Obtener información de tiempo de actividad] ******************************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar información del sistema] *****************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "🖥️  INFORMACIÓN DEL SISTEMA\n==========================\n- Distribución: OracleLinux 9.5\n- Nombre del host: diaken\n- Kernel: 5.15.0-308.179.6.3.el9uek.x86_64\n- Arquitectura: x86_64\n- Tiempo de actividad:  14:26:10 up  8:02,  1 user,  load average: 0.00, 0.00, 0.00\n"[0m
+[0;32m}[0m
+
+TASK [Obtener uso de disco] ****************************************************
+[0;32mok: [demo02][0m
+
+TASK [Obtener uso de memoria] **************************************************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar información de recursos] *****************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "💾 USO DE RECURSOS\n================\n📂 Uso de disco:\n  Filesystem           Size  Used Avail Use% Mounted on\n  devtmpfs             4.0M     0  4.0M   0% /dev\n  tmpfs                756M     0  756M   0% /dev/shm\n  tmpfs                303M  8.8M  294M   3% /run\n  /dev/mapper/ol-root   37G  4.9G   32G  14% /\n  /dev/sda2            960M  562M  399M  59% /boot\n  /dev/sda1            599M  6.3M  593M   2% /boot/efi\n  tmpfs                152M     0  152M   0% /run/user/1000\n\n🧠 Uso de memoria:\n                 total        used        free      shared  buff/cache   available\n  Mem:           1.5Gi       437Mi       578Mi       9.0Mi       661Mi       1.0Gi\n  Swap:          2.0Gi          0B       2.0Gi\n"[0m
+[0;32m}[0m
+
+TASK [Actualizar caché de paquetes (solo lectura)] *****************************
+[0;32mok: [demo02][0m
+
+TASK [Obtener información de actualizaciones disponibles] **********************
+[0;32mok: [demo02][0m
+
+TASK [Obtener actualizaciones de seguridad] ************************************
+[0;32mok: [demo02][0m
+
+TASK [Analizar actualizaciones por severidad] **********************************
+[0;32mok: [demo02][0m
+
+TASK [Obtener paquetes con vulnerabilidades conocidas] *************************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar resumen de actualizaciones] **************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "🔄 ACTUALIZACIONES DISPONIBLES\n===========================\n  Last metadata expiration check: 0:00:03 ago on Sat 17 May 2025 02:26:14 PM -05.\n\n🔒 ACTUALIZACIONES DE SEGURIDAD\n=============================\n  === Critical ===\n    No hay actualizaciones de nivel Critical\n  \n  === Important ===\n    No hay actualizaciones de nivel Important\n  \n  === Moderate ===\n    No hay actualizaciones de nivel Moderate\n  \n  === Low ===\n    No hay actualizaciones de nivel Low\n\n⚠️  PAQUETES VULNERABLES\n======================\n  Last metadata expiration check: 0:00:09 ago on Sat 17 May 2025 02:26:14 PM -05.\n"[0m
+[0;32m}[0m
+
+TASK [Buscar archivos con permisos inseguros] **********************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar usuarios con acceso root] **************************************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar información de seguridad] ****************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "🔐 ANÁLISIS DE SEGURIDAD\n=======================\n\n📁 ARCHIVOS CON PERMISOS INSEGUROS:\n  Archivos con permisos 777:\n  \n  Archivos con permisos 666:\n\n👥 USUARIOS CON PRIVILEGIOS:\n  Usuarios con acceso a sudo:\n    No se encontraron usuarios con acceso sudo\n  \n  Usuarios con acceso a /etc/sudoers:\n  Defaults   !visiblepw\n  Defaults    always_set_home\n  Defaults    match_group_by_gid\n  Defaults    always_query_group_plugin\n  Defaults    env_reset\n  Defaults    env_keep =  \"COLORS DISPLAY HOSTNAME HISTSIZE KDEDIR LS_COLORS\"\n  Defaults    env_keep += \"MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE\"\n  Defaults    env_keep += \"LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES\"\n  Defaults    env_keep += \"LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE\"\n  Defaults    env_keep += \"LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY\"\n  Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin\n  root\tALL=(ALL) \tALL\n  %wheel\tALL=(ALL)\tALL\n"[0m
+[0;32m}[0m
+
+TASK [Verificar servicios en ejecución] ****************************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar servicios con fallos] ******************************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar puertos abiertos] **********************************************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar estado de servicios] *********************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "🚦 ESTADO DE SERVICIOS\n====================\n\n🔵 SERVICIOS EN EJECUCIÓN (19):\n    UNIT                              LOAD   ACTIVE SUB     DESCRIPTION\n    auditd.service                    loaded active running Security Auditing Service\n    crond.service                     loaded active running Command Scheduler\n    dbus-broker.service               loaded active running D-Bus System Message Bus\n    firewalld.service                 loaded active running firewalld - dynamic firewall daemon\n    getty@tty1.service                loaded active running Getty on tty1\n    httpd.service                     loaded active running The Apache HTTP Server\n    irqbalance.service                loaded active running irqbalance daemon\n    NetworkManager-dispatcher.service loaded active running Network Manager Script Dispatcher Service\n    NetworkManager.service            loaded active running Network Manager\n    polkit.service                    loaded active running Authorization Manager\n    pure-ftpd.service                 loaded active running Pure-FTPd FTP server\n    rsyslog.service                   loaded active running System Logging Service\n    sshd.service                      loaded active running OpenSSH server daemon\n    systemd-journald.service          loaded active running Journal Service\n    systemd-logind.service            loaded active running User Login Management\n    systemd-udevd.service             loaded active running Rule-based Manager for Device Events and Files\n    user@1000.service                 loaded active running User Manager for UID 1000\n    vgauthd.service                   loaded active running VGAuth Service for open-vm-tools\n    vmtoolsd.service                  loaded active running Service for virtual machines hosted on VMware\n  \n  LOAD   = Reflects whether the unit definition was properly loaded.\n  ACTIVE = The high-level unit activation state, i.e. generalization of SUB.\n  SUB    = The low-level unit activation state, values depend on unit type.\n  19 loaded units listed.\n\n🔴 SERVICIOS CON FALLOS:\n    UNIT LOAD ACTIVE SUB DESCRIPTION\n  0 loaded units listed.\n\n🔌 PUERTOS ABIERTOS:\n  Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:Port\n  tcp   LISTEN 0      8       10.100.0.120:30250      0.0.0.0:*   \n  tcp   LISTEN 0      511          0.0.0.0:443        0.0.0.0:*   \n  tcp   LISTEN 0      128          0.0.0.0:22         0.0.0.0:*   \n  tcp   LISTEN 0      9            0.0.0.0:21         0.0.0.0:*   \n  tcp   LISTEN 0      511          0.0.0.0:80         0.0.0.0:*   \n  tcp   LISTEN 0      128             [::]:22            [::]:*   \n  tcp   LISTEN 0      9               [::]:21            [::]:*   \n"[0m
+[0;32m}[0m
+
+TASK [Verificar si se requiere reinicio] ***************************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar si hay servicios que requieren reinicio] ***********************
+[0;32mok: [demo02][0m
+
+TASK [Generar informe ejecutivo] ***********************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "📊 INFORME EJECUTIVO DE SEGURIDAD\n================================\n📅 Fecha: 2025-05-17 14:26:08\n🖥️  Host: diaken (diaken.co)\n🏷️  Sistema: OracleLinux 9.5\n🚀 Kernel: 5.15.0-308.179.6.3.el9uek.x86_64\n⏱️  Uptime:  14:26:10 up  8:02,  1 user,  load average: 0.00, 0.00, 0.00\n\n🔍 RESUMEN DE ESTADO\n-------------------\n🔄 Actualizaciones disponibles: No\n🔒 Actualizaciones de seguridad: No\n⚠️  Paquetes vulnerables: Sí\n🔥 Servicios con fallos: Sí\n🔄 Reinicio requerido: No\n\n📋 RECOMENDACIONES\n-----------------\n3. ⚠️  Se detectaron paquetes con vulnerabilidades conocidas. Se recomienda actualizarlos.\n4. ❗ Hay servicios con fallos. Se recomienda revisar el estado de los servicios.\n\n📅 Próximos pasos:\n1. Revisar las actualizaciones pendientes\n2. Aplicar parches de seguridad\n3. Revisar servicios con fallos\n4. Programar mantenimiento si es necesario"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo02[0m                     : [0;32mok=23  [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

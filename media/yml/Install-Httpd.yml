@@ -1,0 +1,109 @@
+---
+- name: Configuración de servidor web en Oracle Linux 9 (Host)
+  hosts: target_host
+  become: yes
+
+  tasks:
+    - name: Actualizar sistema operativo
+      dnf:
+        name: '*'
+        state: latest
+      register: result_update
+
+    - name: Debug result_update
+      debug:
+        var: result_update
+
+    - name: Instalar Apache (httpd) y firewalld
+      dnf:
+        name:
+          - httpd
+          - firewalld
+        state: present
+
+    - name: Asegurar que los servicios httpd y firewalld estén iniciados y habilitados
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - httpd
+        - firewalld
+
+    - name: Abrir puerto HTTP permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ http_port }}/tcp
+      ignore_errors: true
+
+    - name: Abrir puerto HTTPS permanentemente en el firewall
+      command: firewall-cmd --permanent --add-port={{ https_port }}/tcp
+      ignore_errors: true
+
+    - name: Recargar firewalld
+      command: firewall-cmd --reload
+      ignore_errors: true
+
+    - name: Deshabilitar SELinux temporalmente (en la sesión actual)
+      command: setenforce 0
+      ignore_errors: true
+
+    - name: Deshabilitar SELinux permanentemente (en /etc/selinux/config)
+      replace:
+        path: /etc/selinux/config
+        regexp: '^SELINUX=.*'
+        replace: 'SELINUX=disabled'
+      ignore_errors: true
+
+    - name: Crear directorios necesarios para el sitio y logs
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('0755') }}"
+        owner: root
+        group: root
+      loop:
+        - { path: "{{ server_root }}/{{ target_host }}" }
+        - { path: "{{ log_root }}/{{ target_host }}" }
+        - { path: "/etc/httpd/conf.d" }
+
+    - name: Renombrar el archivo actual httpd.conf a httpd.conf.bak si existe
+      command:
+        cmd: mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
+      args:
+        creates: /etc/httpd/conf/httpd.conf.bak
+      ignore_errors: true
+
+    - name: Copiar el archivo httpd.conf desde la plantilla específica de host
+      template:
+        src: /opt/www/media/templates/host/httpd.conf.j2
+        dest: /etc/httpd/conf/httpd.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copiar el archivo de VirtualHost desde la plantilla específica de host
+      template:
+        src: /opt/www/media/templates/host/virtualhost.conf.j2
+        dest: "/etc/httpd/conf.d/{{ target_host }}.conf"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copiar index.html desde la plantilla específica de host
+      template:
+        src: /opt/www/media/templates/host/index.html.j2
+        dest: "{{ server_root }}/{{ target_host }}/index.html"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Verificar sintaxis de Apache antes de reiniciar
+      command: apachectl configtest
+
+    - name: Reiniciar Apache
+      service:
+        name: httpd
+        state: restarted
+
+    - name: Mostrar mensaje final de éxito
+      debug:
+        msg: "¡El servidor Apache se ha instalado y configurado correctamente en {{ target_host }}!"

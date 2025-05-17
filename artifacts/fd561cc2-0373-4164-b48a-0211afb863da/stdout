@@ -1,0 +1,6 @@
+[0;31mERROR! We were unable to read either as JSON nor YAML, these are the errors we got from each:[0m
+[0;31mJSON: Expecting value: line 1 column 1 (char 0)[0m
+[0;31m[0m
+[0;31mSyntax Error while loading YAML.[0m
+[0;31m  . unacceptable character #x001b: control characters are not allowed[0m
+[0;31m  in "<unicode string>", position 2608[0m

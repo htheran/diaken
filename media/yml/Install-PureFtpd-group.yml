@@ -1,0 +1,499 @@
+---
+- name: Instalación y configuración de Pure-FTPd para grupos
+  hosts: target_group
+  become: yes
+  tasks:
+    # Fase 0: Validación de variables
+    - name: Validar variables requeridas
+      debug:
+        msg: "Validando variables para el host: {{ inventory_hostname }} (grupo {{ target_group }})"
+      tags:
+        - always
+
+    - name: Verificar si existen variables de configuración
+      debug:
+        msg: "Variables de configuración disponibles: {{ vars | to_json }}"
+      tags:
+        - debug
+        - never
+
+    - name: Establecer variables por defecto si no están definidas
+      set_fact:
+        server_root: "{{ server_root }}"
+        ftp_user: "{{ ftp_user }}"
+        ftp_password: "{{ ftp_password }}"
+        ftp_port: "{{ ftp_port }}"
+        pasv_min_port: "{{ pasv_min_port }}"
+        pasv_max_port: "{{ pasv_max_port }}"
+        apache_user: "{{ apache_user | default('apache') }}"
+        apache_group: "{{ apache_group | default('apache') }}"
+      tags:
+        - always
+
+    - name: Mostrar variables que se utilizarán
+      debug:
+        msg: |
+          Utilizando las siguientes variables:
+          - server_root: {{ server_root }}
+          - ftp_user: {{ ftp_user }}
+          - ftp_port: {{ ftp_port }}
+          - pasv_min_port: {{ pasv_min_port }}
+          - pasv_max_port: {{ pasv_max_port }}
+          - apache_user: {{ apache_user }}
+          - apache_group: {{ apache_group }}
+      tags:
+        - always
+
+    # Fase 1: Verificación previa y diagnóstico
+    - name: Verificar si Apache está instalado
+      command: which httpd
+      register: httpd_installed
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - diagnose
+
+    - name: Mostrar advertencia si Apache no está instalado
+      debug:
+        msg: "ADVERTENCIA: Apache no está instalado. Se recomienda instalar Apache primero usando el playbook Install HTTPD Group."
+      when: httpd_installed.rc != 0
+      tags:
+        - diagnose
+
+    - name: Verificar si Pure-FTPd está instalado
+      command: which pure-ftpd
+      register: pureftpd_installed
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - diagnose
+
+    # Fase 2: Actualización e instalación
+    - name: Actualizar sistema operativo
+      dnf:
+        name: '*'
+        state: latest
+        update_cache: yes
+      register: result_update
+      ignore_errors: yes
+      tags:
+        - install
+
+    - name: Instalar Pure-FTPd
+      dnf:
+        name: pure-ftpd
+        state: present
+      register: pureftpd_install
+      tags:
+        - install
+
+    # Fase 3: Configuración de firewall
+    - name: Asegurar que el servicio firewalld esté iniciado y habilitado
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+      ignore_errors: yes
+      tags:
+        - firewall
+
+    - name: Abrir puerto FTP permanentemente en el firewall
+      shell: firewall-cmd --permanent --add-port={{ ftp_port }}/tcp
+      ignore_errors: yes
+      tags:
+        - firewall
+
+    - name: Abrir puertos pasivos FTP en el firewall
+      shell: firewall-cmd --permanent --add-port={{ pasv_min_port }}-{{ pasv_max_port }}/tcp
+      ignore_errors: yes
+      tags:
+        - firewall
+
+    - name: Recargar firewalld
+      shell: firewall-cmd --reload
+      ignore_errors: yes
+      tags:
+        - firewall
+
+    # Fase 4: Configuración de SELinux
+    - name: Verificar si SELinux está habilitado
+      command: getenforce
+      register: selinux_status
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - selinux
+
+    - name: Configurar SELinux para permitir FTP y Apache
+      shell: |
+        setsebool -P ftpd_full_access on
+        setsebool -P httpd_can_network_connect on
+        setsebool -P httpd_unified on
+        setsebool -P allow_ftpd_full_access on
+        setsebool -P ftpd_connect_all_unreserved on
+        restorecon -Rv {{ server_root }}/{{ inventory_hostname }}
+        chcon -R -t public_content_rw_t {{ server_root }}/{{ inventory_hostname }}
+      ignore_errors: yes
+      when: selinux_status.stdout == "Enforcing" or selinux_status.stdout == "Permissive"
+      tags:
+        - selinux
+
+    # Fase 5: Crear grupo y usuario FTP
+    - name: Crear grupo FTP
+      group:
+        name: ftpgroup
+        state: present
+      tags:
+        - user
+
+    - name: Verificar si el usuario FTP existe
+      getent:
+        database: passwd
+        key: "{{ ftp_user }}"
+      register: ftp_user_exists
+      ignore_errors: yes
+      tags:
+        - user
+
+    - name: Crear usuario FTP si no existe
+      user:
+        name: "{{ ftp_user }}"
+        password: "{{ ftp_password | password_hash('sha512') }}"
+        group: ftpgroup
+        groups: "{{ apache_group }}"
+        append: yes
+        shell: /sbin/nologin
+        home: "{{ server_root }}/{{ inventory_hostname }}"
+        create_home: no
+      when: ftp_user_exists.failed is defined and ftp_user_exists.failed
+      tags:
+        - user
+
+    - name: Asegurar que el usuario FTP pertenece al grupo Apache
+      user:
+        name: "{{ ftp_user }}"
+        groups: "{{ apache_group }}"
+        append: yes
+      tags:
+        - user
+
+    - name: Asegurar que /sbin/nologin está en /etc/shells
+      lineinfile:
+        path: /etc/shells
+        line: /sbin/nologin
+        state: present
+      tags:
+        - user
+
+    # Fase 6: Crear directorios necesarios
+    - name: Verificar directorio del usuario FTP
+      stat:
+        path: "{{ server_root }}/{{ inventory_hostname }}"
+      register: ftp_dir_stat
+      tags:
+        - directories
+
+    - name: Crear directorio para el usuario FTP si no existe
+      file:
+        path: "{{ server_root }}/{{ inventory_hostname }}"
+        state: directory
+        owner: "{{ apache_user }}"
+        group: "{{ apache_group }}"
+        mode: '0775'
+      when: not ftp_dir_stat.stat.exists
+      tags:
+        - directories
+
+    # Fase 7: Limpiar instalación anterior de Pure-FTPd
+    - name: Detener servicio Pure-FTPd
+      service:
+        name: pure-ftpd
+        state: stopped
+      ignore_errors: yes
+      tags:
+        - cleanup
+
+    - name: Eliminar directorios y archivos de Pure-FTPd
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/pure-ftpd/pureftpd.pdb
+        - /etc/pureftpd.pdb
+        - /etc/pure-ftpd/auth/PureDB
+      ignore_errors: yes
+      tags:
+        - cleanup
+
+    # Fase 8: Configurar Pure-FTPd
+    - name: Crear directorios de configuración
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - /etc/pure-ftpd
+        - /etc/pure-ftpd/auth
+        - /etc/pure-ftpd/conf
+        - /etc/pure-ftpd/passwd
+      tags:
+        - configure
+
+    - name: Configurar Pure-FTPd
+      copy:
+        content: |
+          # Configuración de Pure-FTPd generada por Install-PureFTPD-Group.yml
+          PureDB                        /etc/pure-ftpd/pureftpd.pdb
+          CreateHomeDir                 yes
+          UnixAuthentication            no
+          PAMAuthentication             no
+          PassivePortRange              {{ pasv_min_port }} {{ pasv_max_port }}
+          
+          # Configuración de seguridad
+          ChrootEveryone                yes
+          NoAnonymous                   yes
+          AnonymousOnly                 no
+          
+          # Configuración de logs
+          Daemonize                     yes
+          VerboseLog                    yes
+          
+          # Configuración de conexiones
+          MaxClientsNumber              50
+          MaxClientsPerIP               8
+          
+          # Configuración de tiempos
+          MaxIdleTime                   15
+          
+          # Configuración de mensajes
+          FortunesFile                  /etc/pure-ftpd/welcome.msg
+        dest: /etc/pure-ftpd/pure-ftpd.conf
+        mode: '0644'
+      tags:
+        - configure
+
+    - name: Crear mensaje de bienvenida
+      copy:
+        content: "Bienvenido al servidor FTP de {{ inventory_hostname }} (grupo {{ target_group }})\n"
+        dest: /etc/pure-ftpd/welcome.msg
+        mode: '0644'
+      tags:
+        - configure
+
+    # Fase 9: Crear usuario virtual FTP
+    - name: Crear archivo de contraseña
+      copy:
+        content: "{{ ftp_password }}\n{{ ftp_password }}\n"
+        dest: /tmp/ftppass
+        mode: '0600'
+      tags:
+        - configure
+
+    # Corregido: Eliminado el comando cat que fallaba
+    - name: Crear usuario virtual FTP usando método directo
+      shell: |
+        cd /etc/pure-ftpd
+        rm -f /etc/pure-ftpd/pureftpd.pdb
+        mkdir -p /etc/pure-ftpd/passwd
+        echo -e "{{ ftp_password }}\n{{ ftp_password }}" | pure-pw useradd {{ ftp_user }} -u {{ ftp_user }} -g {{ apache_group }} -d {{ server_root }}/{{ inventory_hostname }}
+        pure-pw mkdb
+      args:
+        executable: /bin/bash
+      register: puredb_output
+      tags:
+        - configure
+
+    - name: Mostrar información de usuario virtual
+      debug:
+        msg: "{{ puredb_output.stdout_lines }}"
+      tags:
+        - configure
+
+    - name: Eliminar archivo de contraseña temporal
+      file:
+        path: /tmp/ftppass
+        state: absent
+      tags:
+        - configure
+
+    # Fase 10: Crear enlaces simbólicos necesarios
+    - name: Crear archivo PureDB en conf
+      copy:
+        content: "/etc/pure-ftpd/pureftpd.pdb"
+        dest: /etc/pure-ftpd/conf/PureDB
+        mode: '0644'
+      tags:
+        - configure
+
+    - name: Crear enlaces simbólicos
+      file:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        state: link
+        force: yes
+        follow: false
+      with_items:
+        - { src: "/etc/pure-ftpd/pureftpd.pdb", dest: "/etc/pureftpd.pdb" }
+        - { src: "/etc/pure-ftpd/conf/PureDB", dest: "/etc/pure-ftpd/auth/PureDB" }
+      tags:
+        - configure
+
+    # Fase 11: Establecer permisos correctos para compatibilidad Apache-FTP
+    - name: Establecer permisos correctos para directorios y archivos
+      shell: |
+        # Establecer permisos de grupo para escritura
+        find {{ server_root }}/{{ inventory_hostname }} -type d -exec chmod 2775 {} \;
+        find {{ server_root }}/{{ inventory_hostname }} -type f -exec chmod 664 {} \;
+        
+        # Mantener apache como propietario
+        chown -R {{ apache_user }}:{{ apache_group }} {{ server_root }}/{{ inventory_hostname }}
+        
+        # Establecer SGID bit en directorios para mantener el grupo
+        find {{ server_root }}/{{ inventory_hostname }} -type d -exec chmod g+s {} \;
+      ignore_errors: yes
+      tags:
+        - permissions
+
+    # Fase 12: Verificar y reiniciar Pure-FTPd
+    - name: Habilitar e iniciar servicio Pure-FTPd
+      service:
+        name: pure-ftpd
+        state: restarted
+        enabled: yes
+      register: pureftpd_service
+      tags:
+        - service
+
+    - name: Reiniciar Apache
+      service:
+        name: httpd
+        state: restarted
+      ignore_errors: yes
+      tags:
+        - service
+
+    - name: Verificar estado del servicio Pure-FTPd
+      command: systemctl status pure-ftpd
+      register: pureftpd_status
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - service
+
+    - name: Mostrar estado del servicio
+      debug:
+        msg: "{{ pureftpd_status.stdout_lines }}"
+      tags:
+        - service
+
+    # Fase 13: Actualizar index.html
+    - name: Verificar si existe index.html
+      stat:
+        path: "{{ server_root }}/{{ inventory_hostname }}/index.html"
+      register: index_exists
+      tags:
+        - index
+
+    - name: Actualizar index.html con información de FTP
+      block:
+        - name: Leer contenido del archivo index.html
+          slurp:
+            src: "{{ server_root }}/{{ inventory_hostname }}/index.html"
+          register: index_content
+          when: index_exists.stat.exists
+          
+        - name: Decodificar contenido
+          set_fact:
+            decoded_content: "{{ index_content['content'] | b64decode }}"
+          when: index_exists.stat.exists
+          
+        - name: Verificar si ya existe badge de FTP
+          set_fact:
+            has_ftp_badge: "{{ decoded_content | regex_search('FTP Status') != None }}"
+          when: index_exists.stat.exists
+          
+        - name: Añadir badge de FTP si no existe
+          replace:
+            path: "{{ server_root }}/{{ inventory_hostname }}/index.html"
+            regexp: '(<div class="container mt-5">.*?<h1>)'
+            replace: '\1<div class="alert alert-success mb-4"><strong>FTP Status:</strong> Pure-FTPd Configured and Running ({{ ansible_date_time.date }})</div>'
+          when: index_exists.stat.exists and (has_ftp_badge is not defined or not has_ftp_badge)
+          
+        - name: Actualizar badge de FTP si ya existe
+          replace:
+            path: "{{ server_root }}/{{ inventory_hostname }}/index.html"
+            regexp: '<div class="alert alert-(success|warning|danger) mb-4"><strong>FTP Status:</strong>.*?</div>'
+            replace: '<div class="alert alert-success mb-4"><strong>FTP Status:</strong> Pure-FTPd Configured and Running ({{ ansible_date_time.date }})</div>'
+          when: index_exists.stat.exists and has_ftp_badge is defined and has_ftp_badge
+      when: index_exists.stat.exists and pureftpd_service.failed is not defined
+      ignore_errors: yes
+      tags:
+        - index
+
+    # Fase 14: Verificar acceso FTP
+    - name: Verificar acceso FTP local
+      shell: |
+        echo -e "user {{ ftp_user }} {{ ftp_password }}\nls\nquit" | nc localhost {{ ftp_port }}
+      register: ftp_test
+      ignore_errors: yes
+      tags:
+        - test
+
+    - name: Mostrar resultado de prueba FTP
+      debug:
+        msg: "{{ ftp_test.stdout_lines }}"
+      tags:
+        - test
+
+    # Fase 15: Verificar acceso HTTP
+    - name: Verificar acceso HTTP
+      uri:
+        url: "http://{{ inventory_hostname }}"
+        return_content: yes
+      register: http_test
+      ignore_errors: yes
+      tags:
+        - test
+
+    - name: Mostrar resultado de prueba HTTP
+      debug:
+        msg: |
+          Resultado de prueba HTTP:
+          - Código de estado: {{ http_test.status | default('Error') }}
+      ignore_errors: yes
+      tags:
+        - test
+
+    # Fase 16: Resumen y recomendaciones
+    - name: Mensaje de diagnóstico y recomendaciones
+      debug:
+        msg: |
+          Instalación de Pure-FTPd completada:
+          - Host: {{ inventory_hostname }} (grupo {{ target_group }})
+          - Estado del servicio: {{ 'Activo' if pureftpd_service.failed is not defined else 'Inactivo' }}
+          - Directorio FTP: {{ server_root }}/{{ inventory_hostname }}
+          - Usuario FTP: {{ ftp_user }}
+          - Puerto: {{ ftp_port }}
+          - Rango de puertos pasivos: {{ pasv_min_port }}-{{ pasv_max_port }}
+          
+          Configuración de permisos:
+          - Apache sigue siendo propietario de los archivos: {{ apache_user }}
+          - El grupo Apache tiene permisos de escritura: {{ apache_group }}
+          - El usuario FTP pertenece al grupo Apache: {{ ftp_user }}
+          - Directorios: 2775 (rwxrwsr-x) con bit SGID
+          - Archivos: 664 (rw-rw-r--)
+          
+          Para probar la conexión FTP:
+          - Servidor: {{ inventory_hostname }}
+          - Puerto: {{ ftp_port }}
+          - Usuario: {{ ftp_user }}
+          - Contraseña: [La configurada en settings]
+          
+          Ventajas de Pure-FTPd:
+          1. Configuración sencilla y robusta
+          2. Excelente rendimiento y estabilidad
+          3. Soporte para usuarios virtuales
+          4. Buena integración con SELinux
+          5. Menor huella de memoria que otras alternativas
+      tags:
+        - always

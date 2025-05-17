@@ -1,0 +1,53 @@
+[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17[0m
+
+PLAY [Optimización de sistema y limpieza de kernels] ***************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar kernel actual] *************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar espacio en /boot] **********************************************
+[0;32mok: [demo03][0m
+
+TASK [Listar kernels instalados] ***********************************************
+[0;32mok: [demo03][0m
+
+TASK [Eliminar kernels antiguos (más de 2)] ************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Limitar kernels guardados permanentemente] *******************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar todos los paquetes] *******************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar tuned y utilidades] *********************************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar parámetros de kernel] *****************************************
+[0;32mok: [demo03] => (item={'name': 'vm.swappiness', 'value': '10'})[0m
+[0;32mok: [demo03] => (item={'name': 'vm.dirty_ratio', 'value': '20'})[0m
+[0;32mok: [demo03] => (item={'name': 'vm.dirty_background_ratio', 'value': '10'})[0m
+[0;32mok: [demo03] => (item={'name': 'net.core.somaxconn', 'value': '1024'})[0m
+
+TASK [Aplicar perfil de rendimiento tuned] *************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Establecer scheduler a none] *********************************************
+[0;33mchanged: [demo03] => (item=sda)[0m
+
+TASK [Deshabilitar acceso temporal] ********************************************
+[0;33mchanged: [demo03] => (item=sda)[0m
+
+RUNNING HANDLER [Reiniciar tuned] **********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mostrar resumen final] ***************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Optimización completada:\n- Kernel actual: 5.15.0-308.179.6.3.el9uek.x86_64\n- Kernels restantes: 1\n- Espacio en /boot: Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       960M  244M  717M  26% /boot\n- Perfil tuned activo: throughput-performance\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=13  [0m [0;33mchanged=4   [0m unreachable=0    failed=0    [0;36mskipped=1   [0m rescued=0    ignored=0   

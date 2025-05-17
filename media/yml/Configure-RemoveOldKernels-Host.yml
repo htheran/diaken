@@ -1,0 +1,115 @@
+---
+- name: Optimización de sistema y limpieza de kernels
+  hosts: target_host
+  become: yes
+  vars:
+    keep_kernels: 2  # Número de kernels a conservar
+    tuned_profile: "throughput-performance"
+
+  tasks:
+    # Validación inicial
+    - name: Verificar kernel actual
+      command: uname -r
+      register: current_kernel
+      changed_when: false
+      tags: always
+
+    - name: Verificar espacio en /boot
+      command: df -h /boot
+      register: boot_space
+      changed_when: false
+      tags: always
+
+    # Limpieza de kernels
+    - name: Listar kernels instalados
+      command: rpm -q kernel
+      register: installed_kernels
+      changed_when: false
+      tags: cleanup
+
+    - name: Eliminar kernels antiguos (más de {{ keep_kernels }})
+      command: dnf remove --oldinstallonly --setopt=installonly_limit={{ keep_kernels }} -y kernel
+      when: 
+        - installed_kernels.stdout_lines | length > keep_kernels
+        - not ansible_check_mode
+      tags: cleanup
+      notify: Actualizar GRUB
+
+    - name: Limitar kernels guardados permanentemente
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: '^installonly_limit='
+        line: 'installonly_limit={{ keep_kernels }}'
+        insertafter: '^\[main\]'
+      tags: cleanup
+
+    # Optimizaciones de sistema
+    - name: Actualizar todos los paquetes
+      dnf:
+        name: '*'
+        state: latest
+        exclude: kernel*
+      tags: optimize
+
+    - name: Instalar tuned y utilidades
+      dnf:
+        name:
+          - tuned
+          - sysstat
+          - iotop
+        state: present
+      tags: optimize
+
+    - name: Configurar parámetros de kernel
+      ansible.builtin.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+        reload: yes
+      loop:
+        - { name: vm.swappiness, value: '10' }
+        - { name: vm.dirty_ratio, value: '20' }
+        - { name: vm.dirty_background_ratio, value: '10' }
+        - { name: net.core.somaxconn, value: '1024' }
+      tags: optimize
+
+    - name: Aplicar perfil de rendimiento tuned
+      command: tuned-adm profile {{ tuned_profile }}
+      notify: Reiniciar tuned
+      tags: optimize
+
+    - name: Optimizar I/O para SSD
+      block:
+        - name: Establecer scheduler a none
+          command: "echo none > /sys/block/{{ item }}/queue/scheduler"
+          loop: "{{ ansible_devices.keys() | select('match', '^sd|^nvme') | list }}"
+          become: yes
+          ignore_errors: yes
+        - name: Deshabilitar acceso temporal
+          command: "echo 0 > /sys/block/{{ item }}/queue/add_random"
+          loop: "{{ ansible_devices.keys() | select('match', '^sd|^nvme') | list }}"
+          become: yes
+          ignore_errors: yes
+      when: ansible_devices is defined
+      tags: optimize
+
+  handlers:
+    - name: Actualizar GRUB
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg
+      listen: "restart grub"
+
+    - name: Reiniciar tuned
+      service:
+        name: tuned
+        state: restarted
+
+  post_tasks:
+    - name: Mostrar resumen final
+      debug:
+        msg: |
+          Optimización completada:
+          - Kernel actual: {{ current_kernel.stdout }}
+          - Kernels restantes: {{ installed_kernels.stdout_lines | length }}
+          - Espacio en /boot: {{ boot_space.stdout }}
+          - Perfil tuned activo: {{ tuned_profile }}
+      tags: always

@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "2b6f8586-58af-4ac9-a587-dab93467168d", "counter": 13, "stdout": "\u001b[0;31m      - name: Establecer scheduler a none\u001b[0m", "start_line": 12, "end_line": 13, "runner_ident": "bde16527-de11-487d-9fa7-5c448a8706a6", "created": "2025-05-17T11:13:37.705545+00:00"}

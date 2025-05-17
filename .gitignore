@@ -13,7 +13,6 @@ env/
 
 # Django
 *.db
-/media/
 staticfiles/
 
 # Archivos del sistema

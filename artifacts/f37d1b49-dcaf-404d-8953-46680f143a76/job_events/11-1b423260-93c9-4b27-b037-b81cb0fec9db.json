@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "1b423260-93c9-4b27-b037-b81cb0fec9db", "counter": 11, "stdout": "\u001b[0;31m    - name: Configurar par\u00e1metros de kernel\u001b[0m", "start_line": 10, "end_line": 11, "runner_ident": "f37d1b49-dcaf-404d-8953-46680f143a76", "created": "2025-05-17T11:05:04.996220+00:00"}

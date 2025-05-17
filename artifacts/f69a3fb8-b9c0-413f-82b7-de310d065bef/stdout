@@ -1,0 +1,35 @@
+
+PLAY [Revisar logs del sistema y autenticación] ********************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo02][0m
+
+TASK [Verificar si los archivos de log existen] ********************************
+[0;32mok: [demo02] => (item=/var/log/secure)[0m
+[0;32mok: [demo02] => (item=/var/log/messages)[0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/secure (si existe)] ****************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/messages (si existe)] **************
+[0;32mok: [demo02][0m
+
+TASK [Buscar intentos fallidos de autenticación en secure] *********************
+[0;32mok: [demo02][0m
+
+TASK [Buscar errores críticos en messages] *************************************
+[0;32mok: [demo02][0m
+
+TASK [Procesar logs de autenticación] ******************************************
+[0;32mok: [demo02][0m
+
+TASK [Procesar errores del sistema] ********************************************
+[0;32mok: [demo02][0m
+
+TASK [Mostrar resumen ejecutivo] ***********************************************
+[0;32mok: [demo02] => {[0m
+[0;32m    "msg": "\n==================== RESUMEN DEL SISTEMA ====================\nHOST: diaken\nSISTEMA: OracleLinux 9.5\nUPTIME: 0.2802777777777778 horas\n\n🔐 AUTENTICACIÓN\n❌ INTENTOS FALLIDOS (1):\n• May 12 05:54:07 - Usuario: sshd[5156]:\n\n⚠️  ERRORES RECIENTES\n• May 17 15:02:44 diaken kernel: pci 0000:00:16.3: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:16.4: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:16.5: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:16.6: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:16.7: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:17.0: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:17.1: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:17.2: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:17.3: BAR 13: failed to assign [io size 0x1000]\n• May 17 15:02:44 diaken kernel: pci 0000:00:17.4: BAR 13: failed to assign [io size 0x1000]\n\n📊 RECURSOS DEL SISTEMA\n• Memoria: 30.2% usado\n\n🔍 Para ver detalles completos, ejecuta con -v\n===============================================\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo02[0m                     : [0;32mok=9   [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
