@@ -1,0 +1,20 @@
+
+PLAY [Instalación y configuración completa de servidor web (HTTPD + SSL + Pure-FTPd)] ***
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar Apache (httpd)] *************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que el servicio httpd esté iniciado y habilitado] ***************
+[0;33mchanged: [demo03][0m
+
+TASK [Instalar firewalld si no está presente] **********************************
+[0;31mfatal: [demo03]: FAILED! => {"msg": "The conditional check ''firewalld' not in ansible_facts.packages' failed. The error was: error while evaluating conditional ('firewalld' not in ansible_facts.packages): 'dict object' has no attribute 'packages'. 'dict object' has no attribute 'packages'\n\nThe error appears to be in '/tmp/tmpy66vbvk4.yml': line 50, column 11, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n      block:\n        - name: Instalar firewalld si no está presente\n          ^ here\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=4   [0m [0;33mchanged=2   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

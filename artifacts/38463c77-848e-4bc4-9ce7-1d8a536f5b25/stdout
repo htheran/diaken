@@ -1,0 +1,30 @@
+
+PLAY [Auditoría de Seguridad y Actualizaciones del Sistema] ********************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Obtener información del sistema] *****************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar información del sistema] *****************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "🖥️  Información del Sistema:\n- Distribución: OracleLinux 9.5\n- Nombre del host: diaken\n- Kernel: 5.15.0-308.179.6.3.el9uek.x86_64\n- Arq: x86_64\n"[0m
+[0;32m}[0m
+
+TASK [Actualizar caché de paquetes (solo lectura)] *****************************
+[0;32mok: [demo03][0m
+
+TASK [Obtener información detallada de actualizaciones] ************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar resumen de actualizaciones] **************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "🔍 Resumen de Actualizaciones:\nLast metadata expiration check: 0:00:05 ago on Fri 16 May 2025 06:16:16 PM -05.\n"[0m
+[0;32m}[0m
+
+TASK [Buscar actualizaciones de seguridad] *************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "cmd": "dnf updateinfo list --cve --security\n", "delta": "0:00:00.212146", "end": "2025-05-16 18:16:23.182248", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 18:16:22.970102", "stderr": "Command line error: argument --cve/--cves: expected one argument", "stderr_lines": ["Command line error: argument --cve/--cves: expected one argument"], "stdout": "usage: dnf [-c [config file]] [-q] [-v] [--version] [--installroot [path]]\n           [--nodocs] [--noplugins] [--enableplugin [plugin]]\n           [--disableplugin [plugin]] [--releasever RELEASEVER]\n           [--setopt SETOPTS] [--skip-broken] [-h] [--allowerasing]\n           [-b | --nobest] [-C] [-R [minutes]] [-d [debug level]]\n           [--debugsolver] [--showduplicates] [-e ERRORLEVEL] [--obsoletes]\n           [--rpmverbosity [debug level name]] [-y] [--assumeno]\n           [--enablerepo [repo]] [--disablerepo [repo] | --repo [repo]]\n           [--enable | --disable] [-x [package]] [--disableexcludes [repo]]\n           [--repofrompath [repo,path]] [--noautoremove] [--nogpgcheck]\n           [--color COLOR] [--refresh] [-4] [-6] [--destdir DESTDIR]\n           [--downloadonly] [--comment COMMENT] [--bugfix] [--enhancement]\n           [--newpackage] [--security] [--advisory ADVISORY] [--bz BUGZILLA]\n           [--cve CVES] [--sec-severity {Critical,Important,Moderate,Low}]\n           [--forcearch ARCH]", "stdout_lines": ["usage: dnf [-c [config file]] [-q] [-v] [--version] [--installroot [path]]", "           [--nodocs] [--noplugins] [--enableplugin [plugin]]", "           [--disableplugin [plugin]] [--releasever RELEASEVER]", "           [--setopt SETOPTS] [--skip-broken] [-h] [--allowerasing]", "           [-b | --nobest] [-C] [-R [minutes]] [-d [debug level]]", "           [--debugsolver] [--showduplicates] [-e ERRORLEVEL] [--obsoletes]", "           [--rpmverbosity [debug level name]] [-y] [--assumeno]", "           [--enablerepo [repo]] [--disablerepo [repo] | --repo [repo]]", "           [--enable | --disable] [-x [package]] [--disableexcludes [repo]]", "           [--repofrompath [repo,path]] [--noautoremove] [--nogpgcheck]", "           [--color COLOR] [--refresh] [-4] [-6] [--destdir DESTDIR]", "           [--downloadonly] [--comment COMMENT] [--bugfix] [--enhancement]", "           [--newpackage] [--security] [--advisory ADVISORY] [--bz BUGZILLA]", "           [--cve CVES] [--sec-severity {Critical,Important,Moderate,Low}]", "           [--forcearch ARCH]"]}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=6   [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

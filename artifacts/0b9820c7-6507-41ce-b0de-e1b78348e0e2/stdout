@@ -1,0 +1,65 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9 (Host)] ******************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd) y firewalld] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo03][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo03][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Deshabilitar SELinux temporalmente (en la sesión actual)] ****************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.009589", "end": "2025-05-16 21:15:21.689917", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 21:15:21.680328", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente (en /etc/selinux/config)] ***********
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios para el sitio y logs] ***********************
+[0;32mok: [demo03] => (item={'path': '/opt/www/sites/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/var/log/httpd/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/etc/httpd/conf.d'})[0m
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak si existe] *******
+[0;32mok: [demo03][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla específica de host] ******
+[0;32mok: [demo03][0m
+
+TASK [Copiar el archivo de VirtualHost desde la plantilla específica de host] ***
+[0;32mok: [demo03][0m
+
+TASK [Copiar index.html desde la plantilla específica de host] *****************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar sintaxis de Apache antes de reiniciar] *************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["apachectl", "configtest"], "delta": "0:00:00.090587", "end": "2025-05-16 21:15:30.825948", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 21:15:30.735361", "stderr": "AH00526: Syntax error on line 85 of /etc/httpd/conf.d/ssl.conf:\nSSLCertificateFile: file '/etc/pki/tls/certs/localhost.crt' does not exist or is empty", "stderr_lines": ["AH00526: Syntax error on line 85 of /etc/httpd/conf.d/ssl.conf:", "SSLCertificateFile: file '/etc/pki/tls/certs/localhost.crt' does not exist or is empty"], "stdout": "", "stdout_lines": []}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=15  [0m [0;33mchanged=5   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=1   [0m

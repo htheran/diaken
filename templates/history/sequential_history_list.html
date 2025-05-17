@@ -1,0 +1,87 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  <div class="container mt-4">
+    <h2>Sequential Playbook Executions</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Playbook</th>
+          <th>User</th>
+          <th>Group/Host</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Output</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for history in page_obj %}
+        <tr{% if history.group %} class="table-info"{% endif %}>
+          <td>{{ history.playbook.name }}</td>
+          <td>{{ history.user.username }}</td>
+          <td>{% if history.group %}<span style="text-decoration: underline; font-weight: bold;">{{ history.group.name }}</span>{% else %}{{ history.host.name }}{% endif %}</td>
+          <td>{{ history.date }}</td>
+          <td>
+             {% if history.status == 'successful' %}
+               <span class="badge badge-success"><i class="fas fa-check-circle"></i> Success</span>
+             {% elif history.status == 'failed' %}
+               <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Failed</span>
+             {% elif history.status == 'pending' %}
+               <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+             {% elif history.status == 'running' %}
+               <span class="badge badge-info"><i class="fas fa-spinner fa-spin"></i> Running</span>
+             {% else %}
+               <span class="badge badge-secondary">{{ history.status }}</span>
+             {% endif %}
+          </td>
+          <td>
+            {% if history.output %}
+              <span style="white-space: pre-line;">{{ history.output|truncatechars:80 }}</span>
+              <a href="#" data-toggle="modal" data-target="#outputModal{{ history.id }}">View all</a>
+            {% else %}
+              <span class="text-muted">-</span>
+            {% endif %}
+          </td>
+        </tr>
+        <!-- Modal for Output -->
+        <div class="modal fade" id="outputModal{{ history.id }}" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel{{ history.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header" style="background-color: #1e3a5f; color: white;">
+                <h5 class="modal-title" id="outputModalLabel{{ history.id }}">Execution Output - {{ history.playbook.name }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" style="background-color: #f8f9fc;">
+                <pre style="max-height: 500px; overflow-y: auto; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px; background-color: #f8f9fc; border: 1px solid #e3e6f0; padding: 15px; border-radius: 5px;">{{ history.output }}</pre>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo; First</span></li>
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+          <li class="page-item disabled"><span class="page-link">Last &raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+{% endblock %}

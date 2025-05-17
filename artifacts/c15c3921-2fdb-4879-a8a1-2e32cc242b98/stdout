@@ -1,0 +1,73 @@
+[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17[0m
+
+PLAY [Configuración completa de servidor web con SSL opcional] *****************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar todos los paquetes] *******************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar paquetes base] **************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Habilitar e iniciar servicios esenciales] ********************************
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Configurar puertos firewall] *********************************************
+[0;32mok: [demo03] => (item=80)[0m
+
+TASK [Deshabilitar SELinux temporalmente] **************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.008943", "end": "2025-05-16 20:15:55.050384", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 20:15:55.041441", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear estructura de directorios] *****************************************
+[0;33mchanged: [demo03] => (item={'path': '/opt/www/sites/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/var/log/httpd/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/etc/httpd/conf.d'})[0m
+[0;33mchanged: [demo03] => (item={'path': '/etc/ssl/httpd', 'mode': '0700'})[0m
+
+TASK [Respaldar configuración original] ****************************************
+[0;32mok: [demo03][0m
+
+TASK [Implementar configuración principal] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Implementar VirtualHost HTTP] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Implementar contenido web] ***********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Verificar sintaxis de Apache] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar módulo SSL] *****************************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Configurar enlace simbólico SSL] *****************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Implementar certificados SSL] ********************************************
+[0;36mskipping: [demo03] => (item={'src': 'certificado.crt', 'dest_suffix': '.crt'}) [0m
+[0;36mskipping: [demo03] => (item={'src': 'certificado.key', 'dest_suffix': '.key'}) [0m
+[0;36mskipping: [demo03] => (item={'src': 'certificado-provider.crt', 'dest_suffix': '-provider.crt'}) [0m
+[0;36mskipping: [demo03][0m
+
+TASK [Implementar VirtualHost HTTPS] *******************************************
+[0;36mskipping: [demo03][0m
+
+RUNNING HANDLER [Reiniciar Apache] *********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Mostrar resumen final] ***************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Configuración completada:\n- Dominio: demo03.upb.edu.co\n- HTTP: 80\n- HTTPS: Deshabilitado\n- Directorio raíz: /opt/www/sites/demo03\n- Logs: /var/log/httpd/demo03\n- SSL: Deshabilitado\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=15  [0m [0;33mchanged=5   [0m unreachable=0    failed=0    [0;36mskipped=4   [0m rescued=0    [1;35mignored=1   [0m

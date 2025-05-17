@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "4e3163d0-a3c2-4e5e-9b71-0d9f0094cdd8", "counter": 1, "stdout": "\u001b[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17\u001b[0m", "start_line": 0, "end_line": 1, "runner_ident": "39cb2cd5-dfa5-4446-85d3-f53105daded3", "created": "2025-05-17T01:12:14.891442+00:00"}

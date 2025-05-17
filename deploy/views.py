@@ -211,7 +211,8 @@ def deploy_to_host(request):
             user=request.user,
             host=host,
             status=status,
-            output=output
+            output=output,
+            execution_type='manual'
         )
         # logger.info(result.stats)
         return redirect('deploy_success')

@@ -1,0 +1,64 @@
+[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17[0m
+
+PLAY [Configuración completa de servidor web con SSL] **************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar paquetes requeridos] ********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar que los servicios estén iniciados y habilitados] ****************
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Configurar puertos en el firewall] ***************************************
+[0;32mok: [demo03] => (item={'port': 80, 'tag': 'firewall'})[0m
+[0;33mchanged: [demo03] => (item={'port': 443, 'tag': 'firewall,ssl'})[0m
+
+TASK [Deshabilitar SELinux temporalmente] **************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.008923", "end": "2025-05-16 20:34:36.106633", "msg": "non-zero return code", "rc": 1, "start": "2025-05-16 20:34:36.097710", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente] ************************************
+[0;32mok: [demo03][0m
+
+TASK [Crear directorios necesarios] ********************************************
+[0;32mok: [demo03] => (item={'path': '/opt/www/sites/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/var/log/httpd/demo03'})[0m
+[0;32mok: [demo03] => (item={'path': '/etc/httpd/conf.d'})[0m
+[0;33mchanged: [demo03] => (item={'path': '/etc/ssl/httpd'})[0m
+
+TASK [Respaldar configuración actual de Apache] ********************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar httpd.conf] ***************************************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar VirtualHost HTTP] *********************************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar index.html] ***************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Configurar enlace simbólico SSL] *****************************************
+[1;35m[WARNING]: Unable to find '/etc/httpd/conf.d/ssl.conf' in expected paths (use[0m
+[1;35m-vvvvv to see paths)[0m
+[0;31mfatal: [demo03]: FAILED! => {"msg": "The conditional check 'not lookup('file', '/etc/httpd/conf.d/ssl.conf') | bool' failed. The error was: An unhandled exception occurred while running the lookup plugin 'file'. Error was a <class 'ansible.errors.AnsibleError'>, original message: could not locate file in lookup: /etc/httpd/conf.d/ssl.conf. could not locate file in lookup: /etc/httpd/conf.d/ssl.conf\n\nThe error appears to be in '/tmp/tmp4w1j9ge_.yml': line 120, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n    # Configuración SSL\n    - name: Configurar enlace simbólico SSL\n      ^ here\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=13  [0m [0;33mchanged=5   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=1   [0m

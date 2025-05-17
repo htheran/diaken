@@ -1,0 +1,67 @@
+[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17[0m
+
+PLAY [Configuración completa de servidor web con HTTPS] ************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar todos los paquetes] *******************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar paquetes base (httpd y firewalld)] ******************************
+[0;32mok: [demo03][0m
+
+TASK [Habilitar e iniciar servicios esenciales] ********************************
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Configurar puertos firewall] *********************************************
+[0;32mok: [demo03] => (item=80)[0m
+
+TASK [Configurar SELinux en modo permisivo] ************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Policy is required if state is not 'disabled'"}[0m
+[0;36m...ignoring[0m
+
+TASK [Crear estructura de directorios] *****************************************
+[0;32mok: [demo03] => (item=/opt/www/sites/demo03)[0m
+[0;32mok: [demo03] => (item=/var/log/httpd/demo03)[0m
+[0;32mok: [demo03] => (item=/etc/httpd/conf.d)[0m
+[0;32mok: [demo03] => (item=/etc/ssl/httpd)[0m
+
+TASK [Configurar archivo httpd.conf] *******************************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar VirtualHost HTTP] *********************************************
+[0;32mok: [demo03][0m
+
+TASK [Configurar nombre de host] ***********************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Desplegar contenido web] *************************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Asegurar permisos de directorios] ****************************************
+[0;33mchanged: [demo03][0m
+
+TASK [Instalar módulo SSL] *****************************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Configurar enlace simbólico SSL] *****************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Copiar certificados SSL] *************************************************
+[0;36mskipping: [demo03] => (item={'src': 'certificado.crt', 'dest_suffix': '.crt'}) [0m
+[0;36mskipping: [demo03] => (item={'src': 'certificado.key', 'dest_suffix': '.key'}) [0m
+[0;36mskipping: [demo03] => (item={'src': 'certificado-provider.crt', 'dest_suffix': '-provider.crt'}) [0m
+[0;36mskipping: [demo03][0m
+
+TASK [Configurar VirtualHost HTTPS] ********************************************
+[0;36mskipping: [demo03][0m
+
+TASK [Mostrar resumen final] ***************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "Configuración completada:\n- Dominio: demo03.upb.edu.co\n- Puerto HTTP: 80\n- Puerto HTTPS: Deshabilitado\n- Directorio raíz: /opt/www/sites/demo03\n- Logs: /var/log/httpd/demo03\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo03[0m                     : [0;32mok=13  [0m [0;33mchanged=3   [0m unreachable=0    failed=0    [0;36mskipped=4   [0m rescued=0    [1;35mignored=1   [0m

@@ -1,0 +1,36 @@
+[1;35m[WARNING]: Collection ansible.posix does not support Ansible version 2.14.17[0m
+
+PLAY [Configuración completa de servidor web con HTTPS] ************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Actualizar todos los paquetes] *******************************************
+[0;32mok: [demo03][0m
+
+TASK [Instalar paquetes base (httpd y firewalld)] ******************************
+[0;32mok: [demo03][0m
+
+TASK [Habilitar e iniciar servicios esenciales] ********************************
+[0;32mok: [demo03] => (item=httpd)[0m
+[0;32mok: [demo03] => (item=firewalld)[0m
+
+TASK [Configurar puertos firewall] *********************************************
+[0;32mok: [demo03] => (item=80)[0m
+
+TASK [Configurar SELinux en modo permisivo] ************************************
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Policy is required if state is not 'disabled'"}[0m
+[0;36m...ignoring[0m
+
+TASK [Crear estructura de directorios] *****************************************
+[0;32mok: [demo03] => (item=/opt/www/sites/demo03)[0m
+[0;32mok: [demo03] => (item=/var/log/httpd/demo03)[0m
+[0;32mok: [demo03] => (item=/etc/httpd/conf.d)[0m
+[0;33mchanged: [demo03] => (item=/etc/ssl/httpd)[0m
+
+TASK [Configurar archivo httpd.conf] *******************************************
+[0;31mAn exception occurred during task execution. To see the full traceback, use -vvv. The error was: If you are using a module and expect the file to exist on the remote, see the remote_src option[0m
+[0;31mfatal: [demo03]: FAILED! => {"changed": false, "msg": "Could not find or access '/opt/www/media/templates/httpd.conf.j2' on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=7   [0m [0;33mchanged=1   [0m unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=1   [0m

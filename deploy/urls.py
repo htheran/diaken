@@ -1,8 +1,11 @@
 from django.urls import path
 from . import views
 from . import views_scheduled
+from . import views_sequential
 
 urlpatterns = [
+    path('sequential/', views_sequential.deploy_sequential, name='deploy_sequential'),
+    path('sequential/history/', views_sequential.sequential_history, name='sequential_history'),
     path('host/', views.deploy_to_host, name='deploy_to_host'),
     path('group/', views.deploy_to_group, name='deploy_to_group'),
     path('schedule/host/', views_scheduled.schedule_to_host, name='schedule_to_host'),

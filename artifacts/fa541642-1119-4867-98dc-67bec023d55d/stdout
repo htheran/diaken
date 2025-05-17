@@ -1,0 +1,78 @@
+
+PLAY [Auditoría de Seguridad y Actualizaciones del Sistema] ********************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Obtener información del sistema] *****************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar información del sistema] *****************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "🖥️  Información del Sistema:\n- Distribución: OracleLinux 9.5\n- Nombre del host: diaken\n- Kernel: 5.15.0-308.179.6.3.el9uek.x86_64\n- Arq: x86_64\n"[0m
+[0;32m}[0m
+
+TASK [Actualizar caché de paquetes (solo lectura)] *****************************
+[0;32mok: [demo03][0m
+
+TASK [Obtener información de actualizaciones disponibles] **********************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar actualizaciones disponibles] *************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "🔄 Actualizaciones disponibles:\nLast metadata expiration check: 0:00:02 ago on Fri 16 May 2025 06:18:27 PM -05.\n"[0m
+[0;32m}[0m
+
+TASK [Buscar actualizaciones de seguridad] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Analizar actualizaciones de seguridad por severidad] *********************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar resumen de seguridad] ********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "🔒 Resumen de Seguridad:\n=== Critical ===\nNo hay actualizaciones de nivel Critical\n\n=== Important ===\nNo hay actualizaciones de nivel Important\n\n=== Moderate ===\nNo hay actualizaciones de nivel Moderate\n\n=== Low ===\nNo hay actualizaciones de nivel Low\n"[0m
+[0;32m}[0m
+
+TASK [Listar paquetes obsoletos] ***********************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar paquetes obsoletos] **********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "📦 Paquetes obsoletos:\nLast metadata expiration check: 0:00:09 ago on Fri 16 May 2025 06:18:27 PM -05.\n"[0m
+[0;32m}[0m
+
+TASK [Verificar servicios en ejecución] ****************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar servicios con fallos] ******************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar estado de servicios] *********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "🚦 Estado de Servicios:\n\nServicios en ejecución:\n  UNIT                              LOAD   ACTIVE SUB     DESCRIPTION\n  auditd.service                    loaded active running Security Auditing Service\n  crond.service                     loaded active running Command Scheduler\n  dbus-broker.service               loaded active running D-Bus System Message Bus\n  firewalld.service                 loaded active running firewalld - dynamic firewall daemon\n  getty@tty1.service                loaded active running Getty on tty1\n  httpd.service                     loaded active running The Apache HTTP Server\n  irqbalance.service                loaded active running irqbalance daemon\n  NetworkManager-dispatcher.service loaded active running Network Manager Script Dispatcher Service\n  NetworkManager.service            loaded active running Network Manager\n  polkit.service                    loaded active running Authorization Manager\n  pure-ftpd.service                 loaded active running Pure-FTPd FTP server\n  rsyslog.service                   loaded active running System Logging Service\n  sshd.service                      loaded active running OpenSSH server daemon\n  systemd-journald.service          loaded active running Journal Service\n  systemd-logind.service            loaded active running User Login Management\n  systemd-udevd.service             loaded active running Rule-based Manager for Device Events and Files\n  user@1000.service                 loaded active running User Manager for UID 1000\n  vgauthd.service                   loaded active running VGAuth Service for open-vm-tools\n  vmtoolsd.service                  loaded active running Service for virtual machines hosted on VMware\n\nLOAD   = Reflects whether the unit definition was properly loaded.\nACTIVE = The high-level unit activation state, i.e. generalization of SUB.\nSUB    = The low-level unit activation state, values depend on unit type.\n19 loaded units listed.\n\nServicios con fallos:\n  UNIT LOAD ACTIVE SUB DESCRIPTION\n0 loaded units listed.\n"[0m
+[0;32m}[0m
+
+TASK [Verificar si se requiere reinicio] ***************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si hay servicios que requieren reinicio] ***********************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar estado de reinicio] **********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "🔄 Estado de Reinicio:\n- Reinicio requerido por paquetes: No\n- Servicios que requieren reinicio: No\n"[0m
+[0;32m}[0m
+
+TASK [Generar resumen ejecutivo] ***********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "📊 RESUMEN EJECUTIVO DE SEGURIDAD\n================================\n\n🔄 Actualizaciones Disponibles:\n  Last metadata expiration check: 0:00:02 ago on Fri 16 May 2025 06:18:27 PM -05.\n\n🔒 Actualizaciones de Seguridad:\n  === Critical ===\n  No hay actualizaciones de nivel Critical\n  \n  === Important ===\n  No hay actualizaciones de nivel Important\n  \n  === Moderate ===\n  No hay actualizaciones de nivel Moderate\n  \n  === Low ===\n  No hay actualizaciones de nivel Low\n\n🚦 Estado de Servicios:\n- Servicios en ejecución: 25\n- Servicios con fallos: 2\n\n🔄 Reinicio Requerido: No\n"[0m
+[0;32m}[0m
+
+TASK [Generar recomendaciones] *************************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "💡 RECOMENDACIONES:\n1. Se recomienda revisar las actualizaciones de seguridad disponibles.\n3. Revise los servicios con fallos para asegurar la estabilidad del sistema.\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo03[0m                     : [0;32mok=19  [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

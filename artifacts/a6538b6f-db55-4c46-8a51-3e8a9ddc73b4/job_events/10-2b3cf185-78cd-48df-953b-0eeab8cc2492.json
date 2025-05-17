@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "2b3cf185-78cd-48df-953b-0eeab8cc2492", "counter": 10, "stdout": "\u001b[0;31m        - name: Aplicar contexto SELinux a certificados\u001b[0m", "start_line": 9, "end_line": 10, "runner_ident": "a6538b6f-db55-4c46-8a51-3e8a9ddc73b4", "created": "2025-05-17T01:27:36.996181+00:00"}
