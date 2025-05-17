@@ -55,8 +55,13 @@
           {%- set failed_attempts = [] -%}
           {%- for line in failed_auth.stdout_lines | default([]) -%}
             {%- if 'Failed password' in line or 'authentication failure' in line -%}
-              {%- set parts = line.split(' ')[:5] -%}
-              {%- set _ = failed_attempts.append({'time': ' '.join(parts[0:3]), 'user': parts[4] if parts|length > 4 else 'unknown'}) -%}
+              {%- set parts = line.split(' ') -%}
+              {%- set time = parts[0:3] | join(' ') -%}
+              {%- set user = 'unknown' -%}
+              {%- if 'Failed password for' in line -%}
+                {%- set user = line.split('Failed password for ')[1].split(' ')[0] -%}
+              {%- endif -%}
+              {%- set _ = failed_attempts.append({'time': time, 'user': user}) -%}
             {%- endif -%}
           {%- endfor -%}
           {{ failed_attempts | unique | list | to_json }}
@@ -64,30 +69,38 @@
     - name: Procesar errores del sistema
       set_fact:
         errors_summary: |
+          {%- set error_counts = {} -%}
           {%- set unique_errors = [] -%}
           {%- for line in system_errors.stdout_lines | default([]) -%}
             {%- if 'ansible-ansible.legacy.command' not in line -%}
               {%- set error_msg = line.split(']: ')[1] | default(line) | trim -%}
-              {%- if error_msg and error_msg not in unique_errors -%}
-                {%- set _ = unique_errors.append(error_msg) -%}
+              {%- if error_msg -%}
+                {%- set error_key = error_msg | regex_replace('0x[0-9a-fA-F]+', '0xXXXX') | regex_replace('\d+', 'N') -%}
+                {%- if error_key not in error_counts -%}
+                  {%- set _ = error_counts.update({error_key: {'count': 1, 'example': error_msg}}) -%}
+                {%- else -%}
+                  {%- set _ = error_counts[error_key].update({'count': error_counts[error_key].count + 1}) -%}
+                {%- endif -%}
               {%- endif -%}
             {%- endif -%}
           {%- endfor -%}
-          {{ unique_errors[:10] | to_json }}
+          {{ error_counts | to_json }}
 
     - name: Mostrar resumen ejecutivo
       debug:
         msg: |
           
-          ==================== RESUMEN DEL SISTEMA ====================
-          HOST: {{ ansible_hostname }}
-          SISTEMA: {{ ansible_distribution }} {{ ansible_distribution_version }}
-          UPTIME: {{ ansible_uptime_seconds | int / 3600 | round(1) }} horas
+          ╔════════════════════ RESUMEN DEL SISTEMA ═══════════════════╗
+          ║ HOST: {{ '%-50s' | format(ansible_hostname) }}║
+          ║ SISTEMA: {{ '%-46s' | format(ansible_distribution + ' ' + ansible_distribution_version) }}║
+          ║ UPTIME: {{ '%-47.1f' | format(ansible_uptime_seconds | int / 3600) }} horas ║
+          ╚═══════════════════════════════════════════════════════════╝
           
           🔐 AUTENTICACIÓN
-          {% if (auth_summary | from_json | length) > 0 %}
-          ❌ INTENTOS FALLIDOS ({{ (auth_summary | from_json) | length }}):
-          {% for attempt in auth_summary | from_json %}
+          {% set auth_attempts = auth_summary | from_json %}
+          {% if auth_attempts | length > 0 %}
+          ❌ INTENTOS FALLIDOS ({{ auth_attempts | length }}):
+          {% for attempt in auth_attempts %}
           • {{ attempt.time }} - Usuario: {{ attempt.user }}
           {% endfor %}
           {% else %}
@@ -97,31 +110,41 @@
           ⚠️  ERRORES RECIENTES
           {% set errors = errors_summary | from_json %}
           {% if errors | length > 0 %}
-          {% for error in errors %}
-          • {{ error | regex_replace('\s+', ' ') | trim }}
+          {% set error_list = [] %}
+          {% for error_key, error_data in errors.items() | sort(attribute='1.count', reverse=true) %}
+            {% if loop.index <= 5 %}
+              {% if error_data.count > 1 %}
+                {% set _ = error_list.append('• (' ~ error_data.count ~ 'x) ' ~ (error_data.example | regex_replace('0x[0-9a-fA-F]+', '0xXXXX') | regex_replace('\\d+', 'N'))) %}
+              {% else %}
+                {% set _ = error_list.append('• ' ~ (error_data.example | regex_replace('\\s+', ' ') | trim)) %}
+              {% endif %}
+            {% endif %}
           {% endfor %}
+          {{ error_list | join('\n') }}
+          {% if errors | length > 5 %}
+          • ... y {{ errors | length - 5 }} errores más
+          {% endif %}
           {% else %}
           ✅ No se encontraron errores críticos
           {% endif %}
           
           📊 RECURSOS DEL SISTEMA
-          • Memoria: {{ (100 - ansible_memory_mb.real.free / ansible_memory_mb.real.total * 100) | round(1) }}% usado
-          {% set has_disk_info = false %}
-          {% for mount in ansible_mounts %}
+          • Memoria: {{ '%-4.1f' | format(100 - ansible_memory_mb.real.free / ansible_memory_mb.real.total * 100) }}% usado ({{ (ansible_memory_mb.real.used / 1024) | round(1) }}/{{ (ansible_memory_mb.real.total / 1024) | round(1) }} GB)
+          
+          {% set disk_mounts = [] %}
+          {% for mount in ansible_mounts | sort(attribute='mount') %}
           {% if mount.size_available is defined and mount.size is defined and mount.size > 0 %}
-          {% set has_disk_info = true %}
+          {% set _ = disk_mounts.append(mount) %}
           {% endif %}
           {% endfor %}
-          {% if has_disk_info %}
+          
+          {% if disk_mounts | length > 0 %}
           • Almacenamiento:
-          {% for mount in ansible_mounts %}
-          {% if mount.size_available is defined and mount.size is defined and mount.size > 0 %}
-            - {{ mount.mount }}: {{ (100 - mount.size_available / mount.size * 100) | round(1) }}% usado
-              ({{ (mount.size_available / 1073741824) | round(1) }}GB libres de {{ (mount.size / 1073741824) | round(1) }}GB)
-          {% endif %}
+          {% for mount in disk_mounts %}
+            - {{ '%-15s' | format(mount.mount) }} {{ '%5.1f' | format(100 - mount.size_available / mount.size * 100) }}% usado ({{ '%-5.1f' | format(mount.size_available / 1073741824) }} GB libres de {{ '%-5.1f' | format(mount.size / 1073741824) }} GB)
           {% endfor %}
           {% endif %}
           
           🔍 Para ver detalles completos, ejecuta con -v
-          ===============================================
+          ═══════════════════════════════════════════════
       tags: [logs, summary]

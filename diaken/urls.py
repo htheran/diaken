@@ -32,4 +32,5 @@ urlpatterns = [
     path('inventory/', include('inventory.urls')),
     path('history/', include('history.urls')),
     path('settings/', include('app_settings.urls')),
+    path('tools/', include('tools.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

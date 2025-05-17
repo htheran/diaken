@@ -18,7 +18,15 @@
         <tr{% if history.group %} class="table-info"{% endif %}>
           <td>{{ history.playbook.name }}</td>
           <td>{{ history.user.username }}</td>
-          <td>{% if history.group %}<span style="text-decoration: underline; font-weight: bold;">{{ history.group.name }}</span>{% else %}{{ history.host.name }}{% endif %}</td>
+          <td>
+            {% if history.execution_type == 'sequential' and history.host %}
+              {{ history.host.name }}
+            {% elif history.group %}
+              <span style="text-decoration: underline; font-weight: bold;">{{ history.group.name }}</span>
+            {% else %}
+              {{ history.host.name }}
+            {% endif %}
+          </td>
           <td>{{ history.date }}</td>
           <td>
              {% if history.status == 'successful' %}

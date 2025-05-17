@@ -1,4 +1,7 @@
 {% extends 'base/base.html' %}
+
+{% block page_title %}Execution History{% endblock %}
+
 {% block content %}
   <div class="container mt-4">
     <h2>Playbook Execution History</h2>
@@ -18,7 +21,15 @@
         <tr{% if history.group %} class="table-info"{% endif %}>
           <td>{{ history.playbook.name }}</td>
           <td>{{ history.user.username }}</td>
-          <td>{% if history.group %}<span style="text-decoration: underline; font-weight: bold;">{{ history.group.name }}</span>{% else %}{{ history.host.name }}{% endif %}</td>
+          <td>
+            {% if history.execution_type == 'sequential' and history.host %}
+              {{ history.host.name }}
+            {% elif history.group %}
+              <span style="text-decoration: underline; font-weight: bold;">{{ history.group.name }}</span>
+            {% else %}
+              {{ history.host.name }}
+            {% endif %}
+          </td>
           <td>{{ history.date }}</td>
           <td>
              {% if history.status == 'successful' %}

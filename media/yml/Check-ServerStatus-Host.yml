@@ -1,0 +1,83 @@
+---
+- name: Verificar estado de servicios en el servidor
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: Verificar estado de firewalld
+      service_facts:
+      register: service_state
+      
+    - name: Obtener puertos abiertos en firewalld
+      shell: firewall-cmd --list-ports
+      register: firewall_ports
+      ignore_errors: yes
+      when: service_state.ansible_facts.services['firewalld.service'] is defined and service_state.ansible_facts.services['firewalld.service'].state == 'running'
+      changed_when: false
+      
+    - name: Verificar espacio en disco
+      shell: df -h | grep -v tmpfs | grep -v devtmpfs
+      register: disk_space
+      changed_when: false
+      
+    - name: Verificar uso de memoria
+      shell: free -h
+      register: memory_usage
+      changed_when: false
+      
+    - name: Verificar carga del sistema
+      shell: uptime
+      register: system_load
+      changed_when: false
+      
+    - name: Verificar servicios comunes
+      shell: "systemctl is-active {{ item }}"
+      register: services_status
+      with_items:
+        - httpd
+        - nginx
+        - mariadb
+        - postgresql
+        - sshd
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar resumen de estado del servidor
+      debug:
+        msg: |
+          
+          ╔════════════════════ ESTADO DEL SERVIDOR ═══════════════════╗
+          ║ HOST: {{ ansible_hostname }}
+          ║ SISTEMA: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          ║ UPTIME: {{ ansible_uptime_seconds | int / 3600 | round(1) }} horas
+          ╚═══════════════════════════════════════════════════════════╝
+          
+          🔒 FIREWALL
+          {% if service_state.ansible_facts.services['firewalld.service'] is defined and service_state.ansible_facts.services['firewalld.service'].state == 'running' %}
+          ✅ Estado: Activo
+          Puertos abiertos:
+          {{ firewall_ports.stdout }}
+          {% else %}
+          ❌ Estado: Inactivo o no instalado
+          {% endif %}
+          
+          🌐 SERVICIOS
+          {% for service in services_status.results %}
+          {% if service.rc == 0 %}
+          ✅ {{ service.item }}: Activo
+          {% else %}
+          ❌ {{ service.item }}: Inactivo o no instalado
+          {% endif %}
+          {% endfor %}
+          
+          💾 ESPACIO EN DISCO
+          {{ disk_space.stdout }}
+          
+          🧠 MEMORIA
+          {{ memory_usage.stdout }}
+          
+          ⚡ CARGA DEL SISTEMA
+          {{ system_load.stdout }}
+          
+      tags: [status, summary]

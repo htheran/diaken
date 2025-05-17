@@ -1,0 +1,868 @@
+{% extends 'base/base.html' %}
+
+{% block page_title %}Server Status{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <h2>Server Status</h2>
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h3 class="card-title">Select Server</h3>
+        </div>
+        <div class="card-body">
+          <form id="server-selection-form">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="environment">Environment:</label>
+                  <select class="form-control" id="environment" name="environment">
+                    <option value="">Select Environment</option>
+                    {% for environment in environments %}
+                      <option value="{{ environment.id }}">{{ environment.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="group">Group:</label>
+                  <select class="form-control" id="group" name="group" disabled>
+                    <option value="">Select Group</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="host">Server:</label>
+                  <select class="form-control" id="host" name="host" disabled>
+                    <option value="">Select Server</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <button type="button" id="check-status-btn" class="btn btn-primary" disabled>
+                  Check Status
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="status-results" style="display: none;">
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <h3 class="card-title">Server Information <span id="server-name"></span></h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="info-box">
+                  <span class="info-box-icon bg-info"><i class="fas fa-server"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Name</span>
+                    <span class="info-box-number" id="server-name-display"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-box">
+                  <span class="info-box-icon bg-info"><i class="fas fa-network-wired"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">IP Address</span>
+                    <span class="info-box-number" id="server-ip"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-box">
+                  <span class="info-box-icon bg-info"><i class="fas fa-clock"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Uptime</span>
+                    <span class="info-box-number" id="server-uptime"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h3 class="card-title">Services Status</h3>
+          </div>
+          <div class="card-body">
+            <div class="row" id="services-container">
+              <!-- Services will be added dynamically here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Load -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header bg-warning text-white">
+            <h3 class="card-title">System Load</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="info-box">
+                  <span class="info-box-icon bg-warning"><i class="fas fa-tachometer-alt"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Load (1 min)</span>
+                    <span class="info-box-number" id="load-1m"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-box">
+                  <span class="info-box-icon bg-warning"><i class="fas fa-tachometer-alt"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Load (5 min)</span>
+                    <span class="info-box-number" id="load-5m"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="info-box">
+                  <span class="info-box-icon bg-warning"><i class="fas fa-tachometer-alt"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Load (15 min)</span>
+                    <span class="info-box-number" id="load-15m"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle"></i> <span id="load-explanation"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <h3 class="card-title">Memory Usage</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="progress-group">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="progress-text"><strong>Used Memory</strong></span>
+                    <span class="badge badge-pill" id="memory-percent-badge" style="font-size: 100%"></span>
+                  </div>
+                  <span class="float-right mb-1" id="memory-text" style="font-weight: bold;"></span>
+                  <div class="progress" style="height: 15px;">
+                    <div id="memory-progress" class="progress-bar bg-success" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row mt-4">
+              <div class="col-md-3">
+                <div class="small-box bg-info">
+                  <div class="inner">
+                    <h3 id="memory-total"></h3>
+                    <p>Total Memory</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-memory"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="small-box bg-success">
+                  <div class="inner">
+                    <h3 id="memory-free"></h3>
+                    <p>Free Memory</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="small-box bg-primary">
+                  <div class="inner">
+                    <h3 id="memory-available"></h3>
+                    <p>Available Memory</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-chart-area"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="small-box bg-secondary">
+                  <div class="inner">
+                    <h3 id="memory-buff-cache"></h3>
+                    <p>Buffer/Cache</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-hdd"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Swap -->
+            <div class="row mt-4" id="swap-section" style="display: none;">
+              <div class="col-md-12">
+                <h4 class="mb-3">Swap Memory</h4>
+                <div class="progress-group mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="progress-text"><strong>Used Swap</strong></span>
+                    <span class="badge badge-pill" id="swap-percent-badge" style="font-size: 100%"></span>
+                  </div>
+                  <span class="float-right mb-1" id="swap-text" style="font-weight: bold;"></span>
+                  <div class="progress" style="height: 15px;">
+                    <div id="swap-progress" class="progress-bar bg-info" style="width: 0%"></div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="small-box bg-info">
+                      <div class="inner">
+                        <h3 id="swap-total"></h3>
+                        <p>Total Swap</p>
+                      </div>
+                      <div class="icon">
+                        <i class="fas fa-database"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="small-box bg-success">
+                      <div class="inner">
+                        <h3 id="swap-free"></h3>
+                        <p>Free Swap</p>
+                      </div>
+                      <div class="icon">
+                        <i class="fas fa-check-circle"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="small-box bg-warning">
+                      <div class="inner">
+                        <h3 id="swap-used"></h3>
+                        <p>Used Swap</p>
+                      </div>
+                      <div class="icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="small-box bg-secondary">
+                      <div class="inner">
+                        <h3 id="swap-cached"></h3>
+                        <p>Swap Cached</p>
+                      </div>
+                      <div class="icon">
+                        <i class="fas fa-hdd"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disk Space -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h3 class="card-title">Disk Space</h3>
+          </div>
+          <div class="card-body">
+            <h4 class="mb-3">File Systems</h4>
+            <div id="disk-container" class="mb-4">
+              <!-- Disk partitions will be added dynamically here -->
+            </div>
+            
+            <h4 class="mb-3 mt-4">Directory Usage</h4>
+            <div class="alert alert-info mb-3">
+              <i class="fas fa-info-circle"></i> This section shows the space usage of specific directories, even if they are not on separate partitions.
+            </div>
+            <div id="directory-container" class="row">
+              <!-- Directories will be added dynamically here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div id="loading-spinner" style="display: none; text-align: center; margin-top: 50px;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>Getting server information...</p>
+  </div>
+  
+  <!-- Error message -->
+  <div id="error-message" class="alert alert-danger" style="display: none; margin-top: 20px;">
+    <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> <span id="error-title">Connection Error</span></h4>
+    <p id="error-text"></p>
+    
+    <!-- Host configuration details -->
+    <div id="host-config-details" style="display: none;">
+      <div class="card mb-3">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="card-title mb-0">Host Configuration Details</h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-sm">
+            <tbody>
+              <tr>
+                <th style="width: 150px;">Name:</th>
+                <td id="config-host-name"></td>
+              </tr>
+              <tr>
+                <th>IP Address:</th>
+                <td id="config-host-ip"></td>
+              </tr>
+              <tr>
+                <th>Credentials:</th>
+                <td id="config-host-credentials"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <hr>
+    <h5>Possible Solutions:</h5>
+    <ul id="solutions-list">
+      <li>Verify that the server is powered on and accessible on the network.</li>
+      <li>Check that SSH credentials are correctly configured on the host.</li>
+      <li>Make sure the user has permissions to execute commands on the server.</li>
+      <li>Verify that the server allows SSH connections from this server.</li>
+      <li>Check if there are firewall rules blocking the connection.</li>
+    </ul>
+    
+    <!-- Link to host edit page -->
+    <div id="edit-host-link-container" class="mt-3" style="display: none;">
+      <a id="edit-host-link" href="#" class="btn btn-primary">
+        <i class="fas fa-edit"></i> Edit Host Configuration
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Dependent selects
+    document.getElementById('environment').addEventListener('change', function() {
+      var environmentId = this.value;
+      if (!environmentId) {
+        document.getElementById('group').disabled = true;
+        document.getElementById('group').innerHTML = '<option value="">Select Group</option>';
+        document.getElementById('host').disabled = true;
+        document.getElementById('host').innerHTML = '<option value="">Select Server</option>';
+        document.getElementById('check-status-btn').disabled = true;
+        return;
+      }
+      
+      fetch(`/tools/api/groups/?environment_id=${environmentId}`)
+        .then(response => response.json())
+        .then(data => {
+          var groupSelect = document.getElementById('group');
+          groupSelect.innerHTML = '<option value="">Select Group</option>';
+          data.groups.forEach(group => {
+            groupSelect.innerHTML += `<option value="${group.id}">${group.name}</option>`;
+          });
+          groupSelect.disabled = false;
+          document.getElementById('host').disabled = true;
+          document.getElementById('host').innerHTML = '<option value="">Select Server</option>';
+          document.getElementById('check-status-btn').disabled = true;
+        });
+    });
+
+    document.getElementById('group').addEventListener('change', function() {
+      var groupId = this.value;
+      if (!groupId) {
+        document.getElementById('host').disabled = true;
+        document.getElementById('host').innerHTML = '<option value="">Select Server</option>';
+        document.getElementById('check-status-btn').disabled = true;
+        return;
+      }
+      
+      fetch(`/tools/api/hosts/?group_id=${groupId}`)
+        .then(response => response.json())
+        .then(data => {
+          var hostSelect = document.getElementById('host');
+          hostSelect.innerHTML = '<option value="">Select Server</option>';
+          data.hosts.forEach(host => {
+            hostSelect.innerHTML += `<option value="${host.id}">${host.name}</option>`;
+          });
+          hostSelect.disabled = false;
+          document.getElementById('check-status-btn').disabled = true;
+        });
+    });
+
+    document.getElementById('host').addEventListener('change', function() {
+      document.getElementById('check-status-btn').disabled = !this.value;
+    });
+
+    // Check server status
+    document.getElementById('check-status-btn').addEventListener('click', function() {
+      var hostId = document.getElementById('host').value;
+      if (!hostId) return;
+      
+      // Show loading spinner and hide previous messages
+      document.getElementById('loading-spinner').style.display = 'block';
+      document.getElementById('status-results').style.display = 'none';
+      document.getElementById('error-message').style.display = 'none';
+      
+      fetch(`/tools/api/check-service-status/?host_id=${hostId}`)
+        .then(response => response.json())
+        .then(data => {
+          // Ocultar spinner de carga
+          document.getElementById('loading-spinner').style.display = 'none';
+          
+          // Verificar si hay error
+          if (data.error) {
+            // Mostrar el mensaje de error
+            document.getElementById('error-text').textContent = data.error;
+            document.getElementById('error-message').style.display = 'block';
+            
+            // Determinar el tipo de error
+            if (data.error.includes('problemas de configuración')) {
+              // Error de configuración
+              document.getElementById('error-title').textContent = 'Error de configuración';
+              
+              // Mostrar detalles de configuración del host
+              if (data.host) {
+                document.getElementById('host-config-details').style.display = 'block';
+                document.getElementById('config-host-name').textContent = data.host.name || 'No disponible';
+                document.getElementById('config-host-ip').textContent = data.host.ip || 'No configurada';
+                document.getElementById('config-host-credentials').textContent = data.host.credentials || 'No configurado';
+                
+                // Generar soluciones específicas basadas en los problemas de configuración
+                if (data.host.config_issues && data.host.config_issues.length > 0) {
+                  const solutionsList = document.getElementById('solutions-list');
+                  solutionsList.innerHTML = '';
+                  
+                  if (data.host.config_issues.includes('No tiene usuario configurado para conexión SSH ni credenciales de despliegue')) {
+                    solutionsList.innerHTML += `
+                      <li><strong>Configurar credenciales:</strong> Edite el host en el inventario y configure credenciales de despliegue con clave SSH o un usuario válido para conexión SSH.</li>
+                    `;
+                  }
+                  
+                  if (data.host.config_issues.includes('No tiene dirección IP configurada')) {
+                    solutionsList.innerHTML += `
+                      <li><strong>Configurar dirección IP:</strong> Edite el host en el inventario y configure una dirección IP válida.</li>
+                    `;
+                  }
+                  
+                  // Añadir enlace para editar el host
+                  document.getElementById('edit-host-link-container').style.display = 'block';
+                  document.getElementById('edit-host-link').href = `/inventory/hosts/${data.host.id}/edit/`;
+                }
+              }
+            } else if (data.error.includes('Error de servicio SSH')) {
+              // Error de servicio SSH
+              document.getElementById('error-title').textContent = 'Error de servicio SSH';
+              
+              // Mostrar detalles del host
+              if (data.host) {
+                document.getElementById('host-config-details').style.display = 'block';
+                document.getElementById('config-host-name').textContent = data.host.name || 'No disponible';
+                document.getElementById('config-host-ip').textContent = data.host.ip || 'No configurada';
+                document.getElementById('config-host-credentials').textContent = data.host.credentials || 'No configurado';
+                
+                // Mostrar soluciones específicas para problemas de SSH
+                if (data.host.error_details && data.host.error_details.length > 0) {
+                  const solutionsList = document.getElementById('solutions-list');
+                  solutionsList.innerHTML = '';
+                  
+                  // Añadir cada detalle de error como una solución
+                  data.host.error_details.forEach(detail => {
+                    solutionsList.innerHTML += `<li>${detail}</li>`;
+                  });
+                  
+                  // Añadir soluciones estándar para problemas de SSH
+                  solutionsList.innerHTML += `
+                    <li><strong>Verificar servicio SSH:</strong> Asegúrese de que el servicio sshd esté ejecutándose en el servidor.</li>
+                    <li><strong>Comprobar firewall:</strong> Verifique que el puerto 22 esté abierto en el firewall del servidor.</li>
+                  `;
+                }
+              }
+            } else if (data.error.includes('Error de red')) {
+              // Error de red
+              document.getElementById('error-title').textContent = 'Error de red';
+              
+              // Mostrar soluciones específicas para problemas de red
+              if (data.host && data.host.error_details) {
+                const solutionsList = document.getElementById('solutions-list');
+                solutionsList.innerHTML = '';
+                
+                // Añadir cada detalle de error como una solución
+                data.host.error_details.forEach(detail => {
+                  solutionsList.innerHTML += `<li>${detail}</li>`;
+                });
+                
+                // Añadir soluciones estándar para problemas de red
+                solutionsList.innerHTML += `
+                  <li><strong>Verificar conectividad:</strong> Compruebe que el servidor esté encendido y conectado a la red.</li>
+                  <li><strong>Comprobar IP:</strong> Verifique que la dirección IP ${data.host.ip} sea correcta.</li>
+                `;
+              }
+            } else {
+              // Otro tipo de error
+              document.getElementById('error-title').textContent = 'Error de conexión';
+            }
+            
+            return;
+          }
+          
+          // Mostrar resultados
+          document.getElementById('status-results').style.display = 'block';
+          
+          // Información del servidor
+          document.getElementById('server-name').textContent = data.host.name;
+          document.getElementById('server-name-display').textContent = data.host.name;
+          document.getElementById('server-ip').textContent = data.host.ip;
+          
+          // Uptime y carga del sistema
+          if (data.load) {
+            document.getElementById('server-uptime').textContent = data.load.uptime || 'Desconocido';
+            document.getElementById('load-1m').textContent = data.load.load_1m || 'N/A';
+            document.getElementById('load-5m').textContent = data.load.load_5m || 'N/A';
+            document.getElementById('load-15m').textContent = data.load.load_15m || 'N/A';
+            
+            // Mostrar explicación de la carga del sistema
+            if (data.load.explanation) {
+              document.getElementById('load-explanation').textContent = data.load.explanation;
+            }
+            
+            // Cambiar el color de los indicadores de carga según el umbral
+            const load1mElement = document.getElementById('load-1m').parentNode.parentNode.querySelector('.info-box-icon');
+            if (data.load.alert) {
+              load1mElement.classList.remove('bg-warning');
+              load1mElement.classList.add('bg-danger');
+            } else {
+              load1mElement.classList.remove('bg-danger');
+              load1mElement.classList.add('bg-warning');
+            }
+          }
+          
+          // Memoria
+          if (data.memory) {
+            // Información básica de memoria
+            const memoryText = `${data.memory.used} / ${data.memory.total}`;
+            document.getElementById('memory-text').textContent = memoryText;
+            document.getElementById('memory-total').textContent = data.memory.total;
+            document.getElementById('memory-free').textContent = data.memory.free;
+            document.getElementById('memory-available').textContent = data.memory.available;
+            document.getElementById('memory-buff-cache').textContent = data.memory.buff_cache || 'N/A';
+            
+            // Extraer el porcentaje
+            let percent = data.memory.percent_num || 0;
+            if (typeof percent === 'string') {
+              percent = parseFloat(percent.replace('%', ''));
+            }
+            
+            // Mostrar el porcentaje en el badge
+            const percentBadge = document.getElementById('memory-percent-badge');
+            percentBadge.textContent = `${percent.toFixed(1)}%`;
+            
+            // Cambiar el color del badge según el porcentaje
+            percentBadge.classList.remove('badge-success', 'badge-warning', 'badge-info', 'badge-danger');
+            
+            // Establecer el ancho de la barra de progreso
+            document.getElementById('memory-progress').style.width = `${percent}%`;
+            
+            // Cambiar el color según el uso
+            const progressBar = document.getElementById('memory-progress');
+            if (percent > 90) {
+              progressBar.classList.remove('bg-success', 'bg-warning', 'bg-info');
+              progressBar.classList.add('bg-danger');
+              percentBadge.classList.add('badge-danger');
+            } else if (percent > 70) {
+              progressBar.classList.remove('bg-success', 'bg-danger', 'bg-info');
+              progressBar.classList.add('bg-warning');
+              percentBadge.classList.add('badge-warning');
+            } else if (percent > 50) {
+              progressBar.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+              progressBar.classList.add('bg-info');
+              percentBadge.classList.add('badge-info');
+            } else {
+              progressBar.classList.remove('bg-danger', 'bg-warning', 'bg-info');
+              progressBar.classList.add('bg-success');
+              percentBadge.classList.add('badge-success');
+            }
+            
+            // Información de swap si está disponible
+            if (data.memory.swap) {
+              document.getElementById('swap-section').style.display = 'block';
+              document.getElementById('swap-text').textContent = `${data.memory.swap.used} / ${data.memory.swap.total}`;
+              
+              // Mostrar valores individuales
+              document.getElementById('swap-total').textContent = data.memory.swap.total;
+              document.getElementById('swap-free').textContent = data.memory.swap.free;
+              document.getElementById('swap-used').textContent = data.memory.swap.used;
+              document.getElementById('swap-cached').textContent = data.memory.swap.cached || 'N/A';
+              
+              // Extraer el porcentaje
+              let swapPercent = data.memory.swap.percent_num || 0;
+              if (typeof swapPercent === 'string') {
+                swapPercent = parseFloat(swapPercent.replace('%', ''));
+              }
+              
+              // Asegurarse de que el porcentaje no exceda el 100%
+              swapPercent = Math.min(swapPercent, 100);
+              
+              // Mostrar el porcentaje en el badge
+              const swapPercentBadge = document.getElementById('swap-percent-badge');
+              swapPercentBadge.textContent = `${swapPercent.toFixed(1)}%`;
+              
+              // Cambiar el color del badge según el porcentaje
+              swapPercentBadge.classList.remove('badge-success', 'badge-warning', 'badge-info', 'badge-danger');
+              
+              // Establecer el ancho de la barra de progreso (asegurarse de que no exceda el 100%)
+              document.getElementById('swap-progress').style.width = `${swapPercent}%`;
+              
+              // Cambiar el color según el uso
+              const swapProgressBar = document.getElementById('swap-progress');
+              if (swapPercent > 90) {
+                swapProgressBar.classList.remove('bg-info', 'bg-warning', 'bg-success');
+                swapProgressBar.classList.add('bg-danger');
+                swapPercentBadge.classList.add('badge-danger');
+              } else if (swapPercent > 70) {
+                swapProgressBar.classList.remove('bg-info', 'bg-danger', 'bg-success');
+                swapProgressBar.classList.add('bg-warning');
+                swapPercentBadge.classList.add('badge-warning');
+              } else if (swapPercent > 50) {
+                swapProgressBar.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+                swapProgressBar.classList.add('bg-info');
+                swapPercentBadge.classList.add('badge-info');
+              } else {
+                swapProgressBar.classList.remove('bg-danger', 'bg-warning', 'bg-info');
+                swapProgressBar.classList.add('bg-success');
+                swapPercentBadge.classList.add('badge-success');
+              }
+            } else {
+              document.getElementById('swap-section').style.display = 'none';
+            }
+          }
+          
+          // Servicios
+          const servicesContainer = document.getElementById('services-container');
+          servicesContainer.innerHTML = '';
+          
+          for (const [serviceName, serviceInfo] of Object.entries(data.services)) {
+            if (!serviceInfo.installed) continue;
+            
+            const cardClass = serviceInfo.active ? 'bg-success' : 'bg-danger';
+            const statusText = serviceInfo.active ? 'Activo' : 'Inactivo';
+            const icon = getServiceIcon(serviceName);
+            
+            let infoContent = `<p class="card-text"><strong>Estado:</strong> ${statusText}</p>`;
+            
+            // Mostrar puertos y servicios abiertos para firewalld
+            if (serviceName === 'firewalld' && serviceInfo.active) {
+              const infoText = serviceInfo.info ? serviceInfo.info.trim() : 'No hay puertos abiertos';
+              
+              // Separar puertos y servicios si están presentes
+              let puertosHTML = '';
+              let serviciosHTML = '';
+              
+              if (infoText.includes('Puertos:')) {
+                // Extraer y formatear puertos
+                const puertosMatch = infoText.match(/Puertos: ([^\n]+)/);
+                if (puertosMatch && puertosMatch[1]) {
+                  const puertos = puertosMatch[1].split(' ');
+                  puertosHTML = puertos.map(puerto => `<span class="badge badge-info mr-2 mb-2" style="font-size: 100%">${puerto}</span>`).join(' ');
+                }
+              }
+              
+              if (infoText.includes('Servicios:')) {
+                // Extraer y formatear servicios
+                const serviciosMatch = infoText.match(/Servicios: ([^\n]+)/);
+                if (serviciosMatch && serviciosMatch[1]) {
+                  const servicios = serviciosMatch[1].split(' ');
+                  serviciosHTML = servicios.map(servicio => `<span class="badge badge-secondary mr-2 mb-2" style="font-size: 100%">${servicio}</span>`).join(' ');
+                }
+              }
+              
+              // Si no hay puertos ni servicios
+              if (!puertosHTML && !serviciosHTML) {
+                puertosHTML = '<span class="text-muted">No hay puertos abiertos</span>';
+              }
+              
+              // Agregar puertos al contenido
+              infoContent += `
+                <p class="card-text"><strong>Puertos abiertos:</strong></p>
+                <div class="p-2">
+                  ${puertosHTML}
+                </div>
+              `;
+              
+              // Agregar servicios si existen
+              if (serviciosHTML) {
+                infoContent += `
+                  <p class="card-text"><strong>Servicios activos:</strong></p>
+                  <div class="p-2">
+                    ${serviciosHTML}
+                  </div>
+                `;
+              }
+            } else {
+              infoContent += `<p class="card-text"><small>${serviceInfo.info}</small></p>`;
+            }
+            
+            const serviceCard = `
+              <div class="col-md-4 mb-3">
+                <div class="card">
+                  <div class="card-header ${cardClass} text-white">
+                    <h5 class="card-title mb-0"><i class="${icon}"></i> ${serviceName}</h5>
+                  </div>
+                  <div class="card-body">
+                    ${infoContent}
+                  </div>
+                </div>
+              </div>
+            `;
+            
+            servicesContainer.innerHTML += serviceCard;
+          }
+          
+          // Espacio en disco
+          const diskContainer = document.getElementById('disk-container');
+          const directoryContainer = document.getElementById('directory-container');
+          diskContainer.innerHTML = '';
+          directoryContainer.innerHTML = '';
+          
+          if (data.disk) {
+            // Mostrar sistemas de archivos
+            if (data.disk.filesystems && data.disk.filesystems.length > 0) {
+              data.disk.filesystems.forEach(disk => {
+                // Solo mostrar en rojo si supera el 70% de uso
+                const percent_num = disk.percent_num || 0;
+                const alertClass = percent_num > 70 ? 'bg-danger' : 'bg-success';
+                
+                const diskCard = `
+                  <div class="progress-group mb-3">
+                    <span class="progress-text">${disk.mounted} (${disk.filesystem})</span>
+                    <span class="float-right">${disk.used} / ${disk.size} (${disk.percent})</span>
+                    <div class="progress progress-sm">
+                      <div class="progress-bar ${alertClass}" style="width: ${disk.percent}"></div>
+                    </div>
+                  </div>
+                `;
+                
+                diskContainer.innerHTML += diskCard;
+              });
+              
+              // Añadir explicación sobre el umbral de alerta
+              diskContainer.innerHTML += `
+                <div class="alert alert-info mt-3">
+                  <i class="fas fa-info-circle"></i> Las particiones se muestran en rojo cuando el uso supera el 70%.
+                </div>
+              `;
+            } else {
+              diskContainer.innerHTML = '<p class="text-center">No se pudo obtener información de los sistemas de archivos</p>';
+            }
+            
+            // Mostrar uso de directorios específicos
+            if (data.disk.directories && data.disk.directories.length > 0) {
+              data.disk.directories.forEach(dir => {
+                // Determinar la clase de color según el porcentaje de uso
+                const percent_num = dir.percent_num || 0;
+                let colorClass = 'bg-success';
+                
+                if (percent_num > 90) {
+                  colorClass = 'bg-danger';
+                } else if (percent_num > 70) {
+                  colorClass = 'bg-warning';
+                } else if (percent_num > 50) {
+                  colorClass = 'bg-info';
+                }
+                
+                // Crear tarjeta para el directorio
+                const dirCard = `
+                  <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="small-box ${colorClass}">
+                      <div class="inner">
+                        <h3>${dir.size}</h3>
+                        <p>${dir.directory}</p>
+                        <span class="badge badge-pill badge-light">${dir.percent}</span>
+                      </div>
+                      <div class="icon">
+                        <i class="fas fa-folder"></i>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                
+                directoryContainer.innerHTML += dirCard;
+              });
+            } else {
+              directoryContainer.innerHTML = '<p class="text-center">No se pudo obtener información de directorios específicos</p>';
+            }
+          } else {
+            diskContainer.innerHTML = '<p class="text-center">No se pudo obtener información del disco</p>';
+            directoryContainer.innerHTML = '<p class="text-center">No se pudo obtener información de directorios</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('loading-spinner').style.display = 'none';
+          alert('Error al obtener información del servidor');
+        });
+    });
+    
+    // Función para obtener el icono adecuado para cada servicio
+    function getServiceIcon(serviceName) {
+      const icons = {
+        'firewalld': 'fas fa-shield-alt',
+        'httpd': 'fas fa-globe',
+        'nginx': 'fas fa-server',
+        'mariadb': 'fas fa-database',
+        'postgresql': 'fas fa-database',
+        'sshd': 'fas fa-terminal',
+        'default': 'fas fa-cogs'
+      };
+      
+      return icons[serviceName] || icons.default;
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+
+PLAY [Revisar logs del sistema y autenticación] ********************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si los archivos de log existen] ********************************
+[0;32mok: [demo03] => (item=/var/log/secure)[0m
+[0;32mok: [demo03] => (item=/var/log/messages)[0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/secure (si existe)] ****************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/messages (si existe)] **************
+[0;32mok: [demo03][0m
+
+TASK [Buscar intentos fallidos de autenticación en secure] *********************
+[0;32mok: [demo03][0m
+
+TASK [Buscar errores críticos en messages] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Procesar logs de autenticación] ******************************************
+[0;32mok: [demo03][0m
+
+TASK [Procesar errores del sistema] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar resumen ejecutivo] ***********************************************
+[0;31mfatal: [demo03]: FAILED! => {"msg": "template error while templating string: Encountered unknown tag 'break'. Jinja was looking for the following tags: 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'.. String: \n╔════════════════════ RESUMEN DEL SISTEMA ═══════════════════╗\n║ HOST: {{ '%-50s' | format(ansible_hostname) }}║\n║ SISTEMA: {{ '%-46s' | format(ansible_distribution + ' ' + ansible_distribution_version) }}║\n║ UPTIME: {{ '%-47.1f' | format(ansible_uptime_seconds | int / 3600) }} horas ║\n╚═══════════════════════════════════════════════════════════╝\n\n🔐 AUTENTICACIÓN\n{% set auth_attempts = auth_summary | from_json %}\n{% if auth_attempts | length > 0 %}\n❌ INTENTOS FALLIDOS ({{ auth_attempts | length }}):\n{% for attempt in auth_attempts %}\n• {{ attempt.time }} - Usuario: {{ attempt.user }}\n{% endfor %}\n{% else %}\n✅ No se detectaron intentos de autenticación fallidos\n{% endif %}\n\n⚠️  ERRORES RECIENTES\n{% set errors = errors_summary | from_json %}\n{% if errors | length > 0 %}\n{% for error_key, error_data in errors.items() | sort(attribute='1.count', reverse=true) %}\n{% if error_data.count > 1 %}\n• ({{ error_data.count }}x) {{ error_data.example | regex_replace('0x[0-9a-fA-F]+', '0xXXXX') | regex_replace('\\\\d+', 'N') }}\n{% else %}\n• {{ error_data.example | regex_replace('\\\\s+', ' ') | trim }}\n{% endif %}\n{% if loop.index >= 5 %}\n• ... y {{ errors | length - 5 }} errores más\n{% break %}\n{% endif %}\n{% endfor %}\n{% else %}\n✅ No se encontraron errores críticos\n{% endif %}\n\n📊 RECURSOS DEL SISTEMA\n• Memoria: {{ '%-4.1f' | format(100 - ansible_memory_mb.real.free / ansible_memory_mb.real.total * 100) }}% usado ({{ (ansible_memory_mb.real.used / 1024) | round(1) }}/{{ (ansible_memory_mb.real.total / 1024) | round(1) }} GB)\n\n{% set disk_mounts = [] %}\n{% for mount in ansible_mounts | sort(attribute='mount') %}\n{% if mount.size_available is defined and mount.size is defined and mount.size > 0 %}\n{% set _ = disk_mounts.append(mount) %}\n{% endif %}\n{% endfor %}\n\n{% if disk_mounts | length > 0 %}\n• Almacenamiento:\n{% for mount in disk_mounts %}\n  - {{ '%-15s' | format(mount.mount) }} {{ '%5.1f' | format(100 - mount.size_available / mount.size * 100) }}% usado ({{ '%-5.1f' | format(mount.size_available / 1073741824) }} GB libres de {{ '%-5.1f' | format(mount.size / 1073741824) }} GB)\n{% endfor %}\n{% endif %}\n\n🔍 Para ver detalles completos, ejecuta con -v\n═══════════════════════════════════════════════. Encountered unknown tag 'break'. Jinja was looking for the following tags: 'elif' or 'else' or 'endif'. The innermost block that needs to be closed is 'if'."}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo03[0m                     : [0;32mok=8   [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

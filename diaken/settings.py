@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'history',
     'app_settings',
     'deploy',
+    'tools',
 ]
 
 MIDDLEWARE = [
