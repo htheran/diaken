@@ -95,40 +95,71 @@
         </button>
       </div>
       <div class="modal-body" style="max-height: 60vh; overflow-y: auto; text-align: left; font-size: 0.95em;">
-        <div style="background: #f8f9fa; padding: 0.5em 1em; border-radius: 6px;">
-  <div style="font-family: monospace; font-size: 1em;">
-    <strong>THIRD-PARTY SOFTWARE NOTICES AND INFORMATION</strong><br><br>
-    This project incorporates components from the projects listed below.<br>
-    <hr>
-    <div style="margin-bottom: 1.3em;"><div style="background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.4em 0.8em; border-radius: 6px 6px 0 0; margin-bottom: 0.2em;">Django (BSD 3-Clause)</div><div style="padding: 0.5em 0.8em; background: #e9ecef; border-radius: 0 0 6px 6px;">Copyright (c) Django Software Foundation and individual contributors.</div></div>
-    <div style="margin-bottom: 1.3em;"><div style="background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.4em 0.8em; border-radius: 6px 6px 0 0; margin-bottom: 0.2em;">Ansible (GPL-3.0)</div><div style="padding: 0.5em 0.8em; background: #e9ecef; border-radius: 0 0 6px 6px;">Copyright (c) 2023 Red Hat, Inc.</div></div>
-    <div style="margin-bottom: 1.3em;"><div style="background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.4em 0.8em; border-radius: 6px 6px 0 0; margin-bottom: 0.2em;">ansible-runner (GPL-3.0)</div><div style="padding: 0.5em 0.8em; background: #e9ecef; border-radius: 0 0 6px 6px;">Copyright (c) 2018 Red Hat, Inc.</div></div>
-    <div style="margin-bottom: 1.3em;"><div style="background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.4em 0.8em; border-radius: 6px 6px 0 0; margin-bottom: 0.2em;">PyYAML (MIT)</div><div style="padding: 0.5em 0.8em; background: #e9ecef; border-radius: 0 0 6px 6px;">Copyright (c) 2017-2021 Ingy döt Net, 2006-2016 Kirill Simonov</div></div>
-    <div style="margin-bottom: 1.3em;"><div style="background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.4em 0.8em; border-radius: 6px 6px 0 0; margin-bottom: 0.2em;">Bootstrap (MIT)</div><div style="padding: 0.5em 0.8em; background: #e9ecef; border-radius: 0 0 6px 6px;">Copyright (c) 2011-2023 The Bootstrap Authors</div></div>
-    <div style="margin-bottom: 1.3em;"><div style="background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.4em 0.8em; border-radius: 6px 6px 0 0; margin-bottom: 0.2em;">jQuery (MIT)</div><div style="padding: 0.5em 0.8em; background: #e9ecef; border-radius: 0 0 6px 6px;">Copyright OpenJS Foundation and other contributors</div></div>
-    <div style="margin-bottom: 1.3em;"><div style="background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.4em 0.8em; border-radius: 6px 6px 0 0; margin-bottom: 0.2em;">Font Awesome (CC BY 4.0, SIL OFL 1.1, MIT)</div><div style="padding: 0.5em 0.8em; background: #e9ecef; border-radius: 0 0 6px 6px;">Copyright (c) Fonticons, Inc.</div></div>
-    <div style="margin-bottom: 1.3em;"><div style="background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.4em 0.8em; border-radius: 6px 6px 0 0; margin-bottom: 0.2em;">Other Python dependencies:</div><div style="padding: 0.5em 0.8em; background: #e9ecef; border-radius: 0 0 6px 6px;">
-      - asgiref (BSD 3-Clause)<br>
-      - bcrypt (Apache 2.0)<br>
-      - cffi (MIT)<br>
-      - cryptography (Apache 2.0/BSD)<br>
-      - lockfile (MIT)<br>
-      - packaging (Apache 2.0/BSD)<br>
-      - pexpect (ISC)<br>
-      - ptyprocess (ISC)<br>
-      - pycparser (BSD 3-Clause)<br>
-      - python-daemon (Apache 2.0)<br>
-      - sqlparse (BSD 3-Clause)
-    </div></div>>
-      <span style="margin-left: 1em;">- asgiref (BSD 3-Clause)<br>
-      - bcrypt (Apache 2.0)<br>
-      - cffi (MIT)<br>
-      - cryptography (Apache 2.0/BSD)<br>
-      - lockfile (MIT)<br>
-      - packaging (Apache 2.0/BSD)<br>
-      - pexpect (ISC)<br>
-      - ptyprocess (ISC)<br>
-      - pycparser (BSD 3-Clause)<br>
+        <div style="background: #f4f7fa; padding: 1.5em 0.5em; border-radius: 12px;">
+  <div style="font-family: 'Segoe UI', 'Roboto', Arial, sans-serif; font-size: 1.03em;">
+    <div style="font-size: 1.2em; font-weight: 600; color: #1e3a5f; letter-spacing: 0.5px; margin-bottom: 0.7em;">THIRD-PARTY SOFTWARE NOTICES AND INFORMATION</div>
+    <div style="margin-bottom: 1.2em; color: #444;">This project incorporates components from the projects listed below.</div>
+    <div style="display: flex; flex-direction: column; gap: 1.1em;">
+      <div style="box-shadow: 0 2px 8px rgba(30,58,95,0.07); border-radius: 10px; background: #fff;">
+        <div style="display: flex; align-items: center; background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.5em 1em; border-radius: 10px 10px 0 0; font-size: 1.07em;">
+          <i class="fab fa-python" style="margin-right: 7px;"></i> Django (BSD 3-Clause)
+        </div>
+        <div style="padding: 0.8em 1em; color: #222; background: #f8fafc; border-radius: 0 0 10px 10px;">Copyright (c) Django Software Foundation and individual contributors.</div>
+      </div>
+      <div style="box-shadow: 0 2px 8px rgba(30,58,95,0.07); border-radius: 10px; background: #fff;">
+        <div style="display: flex; align-items: center; background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.5em 1em; border-radius: 10px 10px 0 0; font-size: 1.07em;">
+          <i class="fas fa-network-wired" style="margin-right: 7px;"></i> Ansible (GPL-3.0)
+        </div>
+        <div style="padding: 0.8em 1em; color: #222; background: #f8fafc; border-radius: 0 0 10px 10px;">Copyright (c) 2023 Red Hat, Inc.</div>
+      </div>
+      <div style="box-shadow: 0 2px 8px rgba(30,58,95,0.07); border-radius: 10px; background: #fff;">
+        <div style="display: flex; align-items: center; background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.5em 1em; border-radius: 10px 10px 0 0; font-size: 1.07em;">
+          <i class="fas fa-cogs" style="margin-right: 7px;"></i> ansible-runner (GPL-3.0)
+        </div>
+        <div style="padding: 0.8em 1em; color: #222; background: #f8fafc; border-radius: 0 0 10px 10px;">Copyright (c) 2018 Red Hat, Inc.</div>
+      </div>
+      <div style="box-shadow: 0 2px 8px rgba(30,58,95,0.07); border-radius: 10px; background: #fff;">
+        <div style="display: flex; align-items: center; background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.5em 1em; border-radius: 10px 10px 0 0; font-size: 1.07em;">
+          <i class="fas fa-code" style="margin-right: 7px;"></i> PyYAML (MIT)
+        </div>
+        <div style="padding: 0.8em 1em; color: #222; background: #f8fafc; border-radius: 0 0 10px 10px;">Copyright (c) 2017-2021 Ingy döt Net, 2006-2016 Kirill Simonov</div>
+      </div>
+      <div style="box-shadow: 0 2px 8px rgba(30,58,95,0.07); border-radius: 10px; background: #fff;">
+        <div style="display: flex; align-items: center; background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.5em 1em; border-radius: 10px 10px 0 0; font-size: 1.07em;">
+          <i class="fab fa-bootstrap" style="margin-right: 7px;"></i> Bootstrap (MIT)
+        </div>
+        <div style="padding: 0.8em 1em; color: #222; background: #f8fafc; border-radius: 0 0 10px 10px;">Copyright (c) 2011-2023 The Bootstrap Authors</div>
+      </div>
+      <div style="box-shadow: 0 2px 8px rgba(30,58,95,0.07); border-radius: 10px; background: #fff;">
+        <div style="display: flex; align-items: center; background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.5em 1em; border-radius: 10px 10px 0 0; font-size: 1.07em;">
+          <i class="fab fa-js-square" style="margin-right: 7px;"></i> jQuery (MIT)
+        </div>
+        <div style="padding: 0.8em 1em; color: #222; background: #f8fafc; border-radius: 0 0 10px 10px;">Copyright OpenJS Foundation and other contributors</div>
+      </div>
+      <div style="box-shadow: 0 2px 8px rgba(30,58,95,0.07); border-radius: 10px; background: #fff;">
+        <div style="display: flex; align-items: center; background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.5em 1em; border-radius: 10px 10px 0 0; font-size: 1.07em;">
+          <i class="fab fa-font-awesome" style="margin-right: 7px;"></i> Font Awesome (CC BY 4.0, SIL OFL 1.1, MIT)
+        </div>
+        <div style="padding: 0.8em 1em; color: #222; background: #f8fafc; border-radius: 0 0 10px 10px;">Copyright (c) Fonticons, Inc.</div>
+      </div>
+      <div style="box-shadow: 0 2px 8px rgba(30,58,95,0.07); border-radius: 10px; background: #fff;">
+        <div style="display: flex; align-items: center; background: #1e3a5f; color: #fff; font-weight: bold; padding: 0.5em 1em; border-radius: 10px 10px 0 0; font-size: 1.07em;">
+          <i class="fas fa-cube" style="margin-right: 7px;"></i> Other Python dependencies
+        </div>
+        <div style="padding: 0.8em 1em; color: #222; background: #f8fafc; border-radius: 0 0 10px 10px;">
+          - asgiref (BSD 3-Clause)<br>
+          - bcrypt (Apache 2.0)<br>
+          - cffi (MIT)<br>
+          - cryptography (Apache 2.0/BSD)<br>
+          - lockfile (MIT)<br>
+          - packaging (Apache 2.0/BSD)<br>
+          - pexpect (ISC)<br>
+          - ptyprocess (ISC)<br>
+          - pycparser (BSD 3-Clause)<br>
+          - python-daemon (Apache 2.0)<br>
+          - sqlparse (BSD 3-Clause)
+        </div>
+      </div>
       - python-daemon (Apache 2.0)<br>
       - sqlparse (BSD 3-Clause)</span>
     </div>

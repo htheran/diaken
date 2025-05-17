@@ -15,8 +15,11 @@ from app_settings.models import DeploymentCredential
 
 class HostForm(forms.ModelForm):
     deployment_credential = forms.ModelChoiceField(queryset=DeploymentCredential.objects.all(), required=False, label="Deployment Credential")
-    ansible_user = forms.CharField(required=False, label="Usuario (Windows)", widget=forms.HiddenInput())
+    ansible_user = forms.CharField(required=False, label="Usuario (Windows)")
     ansible_password = forms.CharField(required=False, label="Contraseña (Windows)", widget=forms.PasswordInput())
+    ansible_port = forms.IntegerField(required=False, initial=5986, widget=forms.HiddenInput())
+    ansible_winrm_scheme = forms.CharField(required=False, initial='https', widget=forms.HiddenInput())
+    ansible_winrm_server_cert_validation = forms.CharField(required=False, initial='ignore', widget=forms.HiddenInput())
     class Meta:
         model = Host
         fields = [
@@ -45,7 +48,12 @@ class HostForm(forms.ModelForm):
         cred = cleaned_data.get('deployment_credential')
         ansible_user = cleaned_data.get('ansible_user')
         ansible_password = cleaned_data.get('ansible_password')
+        # Set ansible_connection to winrm automatically for Windows hosts
         if os_value == 'Windows':
+            cleaned_data['ansible_connection'] = 'winrm'
+            cleaned_data['ansible_port'] = 5986
+            cleaned_data['ansible_winrm_scheme'] = 'https'
+            cleaned_data['ansible_winrm_server_cert_validation'] = 'ignore'
             if not cred or not cred.windows_password_encrypted:
                 self.add_error('deployment_credential', 'La credencial seleccionada no tiene contraseña de Windows configurada.')
             if not ansible_user:
