@@ -84,5 +84,53 @@
 <script src="/static/js/icon-select.js"></script>
 
 {% block extra_js %}{% endblock %}
+<!-- License Modal -->
+<div class="modal fade" id="licenseModal" tabindex="-1" role="dialog" aria-labelledby="licenseModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #1e3a5f; color: white;">
+        <h5 class="modal-title" id="licenseModalLabel">Third-Party Software & Licenses</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto; text-align: left; font-size: 0.95em;">
+        <div style="background: #f8f9fa; padding: 0.5em 1em; border-radius: 6px;">
+  <div style="font-family: monospace; font-size: 1em;">
+    <strong>THIRD-PARTY SOFTWARE NOTICES AND INFORMATION</strong><br><br>
+    This project incorporates components from the projects listed below.<br>
+    <hr>
+    <div style="margin-bottom: 1em;"><span style="color: #1e3a5f; font-weight: bold;">Django (BSD 3-Clause)</span><br>Copyright (c) Django Software Foundation and individual contributors.</div>
+    <div style="margin-bottom: 1em;"><span style="color: #1e3a5f; font-weight: bold;">Ansible (GPL-3.0)</span><br>Copyright (c) 2023 Red Hat, Inc.</div>
+    <div style="margin-bottom: 1em;"><span style="color: #1e3a5f; font-weight: bold;">ansible-runner (GPL-3.0)</span><br>Copyright (c) 2018 Red Hat, Inc.</div>
+    <div style="margin-bottom: 1em;"><span style="color: #1e3a5f; font-weight: bold;">PyYAML (MIT)</span><br>Copyright (c) 2017-2021 Ingy döt Net, 2006-2016 Kirill Simonov</div>
+    <div style="margin-bottom: 1em;"><span style="color: #1e3a5f; font-weight: bold;">Bootstrap (MIT)</span><br>Copyright (c) 2011-2023 The Bootstrap Authors</div>
+    <div style="margin-bottom: 1em;"><span style="color: #1e3a5f; font-weight: bold;">jQuery (MIT)</span><br>Copyright OpenJS Foundation and other contributors</div>
+    <div style="margin-bottom: 1em;"><span style="color: #1e3a5f; font-weight: bold;">Font Awesome (CC BY 4.0, SIL OFL 1.1, MIT)</span><br>Copyright (c) Fonticons, Inc.</div>
+    <div style="margin-bottom: 1em;"><span style="color: #1e3a5f; font-weight: bold;">Other Python dependencies:</span><br>
+      <span style="margin-left: 1em;">- asgiref (BSD 3-Clause)<br>
+      - bcrypt (Apache 2.0)<br>
+      - cffi (MIT)<br>
+      - cryptography (Apache 2.0/BSD)<br>
+      - lockfile (MIT)<br>
+      - packaging (Apache 2.0/BSD)<br>
+      - pexpect (ISC)<br>
+      - ptyprocess (ISC)<br>
+      - pycparser (BSD 3-Clause)<br>
+      - python-daemon (Apache 2.0)<br>
+      - sqlparse (BSD 3-Clause)</span>
+    </div>
+    <div style="margin-top: 1.5em;">
+      For full license texts and details, see the NOTICE file distributed with this application.
+    </div>
+  </div>
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
