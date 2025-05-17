@@ -67,3 +67,14 @@ class DeploymentCredential(models.Model):
             return None
         f = Fernet(settings.FIELD_ENCRYPTION_KEY)
         return f.decrypt(self.ssh_private_key_encrypted).decode()
+
+    def set_windows_password(self, password_str):
+        f = Fernet(settings.FIELD_ENCRYPTION_KEY)
+        self.windows_password_encrypted = f.encrypt(password_str.encode())
+
+    def get_windows_password(self):
+        if not self.windows_password_encrypted:
+            return None
+        f = Fernet(settings.FIELD_ENCRYPTION_KEY)
+        return f.decrypt(self.windows_password_encrypted).decode()
+

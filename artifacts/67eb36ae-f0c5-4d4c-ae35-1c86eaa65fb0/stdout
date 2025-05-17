@@ -1,0 +1,6 @@
+[1;35m[WARNING]: Could not match supplied host pattern, ignoring: htheran[0m
+
+PLAY [Pruebas básicas de conectividad y sistema en Windows] ********************
+[0;36mskipping: no hosts matched[0m
+
+PLAY RECAP *********************************************************************

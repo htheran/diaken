@@ -1,0 +1,8 @@
+
+PLAY [Revisar logs del sistema y autenticación] ********************************
+
+TASK [Gathering Facts] *********************************************************
+[1;31mfatal: [demo02]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '10.100.0.120' (ED25519) to the list of known hosts.\r\nLoad key \"/tmp/tmpcjshew83\": error in libcrypto\r\nuser_diaken@10.100.0.120: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).", "unreachable": true}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mdemo02[0m                     : ok=0    changed=0    [1;31munreachable=1   [0m failed=0    skipped=0    rescued=0    ignored=0   

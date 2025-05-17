@@ -1,0 +1,24 @@
+[1;35m[WARNING]:  * Failed to parse /tmp/tmpk9lfl7v9 with yaml plugin: We were unable[0m
+[1;35mto read either as JSON nor YAML, these are the errors we got from each: JSON:[0m
+[1;35mExpecting value: line 1 column 2 (char 1)  Syntax Error while loading YAML.[0m
+[1;35mdid not find expected <document start>. did not find expected <document start>[0m
+[1;35min "<unicode string>", line 3, column 1  The error appears to be in[0m
+[1;35m'/tmp/tmpk9lfl7v9': line 3, column 1, but may be elsewhere in the file[0m
+[1;35mdepending on the exact syntax problem.  The offending line appears to be:[0m
+[1;35m[target_host] ^ here[0m
+[1;35m[WARNING]:  * Failed to parse /tmp/tmpk9lfl7v9 with ini plugin:[0m
+[1;35m/tmp/tmpk9lfl7v9:7: Expected group name, got: 10.104.10.20[0m
+[1;35mansible_host=10.104.10.20 ansible_connection=ssh ansible_port=22[0m
+[1;35mansible_user=administrator ansible_password=Windows2022[0m
+[1;35mansible_ssh_common_args='-o StrictHostKeyChecking=no'[0m
+[1;35mansible_shell_type=powershell[0m
+[1;35m[WARNING]: Unable to parse /tmp/tmpk9lfl7v9 as an inventory source[0m
+[1;35m[WARNING]: No inventory was parsed, only implicit localhost is available[0m
+[1;35m[WARNING]: provided hosts list is empty, only localhost is available. Note that[0m
+[1;35mthe implicit localhost does not match 'all'[0m
+[1;35m[WARNING]: Could not match supplied host pattern, ignoring: htheran[0m
+
+PLAY [Pruebas básicas de conectividad y sistema en Windows] ********************
+[0;36mskipping: no hosts matched[0m
+
+PLAY RECAP *********************************************************************

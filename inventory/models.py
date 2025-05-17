@@ -33,7 +33,16 @@ class Host(models.Model):
     ansible_user = models.CharField(max_length=255, blank=True, null=True)
     ansible_become = models.BooleanField(default=True)
     ansible_become_method = models.CharField(max_length=50, default='sudo')
-    # Eliminado: ansible_become_password, ansible_ssh_private_key_file
+    # Ansible connection fields
+    ansible_connection = models.CharField(max_length=50, blank=True, null=True)
+    ansible_port = models.IntegerField(blank=True, null=True)
+    # Campos para SSH
+    ansible_shell_type = models.CharField(max_length=50, blank=True, null=True, help_text='Tipo de shell a usar (ej: powershell, cmd, bash)')
+    ansible_ssh_private_key_file = models.CharField(max_length=255, blank=True, null=True, help_text='Ruta al archivo de llave privada SSH')
+    ansible_ssh_common_args = models.TextField(blank=True, null=True, help_text='Argumentos adicionales para SSH')
+    # Campos obsoletos
+    ansible_winrm_scheme = models.CharField(max_length=10, blank=True, null=True)
+    ansible_winrm_server_cert_validation = models.CharField(max_length=20, blank=True, null=True)
     deployment_credential = models.ForeignKey('app_settings.DeploymentCredential', null=True, blank=True, on_delete=models.SET_NULL, help_text='Deployment credential from settings')
     status = models.IntegerField(default=1)
     tags = models.CharField(max_length=255, blank=True, null=True)

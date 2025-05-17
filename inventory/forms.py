@@ -1,5 +1,9 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Environment, Group, Host
+from app_settings.models import DeploymentCredential
+import tempfile
+import os
 
 class EnvironmentForm(forms.ModelForm):
     class Meta:
@@ -11,15 +15,43 @@ class GroupForm(forms.ModelForm):
         model = Group
         fields = ['environment', 'name', 'type', 'description']
 
-from app_settings.models import DeploymentCredential
-
 class HostForm(forms.ModelForm):
-    deployment_credential = forms.ModelChoiceField(queryset=DeploymentCredential.objects.all(), required=False, label="Deployment Credential")
-    ansible_user = forms.CharField(required=False, label="Usuario (Windows)")
-    ansible_password = forms.CharField(required=False, label="Contraseña (Windows)", widget=forms.PasswordInput())
-    ansible_port = forms.IntegerField(required=False, initial=5986, widget=forms.HiddenInput())
-    ansible_winrm_scheme = forms.CharField(required=False, initial='https', widget=forms.HiddenInput())
-    ansible_winrm_server_cert_validation = forms.CharField(required=False, initial='ignore', widget=forms.HiddenInput())
+    deployment_credential = forms.ModelChoiceField(
+        queryset=DeploymentCredential.objects.all(),
+        required=False,
+        label="Credencial de Despliegue",
+        help_text="Seleccione la credencial que contiene la llave PPK para la conexión SSH"
+    )
+    ansible_user = forms.CharField(
+        required=False,
+        label="Usuario",
+        help_text="Usuario para la conexión SSH (ej: Administrator)"
+    )
+    ansible_password = forms.CharField(
+        required=False,
+        label="Contraseña",
+        widget=forms.PasswordInput(render_value=True),
+        help_text="Contraseña del usuario (opcional si se usa autenticación por llave)"
+    )
+    ansible_port = forms.IntegerField(
+        required=False,
+        initial=22,
+        widget=forms.HiddenInput()
+    )
+    ansible_ssh_private_key_file = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
+    ansible_ssh_common_args = forms.CharField(
+        required=False,
+        initial='-o StrictHostKeyChecking=no',
+        widget=forms.HiddenInput()
+    )
+    ansible_shell_type = forms.CharField(
+        required=False,
+        initial='powershell',
+        widget=forms.HiddenInput()
+    )
     class Meta:
         model = Host
         fields = [
@@ -48,65 +80,64 @@ class HostForm(forms.ModelForm):
         cred = cleaned_data.get('deployment_credential')
         ansible_user = cleaned_data.get('ansible_user')
         ansible_password = cleaned_data.get('ansible_password')
-        # Set ansible_connection to winrm automatically for Windows hosts
+        
+        # Configuración común para todos los sistemas operativos
+        cleaned_data['ansible_connection'] = 'ssh'
+        cleaned_data['ansible_port'] = 22
+        
+        # Configuración específica para Windows
         if os_value == 'Windows':
-            cleaned_data['ansible_connection'] = 'winrm'
-            cleaned_data['ansible_port'] = 5986
-            cleaned_data['ansible_winrm_scheme'] = 'https'
-            cleaned_data['ansible_winrm_server_cert_validation'] = 'ignore'
-            if not cred or not cred.windows_password_encrypted:
-                self.add_error('deployment_credential', 'La credencial seleccionada no tiene contraseña de Windows configurada.')
+            cleaned_data['ansible_shell_type'] = 'powershell'
+            
+            # Validaciones para Windows
             if not ansible_user:
                 self.add_error('ansible_user', 'El usuario es obligatorio para hosts Windows.')
-            if not ansible_password:
-                self.add_error('ansible_password', 'La contraseña es obligatoria para hosts Windows.')
+                
+            if not cred:
+                self.add_error('deployment_credential', 'Se requiere una credencial para hosts Windows.')
+            else:
+                # Configurar la llave privada si existe en la credencial
+                if hasattr(cred, 'get_ssh_private_key'):
+                    ssh_key = cred.get_ssh_private_key()
+                    if ssh_key:
+                        try:
+                            # Crear archivo temporal con la llave privada
+                            keyfile = tempfile.NamedTemporaryFile(mode='w', delete=False)
+                            keyfile.write(ssh_key)
+                            keyfile.close()
+                            # Asegurar permisos correctos
+                            os.chmod(keyfile.name, 0o600)
+                            cleaned_data['ansible_ssh_private_key_file'] = keyfile.name
+                            
+                            # Verificar que la llave sea válida
+                            import subprocess
+                            result = subprocess.run(
+                                ['ssh-keygen', '-y', '-f', keyfile.name],
+                                capture_output=True,
+                                text=True,
+                                timeout=5
+                            )
+                            if result.returncode != 0:
+                                self.add_error('deployment_credential', 
+                                    'La llave privada en la credencial no es válida.')
+                        except Exception as e:
+                            self.add_error('deployment_credential', 
+                                f'Error al procesar la llave privada: {str(e)}')
+                            if 'keyfile' in locals() and os.path.exists(keyfile.name):
+                                os.unlink(keyfile.name)
+        
+        # Configuración para Linux/Unix
         else:
-            # Validación SSH para hosts no-Windows
-            import socket
-            import subprocess
-            ip = cleaned_data.get('ip')
-            cred = cleaned_data.get('deployment_credential')
-            user = cred.user if cred and hasattr(cred, 'user') else None
-            keyfile = None
-            if cred and hasattr(cred, 'get_ssh_private_key'):
-                ssh_key = cred.get_ssh_private_key()
-                if ssh_key:
-                    import tempfile
-                    keyfile = tempfile.NamedTemporaryFile(delete=False, mode='w')
-                    keyfile.write(ssh_key.strip() + '\n')
-                    keyfile.close()
-                    # Validar que la llave privada permita generar la pública
-                    import subprocess
-                    try:
-                        result = subprocess.run(['ssh-keygen', '-y', '-f', keyfile.name], capture_output=True, timeout=5)
-                        if result.returncode != 0:
-                            self.add_error('deployment_credential', 'La llave privada de la credencial seleccionada es inválida o está corrupta. No se pudo generar la llave pública.')
-                    except Exception as e:
-                        self.add_error('deployment_credential', f'Error al validar la llave privada: {e}')
-            # Intentar conexión SSH
-            if ip:
-                ssh_args = [
-                    'ssh',
-                    '-o', 'BatchMode=yes',
-                    '-o', 'ConnectTimeout=5',
-                    '-o', 'StrictHostKeyChecking=no',
-                ]
-                if keyfile:
-                    ssh_args += ['-i', keyfile.name]
-                ssh_args += [f'{user}@{ip}', 'echo ok']
-                try:
-                    result = subprocess.run(ssh_args, capture_output=True, timeout=8)
-                    if result.returncode != 0:
-                        import datetime
-                        error_msg = result.stderr.decode().strip()
-                        self.add_error('ip', f'No se pudo conectar por SSH: {error_msg}')
-                        # Guardar log
-                        with open('/opt/www/inventory/host_connection_errors.log', 'a') as logf:
-                            logf.write(f"[{datetime.datetime.now()}] {user}@{ip} - {error_msg}\n")
-                except Exception as e:
-                    self.add_error('ip', f'Error de conexión SSH: {e}')
-                finally:
-                    if keyfile:
-                        import os
-                        os.unlink(keyfile.name)
+            cleaned_data['ansible_shell_type'] = 'bash'
+            
+            # Validar credencial para Linux
+            if not cred:
+                self.add_error('deployment_credential', 'Se requiere una credencial para hosts Linux.')
+            elif not hasattr(cred, 'get_ssh_private_key') or not cred.get_ssh_private_key():
+                self.add_error('deployment_credential', 'La credencial seleccionada no tiene llave SSH configurada.')
+        
+        # Limpiar campos no utilizados
+        cleaned_data['ansible_winrm_scheme'] = None
+        cleaned_data['ansible_winrm_server_cert_validation'] = None
+        
         return cleaned_data

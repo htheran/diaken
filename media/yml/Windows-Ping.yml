@@ -1,0 +1,65 @@
+---
+- name: Pruebas básicas de conectividad y sistema en Windows
+  hosts: target_host
+  gather_facts: no
+  
+  tasks:
+    - name: Verificar conectividad básica con ping
+      raw: ping -n 2 127.0.0.1
+      register: ping_result
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar resultado del ping
+      debug:
+        var: ping_result.stdout_lines
+        
+    - name: Obtener información del sistema (systeminfo)
+      raw: systeminfo
+      register: sysinfo
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar información del sistema
+      debug:
+        var: sysinfo.stdout_lines
+        
+    - name: Obtener información de red básica
+      raw: ipconfig
+      register: ipconfig
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar configuración de red
+      debug:
+        var: ipconfig.stdout_lines
+        
+    - name: Verificar directorio actual
+      raw: cd /d C:\Users\Administrator && dir
+      register: dir_listing
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar listado de archivos
+      debug:
+        var: dir_listing.stdout_lines
+        
+    - name: Verificar versión de Windows
+      raw: ver
+      register: windows_version
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar versión de Windows
+      debug:
+        var: windows_version.stdout_lines
+        
+    - name: Verificar variables de entorno
+      raw: set
+      register: env_vars
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar variables de entorno
+      debug:
+        var: env_vars.stdout_lines

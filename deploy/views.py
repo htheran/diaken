@@ -70,30 +70,55 @@ def generate_temporary_inventory(group_id=None, host_id=None):
         # Si se proporciona un host, escribe solo ese host
         elif host_id:
             host = get_object_or_404(Host, id=host_id)
-            # Obtener la llave privada SSH y escribirla a un archivo temporal si existe
-            private_key_path = ''
-            if host.deployment_credential and host.deployment_credential.ssh_private_key_encrypted:
-                ssh_key = host.deployment_credential.get_ssh_private_key()
-                key_bytes = (ssh_key.strip() + '\n').encode('utf-8')
-                key_file = tempfile.NamedTemporaryFile(delete=False, mode='wb', dir='/tmp')
-                key_file.write(key_bytes)
-                key_file.close()
-                os.chmod(key_file.name, 0o600)
-                private_key_path = key_file.name
-            inventory_file.write(f"[target_host]\n")
-            user = host.deployment_credential.user if host.deployment_credential and hasattr(host.deployment_credential, 'user') else 'root'
-            ssh_key_valid = bool(private_key_path and os.path.exists(private_key_path) and os.path.getsize(private_key_path) > 100)
-            line = (
-                f"{host.name} ansible_host={host.ip} ansible_python_interpreter={host.ansible_python_interpreter}"
-                f" ansible_user={user}"
-                f" ansible_become={'yes' if host.ansible_become else 'no'}"
-                f" ansible_become_method={host.ansible_become_method if host.ansible_become_method else ''}"
-                f" ansible_ssh_common_args='-o StrictHostKeyChecking=no'"
-            )
-            if ssh_key_valid:
-                line += f" ansible_ssh_private_key_file={private_key_path}"
-            line += "\n"
-            inventory_file.write(line)
+            
+            # Escribir configuración global
+            inventory_file.write("[all:vars]\n")
+            inventory_file.write("ansible_connection=ssh\n")
+            inventory_file.write("ansible_port=22\n")
+            inventory_file.write("ansible_ssh_common_args='-o StrictHostKeyChecking=no'\n\n")
+            
+            # Escribir grupo target_host
+            inventory_file.write("[target_host]\n")
+            
+            if host.operating_system == 'Windows':
+                # Configuración para Windows
+                user = host.ansible_user or (host.deployment_credential.user if host.deployment_credential else 'Administrator')
+                password = ''
+                if host.deployment_credential and hasattr(host.deployment_credential, 'get_windows_password'):
+                    password = host.deployment_credential.get_windows_password() or ''
+                
+                # Escribir host con configuración Windows
+                inventory_file.write(f"{host.name} ")
+                inventory_file.write(f"ansible_host={host.ip} ")
+                inventory_file.write(f"ansible_user={user} ")
+                if password:
+                    inventory_file.write(f"ansible_password={password} ")
+                inventory_file.write("ansible_shell_type=powershell\n")
+                
+            else:
+                # Configuración para Linux/Unix con opciones de depuración
+                user = host.ansible_user or (host.deployment_credential.user if host.deployment_credential else 'root')
+                
+                # Usar el nombre del host como identificador en el inventario
+                inventory_file.write(f"{host.name} ")
+                inventory_file.write(f"ansible_host={host.ip} ")
+                inventory_file.write(f"ansible_user={user} ")
+                
+                # Configuración básica
+                inventory_file.write(f"ansible_python_interpreter={host.ansible_python_interpreter} ")
+                inventory_file.write(f"ansible_become={'yes' if host.ansible_become else 'no'} ")
+                
+                if host.ansible_become_method:
+                    inventory_file.write(f"ansible_become_method={host.ansible_become_method} ")
+                
+                # Configuración de SSH para depuración
+                inventory_file.write("ansible_ssh_common_args='-o StrictHostKeyChecking=no -o PreferredAuthentications=password,keyboard-interactive' ")
+                
+                # Permitir autenticación por contraseña para depuración
+                inventory_file.write("ansible_ssh_pass='' ")
+                inventory_file.write("ansible_ssh_extra_args='-v' ")
+                
+                inventory_file.write("\n")
 
     # Logging para depuración
     try:
@@ -161,11 +186,11 @@ def deploy_to_host(request):
         # Añadir target_host como variable para las plantillas
         extravars['target_host'] = host.name
 
-        # Crear copia temporal del playbook con reemplazo de hosts: target_host
+        # Crear copia temporal del playbook sin modificar el target_host
         import tempfile
         with open(playbook.file.path, 'r') as original_pb:
             pb_content = original_pb.read()
-        pb_content = pb_content.replace('hosts: target_host', f'hosts: {host.name}')
+        # No reemplazar el target_host, dejarlo como está
         with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.yml') as temp_pb:
             temp_pb.write(pb_content)
             temp_pb_path = temp_pb.name

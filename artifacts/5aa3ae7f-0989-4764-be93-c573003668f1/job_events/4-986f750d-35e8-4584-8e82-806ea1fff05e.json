@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "986f750d-35e8-4584-8e82-806ea1fff05e", "counter": 4, "stdout": "\u001b[1;35mdid not find expected <document start>. did not find expected <document start>\u001b[0m", "start_line": 3, "end_line": 4, "runner_ident": "5aa3ae7f-0989-4764-be93-c573003668f1", "created": "2025-05-17T23:18:06.837637+00:00"}

@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "7937a6be-d5b7-46d7-b6eb-b91919088252", "counter": 13, "stdout": "\u001b[1;35mansible_ssh_common_args='-o StrictHostKeyChecking=no'\u001b[0m", "start_line": 12, "end_line": 13, "runner_ident": "5aa3ae7f-0989-4764-be93-c573003668f1", "created": "2025-05-17T23:18:06.840755+00:00"}

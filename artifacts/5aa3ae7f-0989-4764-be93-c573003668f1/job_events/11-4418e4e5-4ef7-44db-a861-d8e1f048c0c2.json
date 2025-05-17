@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "4418e4e5-4ef7-44db-a861-d8e1f048c0c2", "counter": 11, "stdout": "\u001b[1;35mansible_host=10.104.10.20 ansible_connection=ssh ansible_port=22\u001b[0m", "start_line": 10, "end_line": 11, "runner_ident": "5aa3ae7f-0989-4764-be93-c573003668f1", "created": "2025-05-17T23:18:06.840180+00:00"}

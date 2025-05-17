@@ -1,0 +1,8 @@
+
+PLAY [Pruebas básicas de conectividad y sistema en Windows] ********************
+
+TASK [Prueba de ping (win_ping)] ***********************************************
+[1;31mfatal: [htheran]: UNREACHABLE! => {"changed": false, "msg": "ssl: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))", "unreachable": true}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : ok=0    changed=0    [1;31munreachable=1   [0m failed=0    skipped=0    rescued=0    ignored=0   

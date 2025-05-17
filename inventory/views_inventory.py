@@ -35,17 +35,23 @@ def descargar_inventario_ansible(request: HttpRequest):
                 if host.operating_system == "Windows":
                     password = cred.get_windows_password() or ""
                     line = (
-                        f"{host.name} ansible_host={host.ip} "
-                        f"ansible_connection=winrm ansible_port=5986 "
-                        f"ansible_user={cred.user} "
+                        f"{host.ip} "  # Usar la IP como nombre de host
+                        f"ansible_host={host.ip} "
+                        f"ansible_connection=ssh "
+                        f"ansible_port=22 "
+                        f"ansible_user={host.ansible_user or cred.user} "
                         f"ansible_password={password} "
-                        f"ansible_winrm_server_cert_validation=ignore"
+                        f"ansible_ssh_private_key_file={host.ansible_ssh_private_key_file or ''} "
+                        f"ansible_ssh_common_args='{host.ansible_ssh_common_args or ''}' "
+                        f"ansible_shell_type={host.ansible_shell_type or 'powershell'}"
                     )
                 else:
                     line = (
-                        f"{host.name} ansible_host={host.ip} "
+                        f"{host.ip} "  # Usar la IP como nombre de host
+                        f"ansible_host={host.ip} "
                         f"ansible_user={cred.user} "
-                        # f"ansible_ssh_private_key_file=<ruta temporal> "  # La app ahora almacena la llave cifrada, se debe exportar a archivo temporal si se requiere.
+                        f"ansible_ssh_private_key_file={host.ansible_ssh_private_key_file or ''} "
+                        f"ansible_ssh_common_args='{host.ansible_ssh_common_args or ''}' "
                         f"ansible_python_interpreter={host.ansible_python_interpreter}"
                     )
                 lines.append(line)

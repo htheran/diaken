@@ -1,0 +1,8 @@
+
+PLAY [Revisar logs del sistema y autenticación] ********************************
+
+TASK [Gathering Facts] *********************************************************
+[1;31mfatal: [10.100.0.120]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Load key \"/tmp/tmp0v8a3pcj\": error in libcrypto\r\nuser_diaken@10.100.0.120: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).", "unreachable": true}[0m
+
+PLAY RECAP *********************************************************************
+[0;31m10.100.0.120[0m               : ok=0    changed=0    [1;31munreachable=1   [0m failed=0    skipped=0    rescued=0    ignored=0   

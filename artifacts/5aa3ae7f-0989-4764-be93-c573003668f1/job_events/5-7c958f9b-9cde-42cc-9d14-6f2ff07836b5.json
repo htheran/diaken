@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "7c958f9b-9cde-42cc-9d14-6f2ff07836b5", "counter": 5, "stdout": "\u001b[1;35min \"<unicode string>\", line 3, column 1  The error appears to be in\u001b[0m", "start_line": 4, "end_line": 5, "runner_ident": "5aa3ae7f-0989-4764-be93-c573003668f1", "created": "2025-05-17T23:18:06.838002+00:00"}

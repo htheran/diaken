@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "22826564-bbb0-4836-a3d5-fe4f0988292f", "counter": 9, "stdout": "\u001b[0;31m    - name: Prueba de ping (win_ping)\u001b[0m", "start_line": 8, "end_line": 9, "runner_ident": "20875a38-65e4-4bff-b82c-20dacc902fa1", "created": "2025-05-17T19:38:36.558489+00:00"}

@@ -1,0 +1,50 @@
+
+PLAY [Pruebas básicas de conectividad y sistema en Windows] ********************
+
+TASK [Verificar conectividad básica con ping] **********************************
+[0;31mfatal: [10.104.10.20]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resultado del ping] **********************************************
+[0;32mok: [10.104.10.20] => {[0m
+[0;32m    "ping_result.stdout_lines": "VARIABLE IS NOT DEFINED!"[0m
+[0;32m}[0m
+
+TASK [Obtener información del sistema (systeminfo)] ****************************
+[0;31mfatal: [10.104.10.20]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar información del sistema] *****************************************
+[0;32mok: [10.104.10.20] => {[0m
+[0;32m    "sysinfo.stdout_lines": "VARIABLE IS NOT DEFINED!"[0m
+[0;32m}[0m
+
+TASK [Obtener información de red] **********************************************
+[0;31mfatal: [10.104.10.20]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar configuración de red] ********************************************
+[0;32mok: [10.104.10.20] => {[0m
+[0;32m    "ipconfig.stdout_lines": "VARIABLE IS NOT DEFINED!"[0m
+[0;32m}[0m
+
+TASK [Listar archivos en el directorio actual] *********************************
+[0;31mfatal: [10.104.10.20]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar listado de archivos] *********************************************
+[0;32mok: [10.104.10.20] => {[0m
+[0;32m    "dir_listing.stdout_lines": "VARIABLE IS NOT DEFINED!"[0m
+[0;32m}[0m
+
+TASK [Verificar versión de Windows] ********************************************
+[0;31mfatal: [10.104.10.20]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar versión de Windows] **********************************************
+[0;32mok: [10.104.10.20] => {[0m
+[0;32m    "windows_version.stdout_lines": "VARIABLE IS NOT DEFINED!"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32m10.104.10.20[0m               : [0;32mok=10  [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    [1;35mignored=5   [0m

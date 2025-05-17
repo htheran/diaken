@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "70854670-913f-48e3-941a-577e4f8a519a", "counter": 12, "stdout": "\u001b[1;35mansible_user=administrator ansible_password=Windows2022\u001b[0m", "start_line": 11, "end_line": 12, "runner_ident": "5aa3ae7f-0989-4764-be93-c573003668f1", "created": "2025-05-17T23:18:06.840475+00:00"}

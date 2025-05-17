@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "c173b1d0-a329-4a2f-9fe8-39e8c94933ce", "counter": 9, "stdout": "\u001b[1;35m[WARNING]:  * Failed to parse /tmp/tmpk9lfl7v9 with ini plugin:\u001b[0m", "start_line": 8, "end_line": 9, "runner_ident": "5aa3ae7f-0989-4764-be93-c573003668f1", "created": "2025-05-17T23:18:06.839580+00:00"}

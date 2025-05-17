@@ -1,0 +1,8 @@
+
+PLAY [Pruebas básicas de conectividad y sistema en Windows] ********************
+
+TASK [Prueba de ping (win_ping)] ***********************************************
+[0;31mfatal: [10.104.10.20]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+
+PLAY RECAP *********************************************************************
+[0;31m10.104.10.20[0m               : ok=0    changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   
