@@ -1,79 +1,232 @@
 {% extends 'base/base.html' %}
-{% include "inventory/inventory_download_button.html" %}
-<form method="get" class="form-inline mb-3">
-  <select name="environment" class="form-control mr-2">
-    <option value="">Todos los entornos</option>
-    {% for env in environments %}
-      <option value="{{ env.id }}" {% if env_id|default:'' == env.id|stringformat:'s' %}selected{% endif %}>{{ env.name }}</option>
-    {% endfor %}
-  </select>
-  <select name="group" class="form-control mr-2">
-    <option value="">Todos los grupos</option>
-    {% for group in groups %}
-      <option value="{{ group.id }}" {% if group_id|default:'' == group.id|stringformat:'s' %}selected{% endif %}>{{ group.name }}</option>
-    {% endfor %}
-  </select>
-  <select name="operating_system" class="form-control mr-2">
-    <option value="">Todos los sistemas</option>
-    {% for os in os_choices %}
-      <option value="{{ os.0 }}" {% if os_filter == os.0 %}selected{% endif %}>{{ os.1 }}</option>
-    {% endfor %}
-  </select>
-  <button type="submit" class="btn btn-primary">Filtrar</button>
-</form>
-<div class="text-right my-3">
-  <a href="/inventory/descargar_inventario_ansible/?{% if env_id %}environment={{ env_id }}&{% endif %}{% if group_id %}group={{ group_id }}&{% endif %}{% if os_filter %}operating_system={{ os_filter }}{% endif %}" class="btn btn-success">
-    Descargar Inventario Ansible
-  </a>
-</div>
+
+{% block page_title %}Inventory - Hosts{% endblock %}
+
 {% block content %}
-  <div class="container mt-4">
-    <div class="card">
-      <div class="card-header">
-        <h2>Inventory - Hosts</h2>
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="mb-0">Inventory - Hosts</h2>
+    </div>
+    <div class="card-body">
+      <div class="row mb-4">
+        <div class="col-md-10">
+          <form method="get" id="searchForm" class="d-flex">
+            <div class="input-group">
+              <input type="text" 
+                     name="q" 
+                     id="searchInput" 
+                     class="form-control" 
+                     placeholder="Search hosts by name, IP, group, environment or OS..."
+                     value="{{ request.GET.q|default:'' }}"
+                     aria-label="Search hosts">
+              <button class="btn btn-outline-secondary" type="submit" id="searchButton">
+                <i class="fas fa-search"></i> Search
+              </button>
+              {% if request.GET.q %}
+                <a href="{% url 'host_list' %}" class="btn btn-outline-secondary" title="Clear search" id="clearSearch">
+                  <i class="fas fa-times"></i>
+                </a>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+        <div class="col-md-2 text-end">
+          <a href="{% url 'host_create' %}" class="btn btn-primary w-100">
+            <i class="fas fa-plus me-1"></i> Add Host
+          </a>
+        </div>
       </div>
-      <div class="card-body">
-        <a href="{% url 'host_create' %}" class="btn btn-primary mb-3">Add New Host</a>
-        {% if env_id or group_id %}
-          {% for env in environments %}
-            {% if not env_id or env.id|stringformat:'s' == env_id|stringformat:'s' %}
-              <h3>{{ env.name }}</h3>
-              {% for group in groups %}
-                {% if not group_id or group.id|stringformat:'s' == group_id|stringformat:'s' %}
-                  <h4>{{ group.name }}</h4>
-                  <ul class="list-group mb-3">
-                    {% for host in hosts %}
-                      {% if host.environment == env and host.group == group %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                          <span>{{ host.name }}</span>
-                          <span>
-                            <a href="{% url 'host_detail' host.pk %}" class="btn btn-info btn-sm">View</a>
-                            <a href="{% url 'host_update' host.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="{% url 'host_delete' host.pk %}" class="btn btn-danger btn-sm">Delete</a>
-                          </span>
-                        </li>
-                      {% endif %}
-                    {% endfor %}
-                  </ul>
+
+
+
+      <!-- Tabla de hosts -->
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>IP Address</th>
+              <th>Group</th>
+              <th>Environment</th>
+              <th>OS</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for host in hosts %}
+              <tr>
+                <td>{{ host.name|default:"-" }}</td>
+                <td>{{ host.ip|default:"-" }}</td>
+                <td>{% if host.group %}{{ host.group.name }}{% else %}-{% endif %}</td>
+                <td>{% if host.environment %}{{ host.environment.name }}{% else %}-{% endif %}</td>
+                <td>{{ host.get_operating_system_display|default:"-" }}</td>
+                <td class="text-end">
+                  <div class="btn-group">
+                    <a href="{% url 'host_detail' host.pk %}" class="btn btn-sm btn-info">
+                      <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="{% url 'host_update' host.pk %}" class="btn btn-sm btn-warning">
+                      <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{% url 'host_delete' host.pk %}" class="btn btn-sm btn-danger">
+                      <i class="fas fa-trash"></i> Delete
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center">No hosts found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      {% if hosts.paginator.num_pages > 1 %}
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div class="text-muted">
+            Showing {{ hosts.start_index }} - {{ hosts.end_index }} of {{ hosts.paginator.count }} hosts
+          </div>
+          <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+              {% if hosts.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;&laquo;</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ hosts.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link">&laquo;&laquo;</span>
+                </li>
+                <li class="page-item disabled">
+                  <span class="page-link">&laquo;</span>
+                </li>
+              {% endif %}
+              
+              {% for num in hosts.paginator.page_range %}
+                {% if hosts.number == num %}
+                  <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% elif num > hosts.number|add:'-3' and num < hosts.number|add:'3' %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                  </li>
                 {% endif %}
               {% endfor %}
-            {% endif %}
-          {% endfor %}
-        {% else %}
-          <ul class="list-group">
-            {% for host in hosts %}
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ host.name }}</span>
-                <span>
-                  <a href="{% url 'host_detail' host.pk %}" class="btn btn-info btn-sm">View</a>
-                  <a href="{% url 'host_update' host.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                  <a href="{% url 'host_delete' host.pk %}" class="btn btn-danger btn-sm">Delete</a>
-                </span>
-              </li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </div>
+              
+              {% if hosts.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ hosts.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&raquo;</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ hosts.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&raquo;&raquo;</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link">&raquo;</span>
+                </li>
+                <li class="page-item disabled">
+                  <span class="page-link">&raquo;&raquo;</span>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+          <div class="d-flex align-items-center">
+            <select id="perPageSelect" class="form-select form-select-sm me-2" style="width: auto;">
+              <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+              <option value="25" {% if per_page == 25 or not per_page %}selected{% endif %}>25</option>
+              <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+              <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+            </select>
+            <span class="text-muted">per page</span>
+          </div>
+        </div>
+      {% else %}
+        <div class="text-muted mt-3">
+          Total: {{ hosts.paginator.count }} hosts
+        </div>
+      {% endif %}
     </div>
   </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Manejar cambios en el selector de elementos por página
+  const perPageSelect = document.getElementById('perPageSelect');
+  if (perPageSelect) {
+    perPageSelect.addEventListener('change', function() {
+      const url = new URL(window.location);
+      url.searchParams.set('per_page', this.value);
+      url.searchParams.set('page', '1');
+      window.location.href = url.toString();
+    });
+  }
+  
+  // Obtener referencias a los elementos
+  const searchForm = document.getElementById('searchForm');
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  
+  if (searchForm && searchInput) {
+    // Manejar envío del formulario
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const searchTerm = searchInput.value.trim();
+      const url = new URL(window.location);
+      
+      // Actualizar parámetro de búsqueda
+      if (searchTerm) {
+        url.searchParams.set('q', searchTerm);
+      } else {
+        url.searchParams.delete('q');
+      }
+      
+      // Mantener otros parámetros de filtrado
+      const perPage = url.searchParams.get('per_page');
+      if (perPage) {
+        url.searchParams.set('per_page', perPage);
+      }
+      
+      // Ir a la primera página de resultados
+      url.searchParams.set('page', '1');
+      window.location.href = url.toString();
+    });
+    
+    // Manejar clic en el botón de búsqueda (por si acaso)
+    const searchButton = document.getElementById('searchButton');
+    if (searchButton) {
+      searchButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        searchForm.dispatchEvent(new Event('submit'));
+      });
+    }
+    
+    // Manejar clic en el botón de limpiar búsqueda
+    if (clearSearch) {
+      clearSearch.addEventListener('click', function(e) {
+        // No necesitamos hacer nada aquí, el enlace ya maneja la limpieza
+        // Solo aseguramos que el evento no se propague
+        e.stopPropagation();
+      });
+    }
+    
+    // Permitir búsqueda con Enter
+    searchInput.addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        searchForm.dispatchEvent(new Event('submit'));
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

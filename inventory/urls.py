@@ -3,6 +3,7 @@ from . import views
 from .views import update_python_interpreter_view
 from .views_inventory import descargar_inventario_ansible, host_list_with_filters
 from .api_views import groups_by_environment
+from django.views.decorators.http import require_http_methods
 
 urlpatterns = [
     # API endpoints
@@ -28,4 +29,5 @@ urlpatterns = [
     path('environments/', views.environment_list, name='environment_list'),
     path('groups/', views.group_list, name='group_list'),
     path('hosts/', views.host_list, name='host_list'),
+    path('descargar-inventario/', descargar_inventario_ansible, name='descargar_inventario'),
 ]
