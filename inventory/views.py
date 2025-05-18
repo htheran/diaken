@@ -59,26 +59,38 @@ def group_create(request):
 
 
 def host_create(request):
-    # Make ansible fields available in the form and handle saving them
-
     if request.method == "POST":
         form = HostForm(request.POST)
         if form.is_valid():
-            host = form.save()
-            # Escribir en /etc/hosts si no existe la entrada
-            if host.name and host.ip:
-                try:
-                    with open('/etc/hosts', 'r+') as f:
-                        lines = f.readlines()
-                        exists = any(
-                            (host.ip in l or host.name in l) and not l.strip().startswith('#')
-                            for l in lines
-                        )
-                        if not exists:
-                            f.write(f"{host.ip}\t{host.name}\n")
-                except Exception as e:
-                    print(f"[WARN] No se pudo escribir en /etc/hosts: {e}")
-            return redirect('host_list')
+            # Get the environment from the form data
+            environment_id = request.POST.get('environment')
+            if not environment_id:
+                form.add_error('environment', 'Este campo es obligatorio')
+                return render(request, 'inventory/host_form.html', {'form': form})
+                
+            try:
+                environment = Environment.objects.get(pk=environment_id)
+                host = form.save(commit=False)
+                host.environment = environment
+                host.save()
+                form.save_m2m()  # Save many-to-many relations if any
+                
+                # Escribir en /etc/hosts si no existe la entrada
+                if host.name and host.ip:
+                    try:
+                        with open('/etc/hosts', 'r+') as f:
+                            lines = f.readlines()
+                            exists = any(
+                                (host.ip in l or host.name in l) and not l.strip().startswith('#')
+                                for l in lines
+                            )
+                            if not exists:
+                                f.write(f"{host.ip}\t{host.name}\n")
+                    except Exception as e:
+                        print(f"[WARN] No se pudo escribir en /etc/hosts: {e}")
+                return redirect('host_list')
+            except Environment.DoesNotExist:
+                form.add_error('environment', 'El ambiente seleccionado no existe')
     else:
         form = HostForm()
     return render(request, 'inventory/host_form.html', {'form': form})
@@ -113,8 +125,21 @@ def host_update(request, pk):
     if request.method == "POST":
         form = HostForm(request.POST, instance=host)
         if form.is_valid():
-            form.save()
-            return redirect('host_detail', pk=pk)
+            # Get the environment from the form data
+            environment_id = request.POST.get('environment')
+            if not environment_id:
+                form.add_error('environment', 'Este campo es obligatorio')
+                return render(request, 'inventory/host_form.html', {'form': form})
+                
+            try:
+                environment = Environment.objects.get(pk=environment_id)
+                host = form.save(commit=False)
+                host.environment = environment
+                host.save()
+                form.save_m2m()  # Save many-to-many relations if any
+                return redirect('host_detail', pk=pk)
+            except Environment.DoesNotExist:
+                form.add_error('environment', 'El ambiente seleccionado no existe')
     else:
         form = HostForm(instance=host)
     return render(request, 'inventory/host_form.html', {'form': form})

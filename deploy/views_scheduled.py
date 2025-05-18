@@ -52,6 +52,7 @@ def schedule_to_host(request):
             sched.user = request.user
             sched.deploy_type = 'host'
             sched.host = host
+            sched.environment = environment  # Asegurar que el ambiente se guarde
             sched.playbook = playbook
             sched.scheduled_time = scheduled_time
             

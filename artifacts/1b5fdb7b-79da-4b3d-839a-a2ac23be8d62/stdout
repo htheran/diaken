@@ -1,0 +1,35 @@
+
+PLAY [Revisar logs del sistema y autenticación] ********************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo03][0m
+
+TASK [Verificar si los archivos de log existen] ********************************
+[0;32mok: [demo03] => (item=/var/log/secure)[0m
+[0;32mok: [demo03] => (item=/var/log/messages)[0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/secure (si existe)] ****************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar últimas 50 líneas de /var/log/messages (si existe)] **************
+[0;32mok: [demo03][0m
+
+TASK [Buscar intentos fallidos de autenticación en secure] *********************
+[0;32mok: [demo03][0m
+
+TASK [Buscar errores críticos en messages] *************************************
+[0;32mok: [demo03][0m
+
+TASK [Procesar logs de autenticación] ******************************************
+[0;32mok: [demo03][0m
+
+TASK [Procesar errores del sistema] ********************************************
+[0;32mok: [demo03][0m
+
+TASK [Mostrar resumen ejecutivo] ***********************************************
+[0;32mok: [demo03] => {[0m
+[0;32m    "msg": "\n╔════════════════════ RESUMEN DEL SISTEMA ═══════════════════╗\n║ HOST: diaken                                            ║\n║ SISTEMA: OracleLinux 9.5                               ║\n║ UPTIME: 19.4                                            horas ║\n╚═══════════════════════════════════════════════════════════╝\n\n🔐 AUTENTICACIÓN\n✅ No se detectaron intentos de autenticación fallidos\n\n⚠️  ERRORES RECIENTES\n✅ No se encontraron errores críticos\n\n📊 RECURSOS DEL SISTEMA\n• Memoria: 56.6% usado (1.1/1.9 GB)\n\n\n\n🔍 Para ver detalles completos, ejecuta con -v\n═══════════════════════════════════════════════\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mdemo03[0m                     : [0;32mok=9   [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
