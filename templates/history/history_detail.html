@@ -2,11 +2,12 @@
 {% block content %}
   <div class="container mt-4">
     <h2>Execution Details</h2>
-    <p><strong>Playbook:</strong> {{ history.playbook.name }}</p>
     <p><strong>User:</strong> {{ history.user.username }}</p>
+    <p><strong>Environment:</strong> {% if history.environment %}{{ history.environment.name }}{% else %}<span class="text-muted">Not specified</span>{% endif %}</p>
     <p><strong>Group/Host:</strong> {% if history.group %}{{ history.group.name }}{% else %}{{ history.host.name }}{% endif %}</p>
+    <p><strong>Playbook:</strong> {{ history.playbook.name }}</p>
     <p><strong>Date:</strong> {{ history.date }}</p>
-    <p><strong>Status:</strong> {{ history.status }}</p>
+    <p><strong>Status:</strong> {% if history.status == 'successful' %}<span class="badge badge-success">Success</span>{% elif history.status == 'failed' %}<span class="badge badge-danger">Failed</span>{% else %}{{ history.status }}{% endif %}</p>
     <h4>Output:</h4>
     <pre>{{ history.output }}</pre>
   </div>

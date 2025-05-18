@@ -18,25 +18,25 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>Playbook</th>
           <th>User</th>
-          <th>Type</th>
           <th>Environment</th>
           <th>Group/Host</th>
+          <th>Playbook</th>
+          <th>Type</th>
           <th>Scheduled Time</th>
-<th>Executed At</th>
-<th>Status</th>
-<th>Output</th>
+          <th>Executed At</th>
+          <th>Status</th>
+          <th>Output</th>
         </tr>
       </thead>
       <tbody>
         {% for sched in page_obj %}
         <tr{% if sched.group %} class="table-info"{% endif %}>
-          <td>{{ sched.playbook.name }}</td>
           <td>{{ sched.user.username }}</td>
-          <td>{{ sched.get_deploy_type_display }}</td>
           <td>{% if sched.environment %}{{ sched.environment.name }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
           <td>{% if sched.group %}<span style="text-decoration: underline; font-weight: bold;">{{ sched.group.name }}</span>{% else %}{{ sched.host.name }}{% endif %}</td>
+          <td>{{ sched.playbook.name }}</td>
+          <td>{{ sched.get_deploy_type_display }}</td>
           <td>{{ sched.scheduled_time|date:'Y-m-d H:i' }}</td>
 <td>{% if sched.executed_at %}{{ sched.executed_at|date:'Y-m-d H:i' }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
 <td id="status-{{ sched.id }}">

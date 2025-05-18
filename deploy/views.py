@@ -246,6 +246,7 @@ def deploy_to_host(request):
             playbook=playbook,
             user=request.user,
             host=host,
+            environment=host.environment,  # Agregar el ambiente del host
             status=status,
             output=output,
             execution_type='manual'
@@ -320,19 +321,16 @@ def deploy_to_group(request):
         output = result.stdout.read()
         status, output = get_ansible_status(output)
 
-        # Save history
+        # Save history with environment
         history_entry = History.objects.create(
             playbook=playbook,
             user=request.user,
             group=group,
+            environment=environment,  # Agregar el ambiente directamente al crear el historial
             status=status,
-            output=output
+            output=output,
+            execution_type='manual'  # Asegurar que el tipo de ejecución sea 'manual'
         )
-        
-        # Guardar el ambiente en el historial si existe
-        if environment:
-            history_entry.environment = environment
-            history_entry.save()
         logger.info(result.stats)
         return redirect('deploy_success')
     else:

@@ -100,6 +100,7 @@ def deploy_sequential(request):
                     user=request.user,
                     host=host,
                     group=group,
+                    environment=environment,  # Agregar el ambiente al historial
                     status=status,
                     output=history_output,
                     execution_type='sequential'

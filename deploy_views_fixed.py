@@ -186,13 +186,15 @@ def deploy_to_host(request):
             resumen = "❌ Ejecución fallida (no se pudo interpretar el resultado)\n"
         output = resumen + clean_output
 
-        # Save history with correct status
+        # Save history with correct status and environment
         History.objects.create(
             playbook=playbook,
             user=request.user,
             host=host,
+            environment=host.environment,  # Agregar el ambiente del host
             status=status,
-            output=output
+            output=output,
+            execution_type='manual'  # Asegurar que el tipo de ejecución sea 'manual'
         )
         # logger.info(result.stats)
         return redirect('deploy_success')
@@ -243,13 +245,15 @@ def deploy_to_group(request):
         output = result.stdout.read()
         status, output = get_ansible_status(output)
 
-        # Save history
+        # Save history with environment
         History.objects.create(
             playbook=playbook,
             user=request.user,
             group=group,
+            environment=group.environment,  # Agregar el ambiente del grupo
             status=status,
-            output=output
+            output=output,
+            execution_type='manual'  # Asegurar que el tipo de ejecución sea 'manual'
         )
         logger.info(result.stats)
         return redirect('deploy_success')
