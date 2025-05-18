@@ -1,0 +1,26 @@
+[0;31mERROR! We were unable to read either as JSON nor YAML, these are the errors we got from each:[0m
+[0;31mJSON: Expecting value: line 1 column 1 (char 0)[0m
+[0;31m[0m
+[0;31mSyntax Error while loading YAML.[0m
+[0;31m  mapping values are not allowed in this context. mapping values are not allowed in this context[0m
+[0;31m  in "<unicode string>", line 35, column 29[0m
+[0;31m[0m
+[0;31mThe error appears to be in '/tmp/tmp1vh_ox51.yml': line 35, column 29, but may[0m
+[0;31mbe elsewhere in the file depending on the exact syntax problem.[0m
+[0;31m[0m
+[0;31mThe offending line appears to be:[0m
+[0;31m[0m
+[0;31m    - name: Agregar encabezado - Fecha y hora[0m
+[0;31m      raw: echo Fecha y hora: %%DATE%% %%TIME%% >> "{{ report_file }}"[0m
+[0;31m                            ^ here[0m
+[0;31mWe could be wrong, but this one looks like it might be an issue with[0m
+[0;31mmissing quotes. Always quote template expression brackets when they[0m
+[0;31mstart a value. For instance:[0m
+[0;31m[0m
+[0;31m    with_items:[0m
+[0;31m      - {{ foo }}[0m
+[0;31m[0m
+[0;31mShould be written as:[0m
+[0;31m[0m
+[0;31m    with_items:[0m
+[0;31m      - "{{ foo }}"[0m

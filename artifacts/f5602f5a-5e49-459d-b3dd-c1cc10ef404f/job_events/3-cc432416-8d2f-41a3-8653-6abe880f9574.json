@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "cc432416-8d2f-41a3-8653-6abe880f9574", "counter": 3, "stdout": "\u001b[1;35m[WARNING]: While constructing a mapping from /tmp/tmpssdiy_d8.yml, line 87,\u001b[0m", "start_line": 2, "end_line": 3, "runner_ident": "f5602f5a-5e49-459d-b3dd-c1cc10ef404f", "created": "2025-05-18T01:52:12.158914+00:00"}

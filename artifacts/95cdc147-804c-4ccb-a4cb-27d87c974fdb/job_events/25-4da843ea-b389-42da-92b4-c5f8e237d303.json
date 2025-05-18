@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "4da843ea-b389-42da-92b4-c5f8e237d303", "counter": 25, "stdout": "\u001b[0;31m    systeminfo | findstr /B /C:\"OS Name\" /C:\"OS Version\" /C:\"OS Build\"\u001b[0m", "start_line": 24, "end_line": 25, "runner_ident": "95cdc147-804c-4ccb-a4cb-27d87c974fdb", "created": "2025-05-18T02:04:51.748862+00:00"}

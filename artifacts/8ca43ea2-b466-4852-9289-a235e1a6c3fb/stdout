@@ -1,0 +1,73 @@
+
+PLAY [Configuración de servidor web en Oracle Linux 9 (Host)] ******************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [demo05][0m
+
+TASK [Actualizar sistema operativo] ********************************************
+[0;32mok: [demo05][0m
+
+TASK [Debug result_update] *****************************************************
+[0;32mok: [demo05] => {[0m
+[0;32m    "result_update": {[0m
+[0;32m        "changed": false,[0m
+[0;32m        "failed": false,[0m
+[0;32m        "msg": "Nothing to do",[0m
+[0;32m        "rc": 0,[0m
+[0;32m        "results": [][0m
+[0;32m    }[0m
+[0;32m}[0m
+
+TASK [Instalar Apache (httpd) y firewalld] *************************************
+[0;33mchanged: [demo05][0m
+
+TASK [Asegurar que los servicios httpd y firewalld estén iniciados y habilitados] ***
+[0;33mchanged: [demo05] => (item=httpd)[0m
+[0;32mok: [demo05] => (item=firewalld)[0m
+
+TASK [Abrir puerto HTTP permanentemente en el firewall] ************************
+[0;33mchanged: [demo05][0m
+
+TASK [Abrir puerto HTTPS permanentemente en el firewall] ***********************
+[0;33mchanged: [demo05][0m
+
+TASK [Recargar firewalld] ******************************************************
+[0;33mchanged: [demo05][0m
+
+TASK [Deshabilitar SELinux temporalmente (en la sesión actual)] ****************
+[0;31mfatal: [demo05]: FAILED! => {"changed": true, "cmd": ["setenforce", "0"], "delta": "0:00:00.013389", "end": "2025-05-17 21:57:47.330522", "msg": "non-zero return code", "rc": 1, "start": "2025-05-17 21:57:47.317133", "stderr": "setenforce: SELinux is disabled", "stderr_lines": ["setenforce: SELinux is disabled"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Deshabilitar SELinux permanentemente (en /etc/selinux/config)] ***********
+[0;32mok: [demo05][0m
+
+TASK [Crear directorios necesarios para el sitio y logs] ***********************
+[0;33mchanged: [demo05] => (item={'path': '/opt/www/sites/demo05'})[0m
+[0;33mchanged: [demo05] => (item={'path': '/var/log/httpd/demo05'})[0m
+[0;32mok: [demo05] => (item={'path': '/etc/httpd/conf.d'})[0m
+
+TASK [Renombrar el archivo actual httpd.conf a httpd.conf.bak si existe] *******
+[0;33mchanged: [demo05][0m
+
+TASK [Copiar el archivo httpd.conf desde la plantilla específica de host] ******
+[0;33mchanged: [demo05][0m
+
+TASK [Copiar el archivo de VirtualHost desde la plantilla específica de host] ***
+[0;33mchanged: [demo05][0m
+
+TASK [Copiar index.html desde la plantilla específica de host] *****************
+[0;33mchanged: [demo05][0m
+
+TASK [Verificar sintaxis de Apache antes de reiniciar] *************************
+[0;33mchanged: [demo05][0m
+
+TASK [Reiniciar Apache] ********************************************************
+[0;33mchanged: [demo05][0m
+
+TASK [Mostrar mensaje final de éxito] ******************************************
+[0;32mok: [demo05] => {[0m
+[0;32m    "msg": "¡El servidor Apache se ha instalado y configurado correctamente en demo05!"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mdemo05[0m                     : [0;32mok=18  [0m [0;33mchanged=13  [0m unreachable=0    failed=0    skipped=0    rescued=0    [1;35mignored=1   [0m

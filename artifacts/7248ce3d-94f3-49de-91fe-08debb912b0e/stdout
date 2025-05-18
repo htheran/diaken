@@ -1,0 +1,14 @@
+
+PLAY [Actualización de Windows con script batch] *******************************
+
+TASK [Verificar conexión con el host Windows] **********************************
+[0;32mok: [htheran][0m
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Crear script batch para actualización de Windows] ************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": true, "msg": "non-zero return code", "rc": 1, "stderr": "The command line is too long.\r\n", "stderr_lines": ["The command line is too long."], "stdout": "", "stdout_lines": []}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : [0;32mok=2   [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

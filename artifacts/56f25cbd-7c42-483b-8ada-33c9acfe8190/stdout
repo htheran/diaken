@@ -1,0 +1,34 @@
+
+PLAY [Actualización de Windows vía SSH - Solo reporte TXT (usando raw)] ********
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Escribir encabezado del reporte] *****************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Información del sistema] *************************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Actualizaciones instaladas antes del update] *****************************
+[0;33mchanged: [htheran][0m
+
+TASK [Reiniciar servicios de Windows Update] ***********************************
+[0;33mchanged: [htheran][0m
+
+TASK [Forzar búsqueda de actualizaciones] **************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Actualizaciones instaladas después del update] ***************************
+[0;33mchanged: [htheran][0m
+
+TASK [Finalizar el reporte] ****************************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Mostrar ubicación del reporte] *******************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "Reporte generado en C:\\diaken\\windows_update_report.txt"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=9   [0m [0;33mchanged=8   [0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

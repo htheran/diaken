@@ -1,0 +1,232 @@
+
+PLAY [Pruebas básicas de conectividad y sistema en Windows] ********************
+
+TASK [Verificar conectividad básica con ping] **********************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar resultado del ping] **********************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "ping_result.stdout_lines": [[0m
+[0;32m        "",[0m
+[0;32m        "Pinging 127.0.0.1 with 32 bytes of data:",[0m
+[0;32m        "Reply from 127.0.0.1: bytes=32 time<1ms TTL=128",[0m
+[0;32m        "Reply from 127.0.0.1: bytes=32 time<1ms TTL=128",[0m
+[0;32m        "",[0m
+[0;32m        "Ping statistics for 127.0.0.1:",[0m
+[0;32m        "    Packets: Sent = 2, Received = 2, Lost = 0 (0% loss),",[0m
+[0;32m        "Approximate round trip times in milli-seconds:",[0m
+[0;32m        "    Minimum = 0ms, Maximum = 0ms, Average = 0ms"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Obtener información del sistema (systeminfo)] ****************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar información del sistema] *****************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "sysinfo.stdout_lines": [[0m
+[0;32m        "",[0m
+[0;32m        "Host Name:                 HTHERAN",[0m
+[0;32m        "OS Name:                   Microsoft Windows Server 2022 Datacenter",[0m
+[0;32m        "OS Version:                10.0.20348 N/A Build 20348",[0m
+[0;32m        "OS Manufacturer:           Microsoft Corporation",[0m
+[0;32m        "OS Configuration:          Standalone Server",[0m
+[0;32m        "OS Build Type:             Multiprocessor Free",[0m
+[0;32m        "Registered Owner:          Windows User",[0m
+[0;32m        "Registered Organization:   ",[0m
+[0;32m        "Product ID:                00454-60000-00001-AA976",[0m
+[0;32m        "Original Install Date:     17/01/2022, 4:26:06 p. m.",[0m
+[0;32m        "System Boot Time:          30/04/2025, 12:32:01 a. m.",[0m
+[0;32m        "System Manufacturer:       VMware, Inc.",[0m
+[0;32m        "System Model:              VMware20,1",[0m
+[0;32m        "System Type:               x64-based PC",[0m
+[0;32m        "Processor(s):              1 Processor(s) Installed.",[0m
+[0;32m        "                           [01]: Intel64 Family 6 Model 79 Stepping 0 GenuineIntel ~2394 Mhz",[0m
+[0;32m        "BIOS Version:              VMware, Inc. VMW201.00V.21805430.B64.2305221830, 22/05/2023",[0m
+[0;32m        "Windows Directory:         C:\\Windows",[0m
+[0;32m        "System Directory:          C:\\Windows\\system32",[0m
+[0;32m        "Boot Device:               \\Device\\HarddiskVolume1",[0m
+[0;32m        "System Locale:             en-us;English (United States)",[0m
+[0;32m        "Input Locale:              es-mx;Spanish (Mexico)",[0m
+[0;32m        "Time Zone:                 (UTC-05:00) Bogota, Lima, Quito, Rio Branco",[0m
+[0;32m        "Total Physical Memory:     8.191 MB",[0m
+[0;32m        "Available Physical Memory: 1.219 MB",[0m
+[0;32m        "Virtual Memory: Max Size:  9.521 MB",[0m
+[0;32m        "Virtual Memory: Available: 1.967 MB",[0m
+[0;32m        "Virtual Memory: In Use:    7.554 MB",[0m
+[0;32m        "Page File Location(s):     C:\\pagefile.sys",[0m
+[0;32m        "Domain:                    WORKGROUP",[0m
+[0;32m        "Logon Server:              \\\\HTHERAN",[0m
+[0;32m        "Hotfix(s):                 4 Hotfix(s) Installed.",[0m
+[0;32m        "                           [01]: KB5055169",[0m
+[0;32m        "                           [02]: KB5012170",[0m
+[0;32m        "                           [03]: KB5055526",[0m
+[0;32m        "                           [04]: KB5055668",[0m
+[0;32m        "Network Card(s):           3 NIC(s) Installed.",[0m
+[0;32m        "                           [01]: vmxnet3 Ethernet Adapter",[0m
+[0;32m        "                                 Connection Name: Ethernet0 2",[0m
+[0;32m        "                                 DHCP Enabled:    Yes",[0m
+[0;32m        "                                 DHCP Server:     10.100.6.3",[0m
+[0;32m        "                                 IP address(es)",[0m
+[0;32m        "                                 [01]: 10.104.10.20",[0m
+[0;32m        "                                 [02]: fe80::b71b:bc00:23ec:385b",[0m
+[0;32m        "                           [02]: VMware Virtual Ethernet Adapter for VMnet1",[0m
+[0;32m        "                                 Connection Name: VMware Network Adapter VMnet1",[0m
+[0;32m        "                                 DHCP Enabled:    No",[0m
+[0;32m        "                                 IP address(es)",[0m
+[0;32m        "                                 [01]: 192.168.209.1",[0m
+[0;32m        "                                 [02]: fe80::d365:9fb4:3847:d34a",[0m
+[0;32m        "                           [03]: VMware Virtual Ethernet Adapter for VMnet8",[0m
+[0;32m        "                                 Connection Name: VMware Network Adapter VMnet8",[0m
+[0;32m        "                                 DHCP Enabled:    No",[0m
+[0;32m        "                                 IP address(es)",[0m
+[0;32m        "                                 [01]: 192.168.223.1",[0m
+[0;32m        "                                 [02]: fe80::128a:d74a:73a6:701b",[0m
+[0;32m        "Hyper-V Requirements:      A hypervisor has been detected. Features required for Hyper-V will not be displayed."[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Obtener información de red básica] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar configuración de red] ********************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "ipconfig.stdout_lines": [[0m
+[0;32m        "",[0m
+[0;32m        "Windows IP Configuration",[0m
+[0;32m        "",[0m
+[0;32m        "",[0m
+[0;32m        "Ethernet adapter Ethernet0 2:",[0m
+[0;32m        "",[0m
+[0;32m        "   Connection-specific DNS Suffix  . : tic.upb",[0m
+[0;32m        "   Link-local IPv6 Address . . . . . : fe80::b71b:bc00:23ec:385b%8",[0m
+[0;32m        "   IPv4 Address. . . . . . . . . . . : 10.104.10.20",[0m
+[0;32m        "   Subnet Mask . . . . . . . . . . . : 255.255.255.0",[0m
+[0;32m        "   Default Gateway . . . . . . . . . : 10.104.10.1",[0m
+[0;32m        "",[0m
+[0;32m        "Ethernet adapter VMware Network Adapter VMnet1:",[0m
+[0;32m        "",[0m
+[0;32m        "   Connection-specific DNS Suffix  . : ",[0m
+[0;32m        "   Link-local IPv6 Address . . . . . : fe80::d365:9fb4:3847:d34a%17",[0m
+[0;32m        "   IPv4 Address. . . . . . . . . . . : 192.168.209.1",[0m
+[0;32m        "   Subnet Mask . . . . . . . . . . . : 255.255.255.0",[0m
+[0;32m        "   Default Gateway . . . . . . . . . : ",[0m
+[0;32m        "",[0m
+[0;32m        "Ethernet adapter VMware Network Adapter VMnet8:",[0m
+[0;32m        "",[0m
+[0;32m        "   Connection-specific DNS Suffix  . : ",[0m
+[0;32m        "   Link-local IPv6 Address . . . . . : fe80::128a:d74a:73a6:701b%16",[0m
+[0;32m        "   IPv4 Address. . . . . . . . . . . : 192.168.223.1",[0m
+[0;32m        "   Subnet Mask . . . . . . . . . . . : 255.255.255.0",[0m
+[0;32m        "   Default Gateway . . . . . . . . . : "[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar directorio actual] *********************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar listado de archivos] *********************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "dir_listing.stdout_lines": [[0m
+[0;32m        " Volume in drive C has no label.",[0m
+[0;32m        " Volume Serial Number is 3CB6-2ADA",[0m
+[0;32m        "",[0m
+[0;32m        " Directory of C:\\Users\\Administrator",[0m
+[0;32m        "",[0m
+[0;32m        "13/02/2025  05:03 p. m.    <DIR>          .",[0m
+[0;32m        "17/01/2022  04:26 p. m.    <DIR>          ..",[0m
+[0;32m        "16/11/2023  04:45 p. m.    <DIR>          .ansible",[0m
+[0;32m        "06/12/2023  05:18 p. m.               506 .bash_history",[0m
+[0;32m        "25/09/2024  08:32 a. m.    <DIR>          .dbus-keyrings",[0m
+[0;32m        "15/05/2024  09:34 a. m.    <DIR>          .docker",[0m
+[0;32m        "16/11/2023  04:19 p. m.    <DIR>          .idlerc",[0m
+[0;32m        "06/12/2023  04:21 p. m.    <DIR>          .NMC",[0m
+[0;32m        "14/02/2025  11:28 a. m.    <DIR>          .ollama",[0m
+[0;32m        "17/05/2025  05:42 p. m.    <DIR>          .ssh",[0m
+[0;32m        "30/10/2024  03:41 p. m.    <DIR>          .VirtualBox",[0m
+[0;32m        "10/11/2023  02:34 p. m.    <DIR>          .vscode",[0m
+[0;32m        "17/01/2022  04:26 p. m.    <DIR>          3D Objects",[0m
+[0;32m        "17/01/2022  04:26 p. m.    <DIR>          Contacts",[0m
+[0;32m        "11/10/2023  04:21 p. m.    <DIR>          Desktop",[0m
+[0;32m        "10/03/2025  09:42 a. m.    <DIR>          Documents",[0m
+[0;32m        "11/04/2024  08:39 a. m.    <DIR>          Downloads",[0m
+[0;32m        "17/01/2022  04:26 p. m.    <DIR>          Favorites",[0m
+[0;32m        "27/05/2024  08:22 a. m.    <DIR>          Links",[0m
+[0;32m        "17/01/2022  04:26 p. m.    <DIR>          Music",[0m
+[0;32m        "17/01/2022  04:26 p. m.    <DIR>          Pictures",[0m
+[0;32m        "17/01/2022  04:26 p. m.    <DIR>          Saved Games",[0m
+[0;32m        "29/01/2024  04:45 p. m.    <DIR>          Searches",[0m
+[0;32m        "17/10/2023  10:15 a. m.    <DIR>          Videos",[0m
+[0;32m        "30/10/2024  03:41 p. m.    <DIR>          VirtualBox VMs",[0m
+[0;32m        "               1 File(s)            506 bytes",[0m
+[0;32m        "              24 Dir(s)  22.425.591.808 bytes free"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar versión de Windows] ********************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar versión de Windows] **********************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "windows_version.stdout_lines": [[0m
+[0;32m        "",[0m
+[0;32m        "Microsoft Windows [Version 10.0.20348.3453]"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar variables de entorno] ******************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar variables de entorno] ********************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "env_vars.stdout_lines": [[0m
+[0;32m        "ALLUSERSPROFILE=C:\\ProgramData",[0m
+[0;32m        "APPDATA=C:\\Users\\Administrator\\AppData\\Roaming",[0m
+[0;32m        "c28fc6f98a2c44abbbd89d6a3037d0d9_POSIX_FD_STATE=AAAAAAICAgA=",[0m
+[0;32m        "ChocolateyInstall=C:\\ProgramData\\chocolatey",[0m
+[0;32m        "ChocolateyLastPathUpdate=133463699499520387",[0m
+[0;32m        "CommonProgramFiles=C:\\Program Files\\Common Files",[0m
+[0;32m        "CommonProgramFiles(x86)=C:\\Program Files (x86)\\Common Files",[0m
+[0;32m        "CommonProgramW6432=C:\\Program Files\\Common Files",[0m
+[0;32m        "COMPUTERNAME=HTHERAN",[0m
+[0;32m        "ComSpec=C:\\Windows\\system32\\cmd.exe",[0m
+[0;32m        "DriverData=C:\\Windows\\System32\\Drivers\\DriverData",[0m
+[0;32m        "HOME=C:\\Users\\Administrator",[0m
+[0;32m        "HOMEDRIVE=C:",[0m
+[0;32m        "HOMEPATH=\\Users\\Administrator",[0m
+[0;32m        "IDENTITY_ENDPOINT=http://localhost:40342/metadata/identity/oauth2/token",[0m
+[0;32m        "IMDS_ENDPOINT=http://localhost:40342",[0m
+[0;32m        "LOCALAPPDATA=C:\\Users\\Administrator\\AppData\\Local",[0m
+[0;32m        "LOGNAME=administrator",[0m
+[0;32m        "NUMBER_OF_PROCESSORS=2",[0m
+[0;32m        "OS=Windows_NT",[0m
+[0;32m        "Path=C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\Program Files (x86)\\VMware\\VMware Workstation\\bin\\;C:\\Windows\\System32;C:\\Program Files\\Docker\\Docker\\resources\\bin;C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\;C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\;C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps;;C:\\Users\\Administrator\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\Administrator\\AppData\\Roaming\\npm;C:\\Users\\Administrator\\AppData\\Local\\Programs\\Ollama",[0m
+[0;32m        "PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC",[0m
+[0;32m        "PROCESSOR_ARCHITECTURE=AMD64",[0m
+[0;32m        "PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 79 Stepping 0, GenuineIntel",[0m
+[0;32m        "PROCESSOR_LEVEL=6",[0m
+[0;32m        "PROCESSOR_REVISION=4f00",[0m
+[0;32m        "ProgramData=C:\\ProgramData",[0m
+[0;32m        "ProgramFiles=C:\\Program Files",[0m
+[0;32m        "ProgramFiles(x86)=C:\\Program Files (x86)",[0m
+[0;32m        "ProgramW6432=C:\\Program Files",[0m
+[0;32m        "PROMPT=administrator@HTHERAN $P$G",[0m
+[0;32m        "PSModulePath=C:\\Program Files\\WindowsPowerShell\\Modules;C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules",[0m
+[0;32m        "PUBLIC=C:\\Users\\Public",[0m
+[0;32m        "SHELL=c:\\windows\\system32\\cmd.exe",[0m
+[0;32m        "SSH_CLIENT=10.100.18.47 52178 22",[0m
+[0;32m        "SSH_CONNECTION=10.100.18.47 52178 10.104.10.20 22",[0m
+[0;32m        "SystemDrive=C:",[0m
+[0;32m        "SystemRoot=C:\\Windows",[0m
+[0;32m        "TEMP=C:\\Users\\Administrator\\AppData\\Local\\Temp",[0m
+[0;32m        "TMP=C:\\Users\\Administrator\\AppData\\Local\\Temp",[0m
+[0;32m        "USER=administrator",[0m
+[0;32m        "USERDOMAIN=WORKGROUP",[0m
+[0;32m        "USERNAME=administrator",[0m
+[0;32m        "USERPROFILE=C:\\Users\\Administrator",[0m
+[0;32m        "windir=C:\\Windows"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mhtheran[0m                    : [0;32mok=12  [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

@@ -1,0 +1,8 @@
+
+PLAY [Actualización de Windows con registro de cambios] ************************
+
+TASK [Gathering Facts] *********************************************************
+[0;31mfatal: [htheran]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"failed": true, "module_stderr": "Warning: Permanently added '10.104.10.20' (ED25519) to the list of known hosts.\r\n'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : ok=0    changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

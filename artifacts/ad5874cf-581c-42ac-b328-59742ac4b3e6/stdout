@@ -1,0 +1,57 @@
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 36,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 36,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 36,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 72,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 72,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 72,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 113,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 113,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 113,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 151,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 151,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpwflyun6p.yml, line 151,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+
+PLAY [Actualización de Windows vía SSH] ****************************************
+
+TASK [Configurar entorno] ******************************************************
+[0;32mok: [htheran][0m
+
+TASK [Iniciar reporte] *********************************************************
+[0;32mok: [htheran][0m
+
+TASK [Verificar estado de servicios] *******************************************
+[0;32mok: [htheran][0m
+
+TASK [Buscar e instalar actualizaciones] ***************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Finalizar reporte] *******************************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar resumen final] ***************************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "============================================\nACTUALIZACIÓN DE WINDOWS - RESUMEN\n============================================\n\nProceso de actualización completado.\n\nPara ver el reporte completo, ejecute en el equipo remoto:\ntype \"C:\\\\diaken\\windows_update.log\"\n\nO abra el archivo en:\nC:\\\\diaken\\windows_update.log\n\nNota: El proceso de actualización puede continuar en segundo plano.\nVerifique el Panel de Control > Windows Update para el progreso actual.\n\n============================================\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=6   [0m [0;33mchanged=1   [0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

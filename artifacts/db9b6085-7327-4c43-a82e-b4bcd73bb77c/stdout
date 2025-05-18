@@ -1,0 +1,40 @@
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpjpuhgvij.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpjpuhgvij.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpjpuhgvij.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+
+PLAY [Diagnóstico de Windows Update - Verificación Detallada] ******************
+
+TASK [Crear carpeta de diagnóstico] ********************************************
+[0;32mok: [htheran][0m
+
+TASK [Iniciar reporte detallado] ***********************************************
+[0;32mok: [htheran][0m
+
+TASK [Verificar servicios de Windows Update] ***********************************
+[0;32mok: [htheran][0m
+
+TASK [Reiniciar componentes de Windows Update] *********************************
+[0;33mchanged: [htheran][0m
+
+TASK [Verificar actualizaciones disponibles] ***********************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar resumen del diagnóstico] *****************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "Diagnóstico de Windows Update completado.\n\nRevise el reporte completo en: C:\\\\diaken\\windows_update_detailed.log\n\nSi el problema persiste, puede intentar:\n1. Ejecutar el Solucionador de problemas de Windows Update\n2. Verificar el registro de eventos de Windows\n3. Revisar la configuración de red y proxy\n\nPara forzar una búsqueda manual de actualizaciones:\n1. Abra Windows Update desde el Panel de Control\n2. Haga clic en 'Buscar actualizaciones'\n"[0m
+[0;32m}[0m
+
+TASK [Obtener resumen del reporte] *********************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "msg": "non-zero return code", "rc": 1, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resumen de advertencias] *****************************************
+[0;36mskipping: [htheran][0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=7   [0m [0;33mchanged=1   [0m unreachable=0    failed=0    [0;36mskipped=1   [0m rescued=0    [1;35mignored=1   [0m

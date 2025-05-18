@@ -1,0 +1,48 @@
+
+PLAY [Verificar actualizaciones de Windows] ************************************
+
+TASK [Crear carpeta de reportes] ***********************************************
+[0;32mok: [htheran][0m
+
+TASK [Obtener actualizaciones instaladas] **************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "msg": "non-zero return code", "rc": 1, "stderr": "'wmic' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "stderr_lines": ["'wmic' is not recognized as an internal or external command,", "operable program or batch file."], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar actualizaciones instaladas] **************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "updates_installed.stdout_lines": [][0m
+[0;32m}[0m
+
+TASK [Buscar actualizaciones disponibles] **************************************
+[0;32mok: [htheran][0m
+
+TASK [Obtener información del sistema] *****************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar información del sistema] *****************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "system_info.stdout_lines": [[0m
+[0;32m        "OS Name:                   Microsoft Windows Server 2022 Datacenter",[0m
+[0;32m        "OS Version:                10.0.20348 N/A Build 20348",[0m
+[0;32m        "OS Build Type:             Multiprocessor Free"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Verificar estado de servicios] *******************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar estado de servicios] *********************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "services_status.stdout_lines": [][0m
+[0;32m}[0m
+
+TASK [Guardar reporte] *********************************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar resumen] *********************************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "============================================\nINFORMACIÓN DE ACTUALIZACIONES\n============================================\n\nSe ha generado el reporte en:\nC:\\diaken\\windows_updates.txt\n\nPara ver el reporte completo, ejecute:\ntype C:\\diaken\\windows_updates.txt\n\n============================================\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mhtheran[0m                    : [0;32mok=10  [0m changed=0    unreachable=0    failed=0    skipped=0    rescued=0    [1;35mignored=1   [0m

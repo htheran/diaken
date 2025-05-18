@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "76fa9451-b43c-475d-9076-fb0c4bc8cfee", "counter": 3, "stdout": "\u001b[1;35m[WARNING]: While constructing a mapping from /tmp/tmpvcpjcpyi.yml, line 142,\u001b[0m", "start_line": 2, "end_line": 3, "runner_ident": "95cdc147-804c-4ccb-a4cb-27d87c974fdb", "created": "2025-05-18T02:04:51.689016+00:00"}

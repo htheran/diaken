@@ -32,11 +32,22 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 def generate_temporary_inventory(group_id=None, host_id=None):
+    # Forzar la aceptación de huellas digitales a nivel global
+    ansible_cfg_path = os.path.expanduser('~/.ansible.cfg')
+    if not os.path.exists(ansible_cfg_path):
+        with open(ansible_cfg_path, 'w') as cfg_file:
+            cfg_file.write("[defaults]\n")
+            cfg_file.write("host_key_checking = False\n\n")
+            cfg_file.write("[ssh_connection]\n")
+            cfg_file.write("ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\n")
+    
     with tempfile.NamedTemporaryFile(delete=False, mode='w', dir='/tmp') as inventory_file:
         inventory_path = inventory_file.name
 
-        # Configuración global para Ansible (sin ansible_connection=local para forzar conexión SSH)
+        # Configuración global para Ansible
         inventory_file.write("[all:vars]\n")
+        inventory_file.write("host_key_checking = False\n")
+        inventory_file.write("ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'\n")
         inventory_file.write("\n")
 
         # Si se proporciona un grupo, escribe los hosts del grupo
@@ -111,12 +122,12 @@ def generate_temporary_inventory(group_id=None, host_id=None):
                 if host.ansible_become_method:
                     inventory_file.write(f"ansible_become_method={host.ansible_become_method} ")
                 
-                # Configuración de SSH para depuración
-                inventory_file.write("ansible_ssh_common_args='-o StrictHostKeyChecking=no -o PreferredAuthentications=password,keyboard-interactive' ")
-                
-                # Permitir autenticación por contraseña para depuración
+                # Configuración simplificada para Linux - Omitimos la llave SSH por ahora
+                # Usar autenticación por contraseña para depuración
                 inventory_file.write("ansible_ssh_pass='' ")
-                inventory_file.write("ansible_ssh_extra_args='-v' ")
+                
+                # Configuración adicional para forzar la aceptación de huellas digitales
+                inventory_file.write("ansible_ssh_extra_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ")
                 
                 inventory_file.write("\n")
 

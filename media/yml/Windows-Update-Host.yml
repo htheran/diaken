@@ -1,0 +1,88 @@
+---
+- name: Verificar actualizaciones de Windows
+  hosts: target_host
+  gather_facts: no
+  
+  tasks:
+    - name: Crear carpeta de reportes
+      raw: if not exist C:\\diaken mkdir C:\\diaken
+      register: mkdir_result
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Obtener actualizaciones instaladas
+      raw: wmic qfe list brief /format:table
+      register: updates_installed
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar actualizaciones instaladas
+      debug:
+        var: updates_installed.stdout_lines
+        
+    - name: Buscar actualizaciones disponibles
+      raw: wuauclt /detectnow
+      register: check_updates
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Obtener información del sistema
+      raw: systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"OS Build"
+      register: system_info
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar información del sistema
+      debug:
+        var: system_info.stdout_lines
+        
+    - name: Verificar estado de servicios
+      raw: |
+        @echo off
+        sc query wuauserv
+        sc query bits
+      register: services_status
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar estado de servicios
+      debug:
+        var: services_status.stdout_lines
+        
+    - name: Guardar reporte
+      raw: |
+        @echo off
+        (
+            echo ============================================
+            echo INFORME DE ACTUALIZACIONES - %date% %time%
+            echo ============================================
+            echo [SISTEMA]:
+            systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"OS Build"
+            echo.
+            echo ============================================
+            echo [ACTUALIZACIONES INSTALADAS]:
+            wmic qfe list brief
+            echo.
+            echo ============================================
+            echo [ESTADO DE SERVICIOS]:
+            sc query wuauserv
+            sc query bits
+        ) > C:\\diaken\\windows_updates.txt 2>&1
+      register: save_report
+      ignore_errors: yes
+      changed_when: false
+      
+    - name: Mostrar resumen
+      debug:
+        msg: |
+          ============================================
+          INFORMACIÓN DE ACTUALIZACIONES
+          ============================================
+          
+          Se ha generado el reporte en:
+          C:\diaken\windows_updates.txt
+          
+          Para ver el reporte completo, ejecute:
+          type C:\diaken\windows_updates.txt
+          
+          ============================================

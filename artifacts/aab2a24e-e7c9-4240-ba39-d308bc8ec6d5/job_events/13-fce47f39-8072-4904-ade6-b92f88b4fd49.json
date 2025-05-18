@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "fce47f39-8072-4904-ade6-b92f88b4fd49", "counter": 13, "stdout": "\u001b[0;31mThe offending line appears to be:\u001b[0m", "start_line": 12, "end_line": 13, "runner_ident": "aab2a24e-e7c9-4240-ba39-d308bc8ec6d5", "created": "2025-05-18T02:09:18.699953+00:00"}

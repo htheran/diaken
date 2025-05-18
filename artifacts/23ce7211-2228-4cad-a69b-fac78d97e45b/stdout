@@ -1,0 +1,43 @@
+
+PLAY [Actualización de Windows con registro de cambios] ************************
+
+TASK [Verificar conexión con el host Windows] **********************************
+[0;32mok: [htheran][0m
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Obtener fecha y hora actual] *********************************************
+[0;32mok: [htheran][0m
+
+TASK [Obtener información del sistema] *****************************************
+[0;32mok: [htheran][0m
+
+TASK [Buscar actualizaciones disponibles (método mejorado)] ********************
+[0;32mok: [htheran][0m
+
+TASK [Generar reporte completo de actualizaciones disponibles] *****************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar mensaje sobre reporte pre-actualización] *************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": ""[0m
+[0;32m}[0m
+
+TASK [Instalar actualizaciones (método mejorado)] ******************************
+[0;31mAn exception occurred during task execution. To see the full traceback, use -vvv. The error was: NoneType: None[0m
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "msg": "This action (raw) does not support async."}[0m
+[0;36m...ignoring[0m
+
+TASK [Verificar si se requiere reinicio] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Generar reporte detallado post-actualización] ****************************
+[0;31mfatal: [htheran]: FAILED! => {"msg": "The task includes an option with an undefined variable.. 'dict object' has no attribute 'stdout'\n\nThe error appears to be in '/tmp/tmpqpz5y2r5.yml': line 142, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Generar reporte detallado post-actualización\n      ^ here\n"}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar mensaje sobre reporte post-actualización] ************************
+[0;31mfatal: [htheran]: FAILED! => {"msg": "The task includes an option with an undefined variable.. 'dict object' has no attribute 'stdout'\n\nThe error appears to be in '/tmp/tmpqpz5y2r5.yml': line 192, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Mostrar mensaje sobre reporte post-actualización\n      ^ here\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : [0;32mok=10  [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=2   [0m

@@ -1,0 +1,25 @@
+
+PLAY [Actualización de Windows vía SSH - Usando PowerShell] ********************
+
+TASK [Verificar PowerShell] ****************************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "Warning: Permanently added '10.104.10.20' (ED25519) to the list of known hosts.\r\n'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Ejecutar actualización de Windows] ***************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar ubicación del reporte] *******************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "Proceso de actualización completado. Reporte generado en C:\\diaken\\windows_update_report.txt"[0m
+[0;32m}[0m
+
+TASK [Mostrar contenido del reporte (últimas 20 líneas)] ***********************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resumen del reporte] *********************************************
+[0;31mfatal: [htheran]: FAILED! => {"msg": "The task includes an option with an undefined variable.. 'dict object' has no attribute 'stdout_lines'\n\nThe error appears to be in '/tmp/tmpg5pih2zj.yml': line 106, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Mostrar resumen del reporte\n      ^ here\n"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : [0;32mok=4   [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=3   [0m

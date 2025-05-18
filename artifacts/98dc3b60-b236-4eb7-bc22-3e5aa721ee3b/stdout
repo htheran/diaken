@@ -1,0 +1,37 @@
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmp06usbck2.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmp06usbck2.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmp06usbck2.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+
+PLAY [Diagnóstico de Windows Update - Verificación Detallada] ******************
+
+TASK [Crear carpeta de diagnóstico] ********************************************
+[0;32mok: [htheran][0m
+
+TASK [Iniciar reporte detallado] ***********************************************
+[0;32mok: [htheran][0m
+
+TASK [Verificar servicios de Windows Update] ***********************************
+[0;32mok: [htheran][0m
+
+TASK [Reiniciar componentes de Windows Update] *********************************
+[0;33mchanged: [htheran][0m
+
+TASK [Verificar actualizaciones disponibles] ***********************************
+[0;32mok: [htheran][0m
+
+TASK [Obtener resumen del reporte] *********************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resumen del diagnóstico] *****************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "============================================\nDIAGNÓSTICO DE WINDOWS UPDATE COMPLETADO\n============================================\n\nRevise el reporte completo en:\nC:\\\\diaken\\windows_update_detailed.log\n\nNo se pudo generar el resumen del reporte.\n\nSi el problema persiste, intente:\n1. Ejecutar el Solucionador de problemas de Windows Update\n2. Verificar el registro de eventos de Windows\n3. Revisar la configuración de red y proxy\n\nPara forzar una búsqueda manual de actualizaciones:\n1. Abra Windows Update desde el Panel de Control\n2. Haga clic en 'Buscar actualizaciones'\n============================================\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=7   [0m [0;33mchanged=1   [0m unreachable=0    failed=0    skipped=0    rescued=0    [1;35mignored=1   [0m

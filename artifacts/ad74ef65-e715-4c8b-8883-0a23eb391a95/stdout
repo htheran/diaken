@@ -1,0 +1,14 @@
+
+PLAY [Actualización de Windows con script batch (versión mini)] ****************
+
+TASK [Verificar conexión con el host Windows] **********************************
+[0;32mok: [htheran][0m
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Crear archivo batch para actualizar Windows] *****************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "checksum": "06eaefbcd87195af69e25b5bac190b12e629a798", "dest": "C:\\diaken\\update_windows.bat", "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "operation": "file_copy", "original_basename": "tmpxm63u8k5", "rc": 1, "size": 2515, "src": null}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : [0;32mok=2   [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

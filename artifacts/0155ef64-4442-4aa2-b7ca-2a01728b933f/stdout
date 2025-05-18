@@ -1,0 +1,8 @@
+
+PLAY [Actualización de Windows vía SSH - Solo reporte TXT (con validaciones)] ***
+
+TASK [Validar acceso al host] **************************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "msg": "non-zero return code", "rc": 1, "stderr": "Warning: Permanently added '10.104.10.20' (ED25519) to the list of known hosts.\r\n'ver\"' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "stderr_lines": ["Warning: Permanently added '10.104.10.20' (ED25519) to the list of known hosts.", "'ver\"' is not recognized as an internal or external command,", "operable program or batch file."], "stdout": "", "stdout_lines": []}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : ok=0    changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

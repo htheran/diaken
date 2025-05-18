@@ -1,0 +1,15 @@
+
+PLAY [Actualización de Windows vía SSH - Solo reporte TXT] *********************
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[1;35m[WARNING]: Unhandled error in Python interpreter discovery for host htheran:[0m
+[1;35munexpected output from Python interpreter discovery[0m
+[1;35m[WARNING]: Platform unknown on host htheran is using the discovered Python[0m
+[1;35minterpreter at /usr/bin/python3, but future installation of another Python[0m
+[1;35minterpreter could change the meaning of that path. See[0m
+[1;35mhttps://docs.ansible.com/ansible-[0m
+[1;35mcore/2.18/reference_appendices/interpreter_discovery.html for more information.[0m
+[0;31mfatal: [htheran]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : ok=0    changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    ignored=0   

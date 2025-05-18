@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "a665c853-7568-4186-b477-84f40718da0f", "counter": 6, "stdout": "\u001b[1;35m[WARNING]: While constructing a mapping from /tmp/tmpm1197xmb.yml, line 77,\u001b[0m", "start_line": 5, "end_line": 6, "runner_ident": "b5236741-3b93-4837-9dea-0173495cb83e", "created": "2025-05-18T02:01:32.063840+00:00"}

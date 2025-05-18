@@ -1,0 +1,72 @@
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpvcpjcpyi.yml, line 142,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpvcpjcpyi.yml, line 142,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmpvcpjcpyi.yml, line 142,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+[0;31mERROR! failed at splitting arguments, either an unbalanced jinja2 block or quotes: @echo off[0m
+[0;31msetlocal enabledelayedexpansion[0m
+[0;31m[0m
+[0;31mecho Iniciando proceso de actualización...[0m
+[0;31m[0m
+[0;31m([0m
+[0;31m    echo ====================================================[0m
+[0;31m    echo ACTUALIZACION DE WINDOWS - INICIO[0m
+[0;31m    echo ====================================================[0m
+[0;31m    echo Fecha: %date% %time%[0m
+[0;31m    echo Equipo: %COMPUTERNAME%[0m
+[0;31m    echo Usuario: %USERNAME%[0m
+[0;31m    echo ====================================================[0m
+[0;31m    echo [1/4] INFORMACION DEL SISTEMA:[0m
+[0;31m    echo ------------------------[0m
+[0;31m    ver[0m
+[0;31m    systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"OS Build"[0m
+[0;31m    echo.[0m
+[0;31m) > "{{ report_file }}" 2>&1[0m
+[0;31m[0m
+[0;31mif exist "{{ report_file }" ([0m
+[0;31m    echo Reporte iniciado correctamente en: {{ report_file }}[0m
+[0;31m    type "{{ report_file }}"[0m
+[0;31m) else ([0m
+[0;31m    echo Error: No se pudo crear el archivo de reporte.[0m
+[0;31m    exit /b 1[0m
+[0;31m)[0m
+[0;31m. failed at splitting arguments, either an unbalanced jinja2 block or quotes: @echo off[0m
+[0;31msetlocal enabledelayedexpansion[0m
+[0;31m[0m
+[0;31mecho Iniciando proceso de actualización...[0m
+[0;31m[0m
+[0;31m([0m
+[0;31m    echo ====================================================[0m
+[0;31m    echo ACTUALIZACION DE WINDOWS - INICIO[0m
+[0;31m    echo ====================================================[0m
+[0;31m    echo Fecha: %date% %time%[0m
+[0;31m    echo Equipo: %COMPUTERNAME%[0m
+[0;31m    echo Usuario: %USERNAME%[0m
+[0;31m    echo ====================================================[0m
+[0;31m    echo [1/4] INFORMACION DEL SISTEMA:[0m
+[0;31m    echo ------------------------[0m
+[0;31m    ver[0m
+[0;31m    systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"OS Build"[0m
+[0;31m    echo.[0m
+[0;31m) > "{{ report_file }}" 2>&1[0m
+[0;31m[0m
+[0;31mif exist "{{ report_file }" ([0m
+[0;31m    echo Reporte iniciado correctamente en: {{ report_file }}[0m
+[0;31m    type "{{ report_file }}"[0m
+[0;31m) else ([0m
+[0;31m    echo Error: No se pudo crear el archivo de reporte.[0m
+[0;31m    exit /b 1[0m
+[0;31m)[0m
+[0;31m[0m
+[0;31m[0m
+[0;31mThe error appears to be in '/tmp/tmpvcpjcpyi.yml': line 36, column 7, but may[0m
+[0;31mbe elsewhere in the file depending on the exact syntax problem.[0m
+[0;31m[0m
+[0;31mThe offending line appears to be:[0m
+[0;31m[0m
+[0;31m[0m
+[0;31m    - name: Iniciar reporte[0m
+[0;31m      ^ here[0m

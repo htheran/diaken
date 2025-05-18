@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "64fbdf19-91a5-48cb-9a46-7346ed4f5b4d", "counter": 36, "stdout": "\u001b[0;31m. failed at splitting arguments, either an unbalanced jinja2 block or quotes: @echo off\u001b[0m", "start_line": 35, "end_line": 36, "runner_ident": "95cdc147-804c-4ccb-a4cb-27d87c974fdb", "created": "2025-05-18T02:04:51.752610+00:00"}

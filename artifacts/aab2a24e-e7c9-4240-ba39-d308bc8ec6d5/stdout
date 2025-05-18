@@ -1,0 +1,17 @@
+[0;31mERROR! We were unable to read either as JSON nor YAML, these are the errors we got from each:[0m
+[0;31mJSON: Expecting value: line 1 column 1 (char 0)[0m
+[0;31m[0m
+[0;31mSyntax Error while loading YAML.[0m
+[0;31m  could not find expected ':'. while scanning a simple key[0m
+[0;31m  in "<unicode string>", line 29, column 1[0m
+[0;31mcould not find expected ':'[0m
+[0;31m  in "<unicode string>", line 36, column 41[0m
+[0;31m[0m
+[0;31mThe error appears to be in '/tmp/tmp2qz933e3.yml': line 36, column 41, but may[0m
+[0;31mbe elsewhere in the file depending on the exact syntax problem.[0m
+[0;31m[0m
+[0;31mThe offending line appears to be:[0m
+[0;31m[0m
+[0;31m        echo ============================================[0m
+[0;31m        echo [3] Información del sistema:[0m
+[0;31m                                        ^ here[0m

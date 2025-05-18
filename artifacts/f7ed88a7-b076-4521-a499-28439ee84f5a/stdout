@@ -1,0 +1,36 @@
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmph43q6ipb.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmph43q6ipb.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmph43q6ipb.yml, line 87,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+
+PLAY [Diagnóstico de Windows Update - Verificación Detallada] ******************
+
+TASK [Crear carpeta de diagnóstico] ********************************************
+[0;32mok: [htheran][0m
+
+TASK [Iniciar reporte detallado] ***********************************************
+[0;32mok: [htheran][0m
+
+TASK [Verificar servicios de Windows Update] ***********************************
+[0;32mok: [htheran][0m
+
+TASK [Reiniciar componentes de Windows Update] *********************************
+[0;33mchanged: [htheran][0m
+
+TASK [Verificar actualizaciones disponibles] ***********************************
+[0;32mok: [htheran][0m
+
+TASK [Obtener resumen del reporte] *********************************************
+[0;32mok: [htheran][0m
+
+TASK [Mostrar resumen del diagnóstico] *****************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "============================================\nDIAGNÓSTICO DE WINDOWS UPDATE COMPLETADO\n============================================\n\nRevise el reporte completo en:\nC:\\\\diaken\\windows_update_detailed.log\n\nNo se encontraron errores en el registro.\n\nSiguientes pasos recomendados:\n1. Verificar el archivo de registro completo en:\n   C:\\\\diaken\\windows_update_detailed.log\n   \n2. Si hay errores, intente:\n   - Reiniciar el servicio Windows Update\n   - Ejecutar el Solucionador de problemas de Windows\n   - Verificar la conexión a Internet\n\n3. Para buscar actualizaciones manualmente:\n   - Abra Windows Update desde el Panel de Control\n   - Haga clic en 'Buscar actualizaciones'\n\n============================================\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=7   [0m [0;33mchanged=1   [0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

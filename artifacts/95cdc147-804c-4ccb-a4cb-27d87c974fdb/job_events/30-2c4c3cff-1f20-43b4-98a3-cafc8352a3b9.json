@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "2c4c3cff-1f20-43b4-98a3-cafc8352a3b9", "counter": 30, "stdout": "\u001b[0;31m    echo Reporte iniciado correctamente en: {{ report_file }}\u001b[0m", "start_line": 29, "end_line": 30, "runner_ident": "95cdc147-804c-4ccb-a4cb-27d87c974fdb", "created": "2025-05-18T02:04:51.750567+00:00"}

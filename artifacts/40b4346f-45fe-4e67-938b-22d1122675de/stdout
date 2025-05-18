@@ -1,0 +1,40 @@
+
+PLAY [Actualización de Windows con comandos básicos] ***************************
+
+TASK [Verificar conexión con el host Windows] **********************************
+[0;32mok: [htheran][0m
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Crear archivo de reporte] ************************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Obtener información del sistema] *****************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Listar actualizaciones instaladas] ***************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Ejecutar Windows Update (detectnow)] *************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Ejecutar Windows Update (updatenow)] *************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Verificar estado de Windows Update] **************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Verificar si se requiere reinicio] ***************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Finalizar reporte] *******************************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Mostrar ubicación del reporte] *******************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "Reporte generado en C:\\diaken\\windows_update_report.txt"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=11  [0m [0;33mchanged=8   [0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

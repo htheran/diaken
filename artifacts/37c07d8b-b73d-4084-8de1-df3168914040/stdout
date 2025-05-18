@@ -1,0 +1,43 @@
+
+PLAY [Actualización de Windows con script batch (versión mini)] ****************
+
+TASK [Verificar conexión con el host Windows] **********************************
+[0;32mok: [htheran][0m
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Crear base del script batch] *********************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar comandos para crear reporte] *************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar comandos para obtener información del sistema] *******************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar comandos para verificar actualizaciones instaladas] **************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar comandos para reiniciar servicios] *******************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar comandos para forzar actualizaciones] ****************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar comandos para verificar actualizaciones después del proceso] *****
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar comandos para finalizar el reporte] ******************************
+[0;33mchanged: [htheran][0m
+
+TASK [Ejecutar script batch] ***************************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Mostrar ubicación del reporte] *******************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "Script ejecutado. Reporte generado en C:\\diaken\\windows_update_report.txt"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=12  [0m [0;33mchanged=9   [0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

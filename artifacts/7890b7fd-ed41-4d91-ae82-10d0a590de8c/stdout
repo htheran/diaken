@@ -1,0 +1,38 @@
+
+PLAY [Actualización de Windows con script PowerShell (Versión Simple)] *********
+
+TASK [Verificar conexión con el host Windows] **********************************
+[0;32mok: [htheran][0m
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Crear archivo base del script PowerShell] ********************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar función para obtener información del sistema] ********************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar función para buscar actualizaciones] *****************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar función para instalar actualizaciones] ***************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar función para verificar reinicio] *********************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar código principal] ************************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Ejecutar script PowerShell] **********************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": true, "msg": "non-zero return code", "rc": 1, "stderr": "'powershell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "stderr_lines": ["'powershell' is not recognized as an internal or external command,", "operable program or batch file."], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [Mostrar resultado del script] ********************************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": [][0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=10  [0m [0;33mchanged=7   [0m unreachable=0    failed=0    skipped=0    rescued=0    [1;35mignored=1   [0m

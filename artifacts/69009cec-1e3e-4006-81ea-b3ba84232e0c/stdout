@@ -1,0 +1,63 @@
+
+PLAY [Actualización de Windows con comandos simples] ***************************
+
+TASK [Verificar conexión con el host Windows] **********************************
+[0;32mok: [htheran][0m
+
+TASK [Crear carpeta diaken si no existe] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Crear archivo de reporte pre-actualización] ******************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar encabezado al reporte pre-actualización] *************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar información del sistema al reporte pre-actualización] ************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar información de actualizaciones instaladas al reporte pre-actualización] ***
+[0;33mchanged: [htheran][0m
+
+TASK [Iniciar búsqueda de actualizaciones] *************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Finalizar reporte pre-actualización] *************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Mostrar mensaje sobre reporte pre-actualización] *************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "Reporte pre-actualización generado en C:\\diaken\\pre_update_2025-05-17_20-18-47.txt"[0m
+[0;32m}[0m
+
+TASK [Crear archivo de reporte post-actualización] *****************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar encabezado al reporte post-actualización] ************************
+[0;33mchanged: [htheran][0m
+
+TASK [Agregar información del sistema al reporte post-actualización] ***********
+[0;33mchanged: [htheran][0m
+
+TASK [Iniciar instalación de actualizaciones (Método 1)] ***********************
+[0;33mchanged: [htheran][0m
+
+TASK [Intentar instalación de actualizaciones (Método 2)] **********************
+[0;33mchanged: [htheran][0m
+
+TASK [Verificar actualizaciones instaladas después de la actualización] ********
+[0;33mchanged: [htheran][0m
+
+TASK [Verificar si se requiere reinicio] ***************************************
+[0;32mok: [htheran][0m
+
+TASK [Finalizar reporte post-actualización] ************************************
+[0;33mchanged: [htheran][0m
+
+TASK [Mostrar mensaje sobre reporte post-actualización] ************************
+[0;32mok: [htheran] => {[0m
+[0;32m    "msg": "Reporte post-actualización generado en C:\\diaken\\post_update_2025-05-17_20-18-48.txt"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mhtheran[0m                    : [0;32mok=18  [0m [0;33mchanged=13  [0m unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

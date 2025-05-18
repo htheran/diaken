@@ -1,0 +1,43 @@
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmp0pfbn9i0.yml, line 132,[0m
+[1;35mcolumn 7, found a duplicate dict key (register). Using last defined value only.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmp0pfbn9i0.yml, line 132,[0m
+[1;35mcolumn 7, found a duplicate dict key (changed_when). Using last defined value[0m
+[1;35monly.[0m
+[1;35m[WARNING]: While constructing a mapping from /tmp/tmp0pfbn9i0.yml, line 132,[0m
+[1;35mcolumn 7, found a duplicate dict key (ignore_errors). Using last defined value[0m
+[1;35monly.[0m
+
+PLAY [Actualización de Windows con Ansible] ************************************
+
+TASK [Crear carpeta de reportes] ***********************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "Warning: Permanently added '10.104.10.20' (ED25519) to the list of known hosts.\r\n'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Obtener información del sistema] *****************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Reiniciar servicios de Windows Update] ***********************************
+[0;31mfailed: [htheran] (item=wuauserv) => {"ansible_loop_var": "item", "changed": false, "item": "wuauserv", "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;31mfailed: [htheran] (item=bits) => {"ansible_loop_var": "item", "changed": false, "item": "bits", "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;31mfailed: [htheran] (item=cryptsvc) => {"ansible_loop_var": "item", "changed": false, "item": "cryptsvc", "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Registrar reinicio de servicios] *****************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Limpiar caché de Windows Update] *****************************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+[0;36m...ignoring[0m
+
+TASK [Buscar actualizaciones disponibles] **************************************
+[0;31mAn exception occurred during task execution. To see the full traceback, use -vvv. The error was: See stdout/stderr for the exact error[0m
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "failed_update_count": 0, "filtered_updates": {}, "found_update_count": 0, "installed_update_count": 0, "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1, "updates": {}}[0m
+[0;36m...ignoring[0m
+
+TASK [Registrar actualizaciones disponibles] ***********************************
+[0;31mfatal: [htheran]: FAILED! => {"changed": false, "module_stderr": "'PowerShell' is not recognized as an internal or external command,\r\noperable program or batch file.\r\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mhtheran[0m                    : [0;32mok=6   [0m changed=0    unreachable=0    [0;31mfailed=1   [0m skipped=0    rescued=0    [1;35mignored=6   [0m
